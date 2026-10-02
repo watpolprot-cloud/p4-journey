@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>P4 Journey | ฟิสิกส์ 4</title>
+<link rel="icon" href="assets/crest.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080b12;--bg2:#0d121c;--panel:#111827;--panel2:#161f31;--line:#26324a;--line2:#34446a;
+  --text:#e7ecf5;--muted:#8793aa;--cyan:#35d0ff;--amber:#ffb020;--red:#ff4d5e;--green:#3ddc97;--violet:#9b7bff;--orange:#ff8a3d;
+  --cut:14px;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;color:var(--text);font-family:"IBM Plex Sans Thai",sans-serif;font-size:15px;line-height:1.55;
+  background:radial-gradient(1200px 600px at 80% -10%,rgba(53,208,255,.10),transparent 60%),radial-gradient(900px 500px at -10% 110%,rgba(155,123,255,.10),transparent 60%),
+  linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px) 0 0/100% 32px,var(--bg)}
+h1,h2,h3,.disp{font-family:"Chakra Petch",sans-serif;font-weight:600;margin:0;letter-spacing:.2px}
+a{color:var(--cyan)}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 16px 60px}
+.muted{color:var(--muted);font-size:13.5px}
+.num{font-family:"Chakra Petch";font-variant-numeric:tabular-nums}
+.grid{display:grid;gap:18px}
+@media(min-width:880px){.g2{grid-template-columns:1fr 1fr}.g-hero{grid-template-columns:1.15fr .85fr}.g-now{grid-template-columns:1.35fr .65fr}}
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);padding:18px;position:relative;
+  clip-path:polygon(0 0,calc(100% - var(--cut)) 0,100% var(--cut),100% 100%,var(--cut) 100%,0 calc(100% - var(--cut)))}
+.card:before{content:"";position:absolute;left:0;top:0;width:40px;height:2px;background:var(--cyan)}
+.card.amber:before{background:var(--amber)}
+.sec-title{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.sec-title h2{font-size:19px}
+.sec-num{font-family:"Chakra Petch";font-weight:700;font-size:13px;color:var(--cyan);border:1px solid var(--cyan);padding:0 7px;letter-spacing:1px}
+.tag{display:inline-block;border:1px solid var(--line2);padding:1px 10px;font-size:12.5px;font-weight:600;background:var(--bg2);font-family:"Chakra Petch"}
+.tag.c{border-color:var(--cyan);color:var(--cyan)}.tag.a{border-color:var(--amber);color:var(--amber)}
+.btn{display:inline-block;font-family:"Chakra Petch";font-weight:600;font-size:15px;letter-spacing:.5px;border:1px solid var(--cyan);padding:8px 18px;background:rgba(53,208,255,.12);color:var(--cyan);cursor:pointer;text-decoration:none;
+  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);transition:background .15s}
+.btn:hover{background:rgba(53,208,255,.25)}
+.btn:disabled{opacity:.4;cursor:wait}
+.btn.alt{border-color:var(--line2);color:var(--text);background:var(--bg2)}
+.btn.am{border-color:var(--amber);color:var(--amber);background:rgba(255,176,32,.12)}
+
+/* header */
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.top img{width:44px;filter:drop-shadow(0 0 6px rgba(255,176,32,.35))}
+.top .t1{font-family:"Chakra Petch";font-weight:700;font-size:24px;line-height:1;letter-spacing:3px}
+.top .t1 span{color:var(--cyan)}
+.top .t2{font-size:13px;color:var(--muted)}
+.announce{border:1px solid rgba(255,176,32,.45);border-left:3px solid var(--amber);background:rgba(255,176,32,.07);padding:9px 14px;margin-bottom:14px;font-size:14px;color:#f3dfb5}
+.announce b{font-family:"Chakra Petch";color:var(--amber);letter-spacing:2px;font-size:12px;margin-right:8px}
+.tabs{display:flex;flex-wrap:wrap;margin-bottom:18px;border-bottom:1px solid var(--line)}
+.tab{font-family:"Chakra Petch";font-weight:600;font-size:15px;letter-spacing:.5px;border:0;border-bottom:2px solid transparent;padding:10px 18px;background:none;color:var(--muted);cursor:pointer}
+.tab[aria-selected="true"]{color:var(--text);border-bottom-color:var(--cyan);background:linear-gradient(0deg,rgba(53,208,255,.10),transparent)}
+.tab:disabled{opacity:.4;cursor:not-allowed}
+[hidden]{display:none!important}
+
+/* lesson */
+.kicker{font-family:"Chakra Petch";letter-spacing:3px;font-size:12.5px;color:var(--amber);font-weight:600}
+.now-title{font-size:26px;line-height:1.25;margin:6px 0 10px}
+.meta{display:flex;gap:6px;flex-wrap:wrap}
+.blk{margin-top:16px}
+.blk h3{font-size:15px;color:var(--cyan);letter-spacing:.5px;margin-bottom:6px}
+.list{margin:0;padding:0;list-style:none}
+.list li{position:relative;padding:5px 0 5px 18px;border-bottom:1px solid #1b2436;font-size:14.5px}
+.list li:before{content:"";position:absolute;left:2px;top:14px;width:7px;height:7px;background:var(--cyan);transform:rotate(45deg)}
+.task{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px solid var(--line);border-left:3px solid var(--amber);background:var(--bg2);padding:9px 12px;margin-bottom:8px}
+.task .btn{font-size:13px;padding:5px 14px}
+.media{display:block;text-decoration:none;color:var(--text);border:1px solid var(--line2);border-left:3px solid var(--cyan);background:var(--bg2);padding:10px 12px;margin-bottom:8px;transition:background .15s}
+.media:hover{background:rgba(53,208,255,.10)}
+.media .kicker{display:block;font-size:11.5px;color:var(--cyan)}
+.media .mt{display:block;font-size:15px;margin:2px 0 6px}
+.media .go{font-family:"Chakra Petch";font-weight:600;font-size:13px;color:var(--cyan);border:1px solid var(--cyan);padding:1px 12px}
+.wk-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.wk-title{font-size:24px}
+.plan-pick{display:flex;gap:8px;flex-wrap:wrap}
+.pick{font-family:"Chakra Petch";font-weight:600;text-decoration:none;color:var(--text);border:1px solid var(--line2);background:var(--bg2);padding:5px 14px;line-height:1.2;text-align:center}
+.pick small{display:block;font-size:11px;color:var(--muted);font-weight:500}
+.pick.on{border-color:var(--cyan);color:var(--cyan);background:rgba(53,208,255,.10)}
+.plan{margin-bottom:22px;scroll-margin-top:12px}
+.plan.st-next:before{background:var(--amber)}.plan.st-next>.kicker{color:var(--amber)}
+.plan.st-done{opacity:.75}.plan.st-done:before{background:var(--green)}.plan.st-done>.kicker{color:var(--green)}
+.plan.st-now>.kicker{color:var(--cyan)}
+.plan-body{gap:0 24px}
+@media(min-width:880px){.plan-body{grid-template-columns:1.3fr .7fr}}
+.next-title{font-size:19px;line-height:1.3;margin:6px 0}
+.cal{width:100%;border-collapse:collapse;font-size:13.5px}
+.cal th{font-family:"Chakra Petch";font-weight:600;text-align:left;color:var(--muted);border-bottom:1px solid var(--line2);padding:6px 8px;font-size:12.5px;letter-spacing:1px}
+.cal td{border-bottom:1px solid #1b2436;padding:6px 8px;vertical-align:top}
+.cal td.w{font-family:"Chakra Petch";font-weight:700;color:var(--muted);width:44px}
+.cal td.d{white-space:nowrap;color:#b8c3d8;width:150px}
+.cal tr.past td{opacity:.45}
+.cal tr.cur td{background:rgba(53,208,255,.09)}
+.cal tr.cur td.w{color:var(--cyan)}
+.cal .lb{font-family:"Chakra Petch";font-weight:700;font-size:12px;border:1px solid var(--amber);color:var(--amber);padding:0 6px;margin-left:6px;white-space:nowrap}
+.cal-wrap{overflow-x:auto}
+@media(max-width:620px){.cal td.d{white-space:normal;width:auto}.cal .pl{display:none}}
+
+/* login */
+.login{max-width:440px;margin:10px auto}
+.field{margin-top:12px}
+.field label{display:block;font-family:"Chakra Petch";font-size:13px;letter-spacing:1px;color:var(--muted);margin-bottom:4px}
+.field input{width:100%;font-family:"Chakra Petch";font-size:20px;letter-spacing:3px;padding:10px 12px;background:var(--bg2);color:var(--text);border:1px solid var(--line2);outline:none}
+.field input:focus{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(53,208,255,.18)}
+.err{color:var(--red);font-size:14px;min-height:22px;margin-top:8px}
+.lock-note{font-size:12.5px;color:var(--muted);margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+
+/* profile */
+.hero{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.avatar{width:132px;height:136px;flex:none}
+.who{flex:1;min-width:220px}
+.who h1{font-size:26px;line-height:1.2}
+.who .nick{font-family:"Chakra Petch";font-weight:700;font-size:15px;color:var(--cyan);letter-spacing:3px;min-height:4px}
+.who .meta{margin-top:10px}
+.speech{margin-top:12px;border-left:3px solid var(--cyan);background:rgba(53,208,255,.07);padding:8px 12px;font-size:14px;color:#cfe7f5}
+.speech b{font-family:"Chakra Petch";color:var(--cyan);font-size:12px;letter-spacing:1px;display:block}
+.rank{display:flex;flex-direction:column;align-items:center;text-align:center}
+.rank .lbl{font-size:12.5px;color:var(--muted)}
+.rank .lbl.k{font-family:"Chakra Petch";letter-spacing:3px;color:var(--amber);font-weight:600}
+.rank h3{font-size:26px;line-height:1.1;margin-top:6px}
+.xpbar{width:100%;height:10px;background:#1b2436;overflow:hidden;margin:14px 0 6px}
+.xpbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--amber),#ffd36b);box-shadow:0 0 10px rgba(255,176,32,.6);transition:width 1.2s ease}
+.xprow{display:flex;justify-content:space-between;width:100%;font-family:"Chakra Petch";font-size:13px}
+.xprow b{color:var(--amber)}
+.ladder{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;width:100%;margin-top:12px}
+.ladder div{border-top:3px solid #26324a;padding:5px 2px 0;font-size:11px;line-height:1.25;color:var(--muted)}
+.ladder .rn{font-family:"Chakra Petch";font-weight:700;font-size:13px;display:block}
+.ladder div.on{border-top-color:#8a6a2a;color:#c9b27a}
+.ladder div.now{border-top-color:var(--amber);color:var(--text)}
+.ladder div.now .rn{color:var(--amber)}
+.radar-box{display:flex;flex-direction:column;align-items:center;position:relative}
+.radar-box svg{width:100%;max-width:440px;height:auto;overflow:visible}
+.empty{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);font-family:"Chakra Petch";font-weight:600;letter-spacing:2px;color:var(--amber);background:rgba(8,11,18,.85);border:1px solid rgba(255,176,32,.5);padding:6px 14px;font-size:13px;text-align:center;white-space:nowrap}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;justify-content:center}
+.chip{border:1px solid var(--line);padding:3px 9px;font-size:12.5px;background:var(--bg2)}
+.chip b{font-family:"Chakra Petch"}
+.lv{border:1px solid currentColor;padding:0 7px;font-weight:700;font-size:12px;font-family:"Chakra Petch"}
+.lv1{color:#9fb4d0}.lv2{color:var(--cyan)}.lv3{color:var(--green)}.lv4{color:var(--amber)}.lv5{color:var(--red)}.lv0{color:#56627a}
+.quiz{display:grid;gap:10px}
+.q{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;border:1px solid var(--line);border-left:3px solid var(--line2);padding:12px;background:var(--bg2)}
+.q.pass{border-left-color:var(--green)}.q.fixed{border-left-color:var(--cyan)}.q.fix{border-left-color:var(--amber)}
+.q .stamp{width:96px;text-align:center;font-family:"Chakra Petch";font-weight:700;font-size:12px;letter-spacing:1px;padding:6px 2px;border:1px solid;color:#56627a}
+.q.pass .stamp{color:var(--green)}.q.fixed .stamp{color:var(--cyan)}.q.fix .stamp{color:var(--amber)}
+.q h3{font-size:16px}
+.tries{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;font-size:12.5px}
+.try{border:1px solid var(--line2);padding:0 7px;font-family:"Chakra Petch";color:#b8c3d8}
+.try.ok{border-color:var(--green);color:var(--green)}
+.score-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sc{border:1px solid var(--line);padding:10px;background:var(--bg2)}
+.sc .big{font-family:"Chakra Petch";font-weight:700;font-size:30px;line-height:1.1}
+.sc .of{font-size:12px;color:var(--muted)}
+.sc .bar{height:4px;margin-top:8px;background:#1b2436}
+.sc .bar i{display:block;height:100%}
+@media(max-width:520px){.score-row{grid-template-columns:repeat(2,1fr)}}
+.mission{display:flex;gap:12px;align-items:center;border:1px solid var(--line);padding:10px 12px;background:var(--bg2);margin-bottom:8px}
+.mission .ico{width:42px;height:42px;border:1px solid;display:grid;place-items:center;font-family:"Chakra Petch";font-weight:700;font-size:13px;flex:none;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)}
+.mission b{font-family:"Chakra Petch";font-size:15px}
+.mission .xp{margin-left:auto;font-family:"Chakra Petch";font-weight:700;color:var(--amber);white-space:nowrap}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
+.bdg{text-align:center;font-size:12.5px;line-height:1.35;border:1px solid var(--line);padding:12px 6px;background:var(--bg2)}
+.bdg b{font-family:"Chakra Petch";font-size:14px}
+.bdg .medal{width:64px;height:70px;margin:0 auto 8px;display:grid;place-items:center;font-family:"Chakra Petch";font-weight:700;font-size:18px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.bdg.lock{opacity:.4;filter:grayscale(1)}
+.bar-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:30px;font-family:"Chakra Petch";letter-spacing:1px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <img src="assets/crest.png" alt="ตราโรงเรียนพรตพิทยพยัต">
+    <div>
+      <div class="t1">P4 <span>JOURNEY</span></div>
+      <div class="t2">ว32204 ฟิสิกส์เพิ่มเติม 4 · ม.5/2 และ ม.5/4 · ภาคเรียนที่ 2/2569 · โรงเรียนพรตพิทยพยัต</div>
+    </div>
+  </header>
+
+  <div class="announce" id="announce" hidden><b>ประกาศ</b><span id="announceText"></span></div>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tabLesson" aria-selected="true" aria-controls="viewLesson">คาบนี้เรียนอะไร</button>
+    <button class="tab" role="tab" id="tabMe" aria-selected="false" aria-controls="viewMe">ข้อมูลของฉัน</button>
+  </nav>
+
+  <!-- ================= ส่วนที่ 1: คาบนี้เรียนอะไร ================= -->
+  <section id="viewLesson" role="tabpanel">
+    <div class="wk-head">
+      <div><div class="kicker" id="wkKicker">WEEK</div><h1 class="wk-title" id="wkTitle"></h1></div>
+      <div class="plan-pick" id="planPick" role="tablist" aria-label="เลือกแผนการเรียน"></div>
+    </div>
+    <div id="plans"></div>
+
+    <div class="grid g2" style="margin-top:22px">
+      <div class="card amber" id="nextCard">
+        <div class="kicker">NEXT WEEK · เตรียมตัวสัปดาห์หน้า</div>
+        <div class="next-title disp" id="nextTitle"></div>
+        <div class="muted" id="nextNote" style="margin-top:6px"></div>
+      </div>
+      <div class="card" id="linksCard">
+        <div class="kicker">ลิงก์ประจำวิชา</div>
+        <div id="links" style="margin-top:8px"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:22px">
+      <div class="sec-title"><div class="sec-num">20</div><h2>เส้นทางทั้งภาค · 20 สัปดาห์</h2></div>
+      <div class="cal-wrap"><table class="cal">
+        <thead><tr><th>WK</th><th>วันที่</th><th class="pl">แผน</th><th>เรื่อง</th></tr></thead>
+        <tbody id="calBody"></tbody>
+      </table></div>
+    </div>
+    <div class="muted" style="margin-top:8px">ข้อมูลคาบเรียนแก้ล่าสุด <span id="lessonUpd"></span></div>
+  </section>
+
+  <!-- ================= ส่วนที่ 2: ข้อมูลของฉัน ================= -->
+  <section id="viewMe" role="tabpanel" hidden>
+
+    <div class="card login" id="loginCard">
+      <div class="kicker">PLAYER LOGIN</div>
+      <h2 style="font-size:22px;margin-top:4px">เข้าดูข้อมูลของฉัน</h2>
+      <div class="muted">ใช้ Username และ Password จากสลิปที่ครูแจก</div>
+      <form id="loginForm" autocomplete="off">
+        <div class="field"><label for="uid">USERNAME · เลขประจำตัวนักเรียน 5 หลัก</label>
+          <input id="uid" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" required></div>
+        <div class="field"><label for="upw">PASSWORD · รหัส 8 ตัว</label>
+          <input id="upw" type="password" maxlength="12" autocapitalize="characters" spellcheck="false" required></div>
+        <div class="err" id="loginErr" role="alert"></div>
+        <button class="btn" id="loginBtn" type="submit" style="width:100%;margin-top:4px">เข้าสู่ระบบ</button>
+      </form>
+      <div class="lock-note">ข้อมูลของแต่ละคนถูกเข้ารหัสไว้ ถอดได้เฉพาะในเครื่องของเราด้วยรหัสของเราเองเท่านั้น เพื่อนมองไม่เห็นข้อมูลของเรา · ลืมรหัสให้ติดต่อครูต้น</div>
+    </div>
+
+    <div id="profile" hidden>
+      <div class="bar-top">
+        <div class="muted">ข้อมูลอัปเดตล่าสุด <span id="pUpd"></span></div>
+        <button class="btn alt" id="logoutBtn" type="button">ออกจากระบบ</button>
+      </div>
+
+      <div class="grid g-hero">
+        <div class="card hero">
+          <svg class="avatar" viewBox="0 0 200 204" aria-hidden="true">
+            <defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2740"/><stop offset="1" stop-color="#0a0f19"/></linearGradient></defs>
+            <polygon points="100,8 180,52 180,140 100,184 20,140 20,52" fill="url(#pg)"/>
+            <polygon points="100,8 180,52 180,140 100,184 20,140 20,52" fill="none" stroke="#ffb020" stroke-width="4"/>
+            <polygon points="100,16 172,56 172,136 100,176 28,136 28,56" fill="none" stroke="#ffb020" stroke-opacity=".35"/>
+            <text x="100" y="92" text-anchor="middle" font-family="Chakra Petch" font-weight="700" font-size="22" fill="#8793aa" letter-spacing="2" id="avRoom"></text>
+            <text x="100" y="132" text-anchor="middle" font-family="Chakra Petch" font-weight="700" font-size="40" fill="#35d0ff" id="avNo"></text>
+          </svg>
+          <div class="who">
+            <div class="nick" id="pNick"></div>
+            <h1 id="pName"></h1>
+            <div class="meta" id="pMeta"></div>
+            <div class="speech"><b>BRIEFING</b><span id="pBrief"></span></div>
+          </div>
+        </div>
+        <div class="card rank">
+          <div class="lbl k">CURRENT RANK</div>
+          <h3 id="rankName"></h3>
+          <div class="lbl" id="rankTier"></div>
+          <div class="xpbar"><i id="xpfill"></i></div>
+          <div class="xprow"><b id="xptext"></b><span class="muted" id="xpgoal"></span></div>
+          <div class="lbl" id="xpnext"></div>
+          <div class="ladder" id="ladder"></div>
+        </div>
+      </div>
+
+      <div class="grid g2" style="margin-top:22px">
+        <div class="card">
+          <div class="sec-title"><div class="sec-num">01</div><h2>พลังฟิสิกส์ 6 ด้าน · ATTRIBUTES</h2></div>
+          <div class="muted">รูปร่างยิ่งใหญ่และกลม แปลว่าเก่งรอบด้าน · เส้นประคือตัวเราเมื่อรอบที่แล้ว</div>
+          <div class="radar-box"><svg id="abilityRadar" viewBox="0 0 440 400" role="img" aria-label="กราฟเรดาร์พลังฟิสิกส์ 6 ด้าน"></svg><div class="empty" id="abilityEmpty" hidden>รอผลตรวจงานครั้งแรก</div></div>
+        </div>
+        <div class="card">
+          <div class="sec-title"><div class="sec-num">02</div><h2>แผนที่ด่าน · MASTERY MAP</h2></div>
+          <div class="muted">แต่ละมุมคือ 1 เรื่อง · วงจากในออกนอกคือ Level 1 ถึง 5 · ไปถึงวงไหนแปลว่าผ่าน Level นั้นแล้ว</div>
+          <div class="tabs" role="tablist" id="unitTabs" style="margin:10px 0 8px"></div>
+          <div class="radar-box"><svg id="unitRadar" viewBox="0 0 440 400" role="img" aria-label="กราฟเรดาร์ระดับความเข้าใจรายเรื่อง"></svg></div>
+          <div class="chips" id="unitChips"></div>
+        </div>
+      </div>
+
+      <div class="grid g2" style="margin-top:22px">
+        <div class="card">
+          <div class="sec-title"><div class="sec-num">03</div><h2>ภารกิจสอบของฉัน</h2></div>
+          <div class="quiz" id="quizList"></div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="sec-title"><div class="sec-num">04</div><h2>คะแนนสะสม</h2></div>
+            <div class="score-row" id="scoreRow"></div>
+            <div class="muted" style="margin-top:8px">รวมตอนนี้ <b id="scoreTotal" class="num"></b> · Quiz ได้ครึ่งหนึ่งขึ้นไปได้เต็มทันที ยังไม่ถึงแก้ได้ด้วยการสอบใหม่หรือส่งชีท จนถึงวันตัดสินผล</div>
+          </div>
+          <div class="card" style="margin-top:22px">
+            <div class="sec-title"><div class="sec-num">05</div><h2>ภารกิจแนะนำ</h2></div>
+            <div id="missions"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:22px">
+        <div class="sec-title"><div class="sec-num">06</div><h2>เหรียญที่สะสมได้</h2></div>
+        <div class="badges" id="badges"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">P4 JOURNEY · ครูนพพล ภาณุสุวัฒน์ · โรงเรียนพรตพิทยพยัต</div>
+</div>
+
+<script src="data/lesson.js"></script>
+<script src="data/vault.js"></script>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const esc=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const safeUrl=u=>/^(https?:\/\/|[\w.\-\/]+\.(html?|pdf)(#.*)?$)/i.test(u||"")?u:"";
+
+/* ===== tabs ===== */
+function showView(which){
+  const me=which==="me";
+  $("viewLesson").hidden=me;$("viewMe").hidden=!me;
+  $("tabLesson").setAttribute("aria-selected",!me);$("tabMe").setAttribute("aria-selected",me);
+  try{history.replaceState(null,"",me?"#me":"#")}catch(e){}
+}
+$("tabLesson").onclick=()=>showView("lesson");
+$("tabMe").onclick=()=>showView("me");
+if(location.hash==="#me")showView("me");
+
+/* ===== ส่วนที่ 1: คาบนี้เรียนอะไร (อ่านจาก data/lesson.js) ===== */
+(function renderLesson(){
+  const L=window.P4_LESSON;
+  if(!L){$("plans").innerHTML='<div class="card">ยังไม่มีข้อมูลคาบเรียน</div>';return}
+  if(L.announce){$("announce").hidden=false;$("announceText").textContent=L.announce}
+  const wk=+L.week||0,row=(L.calendar||[]).find(r=>r[0]===wk);
+  $("wkKicker").textContent=`WEEK ${wk||"-"}${row?" · "+row[1]:""}`;
+  $("wkTitle").textContent=`สัปดาห์ที่ ${wk||"-"}`;
+  const STAT={now:["NOW PLAYING","กำลังเรียน"],next:["UP NEXT","คาบถัดไป"],done:["CLEARED","เรียนแล้ว"]};
+  const li=a=>(a||[]).filter(Boolean).map(x=>`<li>${esc(x)}</li>`).join("");
+  const blk=(h,a)=>(a||[]).filter(Boolean).length?`<div class="blk"><h3>${h}</h3><ul class="list">${li(a)}</ul></div>`:"";
+  const mediaHtml=m=>{const u=safeUrl(m.link),ext=/^https?:/i.test(u),pdf=/\.pdf$/i.test(u);
+    return u?`<a class="media" href="${esc(u)}"${ext||pdf?' target="_blank" rel="noopener"':""}>${m.type?`<span class="kicker">${esc(m.type)}</span>`:""}<span class="mt">${esc(m.text)}</span><span class="go">เปิด</span></a>`:""};
+  const plans=(L.plans||[]).filter(p=>p&&p.title);
+  $("plans").innerHTML=plans.map((p,i)=>{
+    const st=STAT[p.status]||STAT.next;
+    const concepts=String(p.concepts||"").split(/[\s,]+/).filter(Boolean);
+    const meta=[p.plan&&`<span class="tag c">${esc(p.plan)}</span>`,p.periods&&`<span class="tag">${esc(p.periods)}</span>`,p.unit&&`<span class="tag">${esc(p.unit)}</span>`,...concepts.map(c=>`<span class="tag a">${esc(c)}</span>`)].filter(Boolean).join("");
+    const tasks=(p.tasks||[]).filter(t=>t&&t.text).map(t=>{const u=safeUrl(t.link);return `<div class="task"><span>${esc(t.text)}</span>${u?`<a class="btn" href="${esc(u)}" target="_blank" rel="noopener">เปิด</a>`:""}</div>`}).join("");
+    const media=(p.media||[]).filter(m=>m&&m.text).map(mediaHtml).join("");
+    return `<article class="card plan st-${esc(p.status||"next")}" id="plan${i}">
+      <div class="kicker">${st[0]} · ${esc(p.plan||"")}</div>
+      <h2 class="now-title">${esc(p.title)}</h2>
+      <div class="meta">${meta}</div>
+      <div class="grid plan-body">
+        <div>${blk("คาบนี้จะได้อะไร",p.goals)}${blk("สรุปความรู้",p.summary)}${blk("เตรียมมาให้พร้อม",p.bring)}
+          ${tasks?`<div class="blk"><h3>ภารกิจที่ต้องทำ</h3>${tasks}</div>`:""}</div>
+        <div>${media?`<div class="blk"><h3>สื่อและกิจกรรม</h3>${media}</div>`:""}</div>
+      </div>
+    </article>`;
+  }).join("");
+  // ปุ่มเลือกแผน (กดแล้วเลื่อนไปที่แผนนั้น)
+  $("planPick").innerHTML=plans.map((p,i)=>`<a class="pick ${p.status==="now"?"on":""}" href="#plan${i}">${esc(p.plan||"แผน")}<small>${(STAT[p.status]||STAT.next)[1]}</small></a>`).join("");
+  $("planPick").onclick=e=>{const a=e.target.closest("a");if(!a)return;e.preventDefault();document.getElementById(a.getAttribute("href").slice(1)).scrollIntoView({behavior:"smooth",block:"start"})};
+  const nx=L.nextWeek||{};
+  if(nx.title){$("nextTitle").textContent=nx.title;$("nextNote").textContent=nx.note||""}else $("nextCard").hidden=true;
+  const links=(L.links||[]).filter(l=>l&&l.text&&safeUrl(l.link));
+  $("linksCard").hidden=!links.length;
+  $("links").innerHTML=links.map(mediaHtml).join("");
+  $("calBody").innerHTML=(L.calendar||[]).map(r=>{const [w,d,p,t,lb]=r;const cls=w<wk?"past":w===wk?"cur":"";
+    return `<tr class="${cls}"><td class="w">${esc(w)}</td><td class="d">${esc(d)}</td><td class="pl">${esc(p)}</td><td>${esc(t)}${lb?`<span class="lb">${esc(lb)}</span>`:""}</td></tr>`}).join("");
+  $("lessonUpd").textContent=L.updated||"-";
+})();
+
+/* ===== ส่วนที่ 2: ถอดรหัสข้อมูลรายคน ===== */
+const TAG_SALT="P4J-2569|";
+const te=new TextEncoder();
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function sha256hex(t){const h=await crypto.subtle.digest("SHA-256",te.encode(t));return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,"0")).join("")}
+async function unlock(id,pw){
+  const V=window.P4_VAULT;
+  if(!V||!V.items)throw new Error("novault");
+  if(!window.crypto||!crypto.subtle)throw new Error("nocrypto");
+  const item=V.items[(await sha256hex(TAG_SALT+id)).slice(0,20)];
+  if(!item)throw new Error("bad");
+  const base=await crypto.subtle.importKey("raw",te.encode(pw),"PBKDF2",false,["deriveKey"]);
+  const key=await crypto.subtle.deriveKey({name:"PBKDF2",hash:V.kdf.hash,salt:unb64(item.s),iterations:V.kdf.iter},base,{name:"AES-GCM",length:256},false,["decrypt"]);
+  try{const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:unb64(item.i)},key,unb64(item.c));return JSON.parse(new TextDecoder().decode(pt))}
+  catch(e){throw new Error("bad")}
+}
+try{const last=localStorage.getItem("p4_uid");if(last)$("uid").value=last}catch(e){}
+$("upw").addEventListener("input",e=>{const p=e.target.selectionStart;e.target.value=e.target.value.toUpperCase();e.target.setSelectionRange(p,p)});
+$("loginForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const id=$("uid").value.trim(),pw=$("upw").value.replace(/\s/g,"").toUpperCase();
+  $("loginErr").textContent="";
+  if(!/^\d{5}$/.test(id)){$("loginErr").textContent="Username คือเลขประจำตัวนักเรียน 5 หลัก";return}
+  $("loginBtn").disabled=true;$("loginBtn").textContent="กำลังถอดรหัส...";
+  try{
+    const data=await unlock(id,pw);
+    try{localStorage.setItem("p4_uid",id)}catch(e){}
+    $("upw").value="";renderProfile(data);
+  }catch(err){
+    $("loginErr").textContent=err.message==="nocrypto"?"เบราว์เซอร์นี้ถอดรหัสไม่ได้ ลองเปิดด้วย Chrome หรือ Safari รุ่นใหม่":err.message==="novault"?"ยังไม่มีข้อมูลรายคนบนหน้าเว็บ ลองใหม่ภายหลัง":"Username หรือ Password ไม่ถูกต้อง";
+  }finally{$("loginBtn").disabled=false;$("loginBtn").textContent="เข้าสู่ระบบ"}
+});
+$("logoutBtn").onclick=()=>{$("profile").hidden=true;$("loginCard").hidden=false;["pName","pNick","pMeta","quizList","scoreRow","missions","badges"].forEach(i=>$(i).innerHTML="")};
+
+/* ===== ค่าคงที่ของระบบ (ไฟล์ 01 หัวข้อ 3, 4, 8) ===== */
+const RANKS=[{n:"ประกายไฟ",min:0},{n:"อิเล็กตรอน",min:100},{n:"ตัวเก็บประจุ",min:250},{n:"วงจรไฟฟ้า",min:450},{n:"สนามไฟฟ้า",min:700},{n:"สายฟ้า",min:1000}];
+const ROMAN=["I","II","III","IV","V","VI"];
+const ABILITY=["เข้าใจแนวคิด","คำนวณแม่น","หน่วยและทิศ","วิเคราะห์โจทย์","พิชิตโจทย์ยาก","ความเพียร"];
+const UNITS=[
+  {name:"เสียง",items:[["S1","ธรรมชาติเสียง"],["S2","ความเข้ม/dB"],["S3","บีต/ดอปเพลอร์"]]},
+  {name:"ไฟฟ้าสถิต",items:[["E1","ประจุ"],["E2","คูลอมบ์"],["E3","สนามไฟฟ้า"],["E4","ศักย์ไฟฟ้า"],["E5","ตัวเก็บประจุ"]]},
+  {name:"ไฟฟ้ากระแส",items:[["C1","กระแส"],["C2","โอห์ม"],["C3","อนุกรม-ขนาน"],["C4","emf"],["C5","เคอร์ชอฟฟ์"],["C6","กำลังไฟฟ้า"]]}
+];
+const QUIZZES=[
+  {k:"1",name:"Quiz 1 · คลื่นเสียง",when:"สัปดาห์ที่ 4"},
+  {k:"2",name:"Quiz 2 · ประจุและคูลอมบ์",when:"สัปดาห์ที่ 6"},
+  {k:"3",name:"Quiz 3 · สนามไฟฟ้า",when:"สัปดาห์ที่ 8"},
+  {k:"4",name:"Quiz 4 · ศักย์ไฟฟ้า ตัวเก็บประจุ",when:"สัปดาห์ที่ 13"},
+  {k:"5",name:"Quiz 5 · วงจรไฟฟ้า",when:"สัปดาห์ที่ 16"},
+  {k:"6",name:"Quiz 6 · emf พลังงาน การต่อเซลล์",when:"สัปดาห์ที่ 18"}
+];
+const BADGES=[
+  {n:"ด่านแรกผ่าน",d:"ผ่าน Quiz แรก",t:"1",c:"#3ddc97"},
+  {n:"ไม่ยอมแพ้",d:"สอบแก้จนผ่าน",t:"3x",c:"#ff8a3d"},
+  {n:"ขยันต่อเนื่อง",d:"Quick Check 4 สัปดาห์ติด",t:"4",c:"#35d0ff"},
+  {n:"เจ้าแห่งเสียง",d:"ผ่าน L3 ครบหน่วยเสียง",t:"S",c:"#ffb020"},
+  {n:"พลังพุ่ง",d:"พลังด้านใดเพิ่ม 20+",t:"+20",c:"#9b7bff"},
+  {n:"ปรมาจารย์คูลอมบ์",d:"ผ่าน E2 ระดับ L5",t:"E2",c:"#ff4d5e"},
+  {n:"นักท้าทาย",d:"ทำ L5 ถูก 3 ข้อ",t:"L5",c:"#ff4d5e"},
+  {n:"สายฟ้า",d:"ถึงแรงก์สูงสุด",t:"MAX",c:"#ffb020"}
+];
+
+/* ===== radar (จากต้นแบบหน้าศักยภาพ) ===== */
+const NS="http://www.w3.org/2000/svg";
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function drawRadar(svg,labels,series,opt={}){
+  svg.innerHTML="";
+  const cx=220,cy=205,R=opt.R||140,n=labels.length,rings=5,start=-Math.PI/2;
+  const pt=(i,r)=>[cx+r*Math.cos(start+2*Math.PI*i/n),cy+r*Math.sin(start+2*Math.PI*i/n)];
+  const ringColors=["#0f1726","#101929","#121c2e","#141f33","#162238"];
+  for(let k=rings;k>=1;k--){
+    const p=[...Array(n)].map((_,i)=>pt(i,R*k/rings).join(",")).join(" ");
+    el("polygon",{points:p,fill:ringColors[k-1],stroke:k===rings?"#34446a":"#232f47","stroke-width":k===rings?1.6:1},svg);
+  }
+  for(let i=0;i<n;i++){const[x,y]=pt(i,R);el("line",{x1:cx,y1:cy,x2:x,y2:y,stroke:"#232f47","stroke-width":1},svg)}
+  if(opt.levelMarks){for(let k=1;k<=rings;k++){const t=el("text",{x:cx+7,y:cy-R*k/rings+14,"font-size":11,"font-family":"Chakra Petch",fill:"#56627a"},svg);t.textContent="L"+k}}
+  series.forEach(s=>{
+    const p=s.values.map((v,i)=>pt(i,R*Math.max(v,0.12)/s.max).join(",")).join(" ");
+    el("polygon",{points:p,fill:s.fill,"fill-opacity":s.op??.85,stroke:s.dash?"#8793aa":(s.line||s.fill),"stroke-width":s.dash?1.5:2.5,"stroke-dasharray":s.dash?"7 6":"none","stroke-linejoin":"round"},svg);
+    if(!s.dash)s.values.forEach((v,i)=>{const[x,y]=pt(i,R*Math.max(v,0.12)/s.max);el("circle",{cx:x,cy:y,r:4,fill:"#0a0f19",stroke:s.line||s.fill,"stroke-width":2.5},svg)});
+  });
+  labels.forEach((lb,i)=>{
+    const[x,y]=pt(i,R+30);const anchor=Math.abs(x-cx)<10?"middle":(x>cx?"start":"end");const dx=anchor==="start"?-8:anchor==="end"?8:0;
+    const t=el("text",{x:x+dx,y:y+5,"text-anchor":anchor,"font-family":"Chakra Petch","font-weight":600,"font-size":15,fill:"#e7ecf5"},svg);t.textContent=lb[0];
+    if(lb[1]){const t2=el("text",{x:x+dx,y:y+23,"text-anchor":anchor,"font-family":"IBM Plex Sans Thai","font-size":12,fill:"#8793aa"},svg);t2.textContent=lb[1]}
+  });
+}
+
+/* ===== วาดหน้าโปรไฟล์ ===== */
+function quizState(q){
+  const r=q||{},tries=r.tries||[],passIdx=tries.findIndex(t=>t>=5);
+  if(passIdx===0)return "pass";
+  if(passIdx>0||r.via==="sheet")return "fixed";
+  return tries.length?"fix":"wait";
+}
+function renderProfile(D){
+  $("loginCard").hidden=true;$("profile").hidden=false;
+  $("pUpd").textContent=D.updated||"-";
+  $("pNick").textContent=D.nick||"";
+  $("pName").textContent=D.name||"";
+  $("avRoom").textContent=D.room||"";$("avNo").textContent=D.no??"";
+  $("pMeta").innerHTML=`<span class="tag">${esc(D.room)}</span><span class="tag">เลขที่ ${esc(D.no)}</span><span class="tag">ID ${esc(D.id)}</span>`;
+  $("pBrief").textContent=D.note||"ยินดีต้อนรับสู่ P4 Journey ข้อมูลของเราจะเริ่มขึ้นหลังครูตรวจงานชิ้นแรก";
+
+  // rank & xp
+  const xp=+D.xp||0;let cur=0;RANKS.forEach((r,i)=>{if(xp>=r.min)cur=i});
+  const next=RANKS[cur+1];const pct=next?Math.round((xp-RANKS[cur].min)/(next.min-RANKS[cur].min)*100):100;
+  $("rankName").textContent=RANKS[cur].n;$("rankTier").textContent=`TIER ${ROMAN[cur]} จาก VI`;
+  $("xpfill").style.width="0";setTimeout(()=>{$("xpfill").style.width=pct+"%"},150);
+  $("xptext").textContent=xp+" XP";$("xpgoal").textContent=next?next.min+" XP":"";
+  $("xpnext").textContent=next?`อีก ${next.min-xp} XP จะขึ้นเป็น "${next.n}"`:"แรงก์สูงสุดแล้ว";
+  $("ladder").innerHTML=RANKS.map((r,i)=>`<div class="${i<cur?"on":""} ${i===cur?"now":""}"><span class="rn">${ROMAN[i]}</span>${esc(r.n)}</div>`).join("");
+
+  // ability
+  const ab=D.ability;const has=ab&&Array.isArray(ab.now);
+  $("abilityEmpty").hidden=has;
+  const series=[];
+  if(has&&Array.isArray(ab.prev))series.push({values:ab.prev,max:100,fill:"#8793aa",op:.05,dash:true});
+  if(has)series.push({values:ab.now,max:100,fill:"#35d0ff",op:.22});
+  drawRadar($("abilityRadar"),ABILITY.map((k,i)=>[k,has?ab.now[i]+"%":""]),series);
+
+  // mastery map
+  const lv=D.levels||{};
+  const showUnit=idx=>{const u=UNITS[idx];
+    [...$("unitTabs").children].forEach((b,i)=>b.setAttribute("aria-selected",i===idx));
+    const vals=u.items.map(it=>+lv[it[0]]||0);
+    drawRadar($("unitRadar"),u.items.map(it=>[it[0],it[1]]),vals.some(v=>v>0)?[{values:vals,max:5,fill:"#ffb020",op:.2}]:[],{levelMarks:true});
+    $("unitChips").innerHTML=u.items.map((it,i)=>`<span class="chip"><b>${it[0]}</b> ${esc(it[1])} <span class="lv lv${vals[i]}">${vals[i]?"L"+vals[i]:"ยังไม่เริ่ม"}</span></span>`).join("");
+  };
+  $("unitTabs").innerHTML=UNITS.map((u,i)=>`<button class="tab" role="tab" data-i="${i}">${esc(u.name)}</button>`).join("");
+  $("unitTabs").onclick=e=>{const b=e.target.closest(".tab");if(b)showUnit(+b.dataset.i)};
+  showUnit(0);
+
+  // quizzes
+  const stamp={pass:"CLEARED<br>ผ่าน ได้เต็ม",fixed:"RECOVERED<br>แก้ผ่าน ได้เต็ม",fix:"PENDING<br>รอแก้",wait:"UPCOMING<br>ยังไม่สอบ"};
+  const Q=D.quizzes||{};
+  $("quizList").innerHTML=QUIZZES.map(qz=>{
+    const r=Q[qz.k]||{},st=quizState(r),tries=r.tries||[];
+    const tr=tries.length?tries.map((t,i)=>`<span class="try ${t>=5?"ok":""}">รอบ ${i+1}: ${esc(t)}/10</span>`).join('<span class="muted">&rarr;</span>'):`<span class="muted">สอบ${esc(qz.when)}</span>`;
+    const extra=st==="fixed"&&r.via==="sheet"?`<div class="muted">แก้ผ่านด้วยการส่งชีทครบทุกส่วน</div>`:st==="fix"?`<div class="muted">ต้องได้ 5/10 ขึ้นไป หรือส่งชีทที่เขียนครบทุกส่วน แก้ได้ถึงวันตัดสินผล</div>`:"";
+    return `<div class="q ${st}"><div class="stamp">${stamp[st]}</div><div><h3>${esc(qz.name)}</h3><div class="tries">${tr}</div>${extra}</div></div>`;
+  }).join("");
+
+  // score
+  const qpts=k=>{const s=quizState(Q[k]);return s==="pass"||s==="fixed"?10:null};
+  const sumQ=ks=>{const v=ks.map(qpts);return v.some(x=>x!==null)?v.reduce((a,b)=>a+(b||0),0):null};
+  const mid=D.midterm==null?null:(D.midterm.fixed&&D.midterm.raw<12?12:D.midterm.raw);
+  const fin=D.final==null?null:D.final;
+  const S=[{k:"ก่อนกลางภาค",got:sumQ(["1","2","3"]),max:30},{k:"กลางภาค",got:mid,max:20},{k:"หลังกลางภาค",got:sumQ(["4","5","6"]),max:30},{k:"ปลายภาค",got:fin,max:20}];
+  const cols=["#3ddc97","#35d0ff","#ffb020","#ff4d5e"];let tot=0,any=false;
+  $("scoreRow").innerHTML=S.map((s,i)=>{if(s.got!=null){tot+=s.got;any=true}const w=s.got==null?0:s.got/s.max*100;
+    return `<div class="sc"><div class="muted">${s.k}</div><div class="big">${s.got??"-"}</div><div class="of">จาก ${s.max}</div><div class="bar"><i style="width:${w}%;background:${cols[i]}"></i></div></div>`}).join("");
+  $("scoreTotal").textContent=any?tot+" / 100":"ยังไม่มีคะแนน";
+
+  // missions
+  const M=D.missions||[];
+  $("missions").innerHTML=M.length?M.map(m=>`<div class="mission"><div class="ico" style="border-color:${esc(m.c||"#35d0ff")};color:${esc(m.c||"#35d0ff")}">${esc(m.s||"")}</div><div><b>${esc(m.t)}</b><div class="muted">${esc(m.d||"")}</div></div>${m.xp?`<div class="xp">+${esc(m.xp)} XP</div>`:""}</div>`).join("")
+    :`<div class="muted">ภารกิจรายคนจะขึ้นหลังครูตรวจงานชิ้นแรก ระหว่างนี้ดูภารกิจของคาบในแท็บ "คาบนี้เรียนอะไร"</div>`;
+
+  // badges
+  const got=new Set(D.badges||[]);
+  $("badges").innerHTML=BADGES.map(b=>{const lock=!got.has(b.n);return `<div class="bdg ${lock?"lock":""}"><div class="medal" style="background:linear-gradient(180deg,${b.c}33,${b.c}10);color:${b.c};box-shadow:inset 0 0 0 2px ${b.c}">${b.t}</div><b>${esc(b.n)}</b><div class="muted">${lock?"ยังไม่ปลดล็อก · ":""}${esc(b.d)}</div></div>`}).join("");
+}
+</script>
+</body>
+</html>
