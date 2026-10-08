@@ -54,6 +54,7 @@ a{color:var(--cyan)}
 .tab{font-family:"Chakra Petch";font-weight:600;font-size:15px;letter-spacing:.5px;border:0;border-bottom:2px solid transparent;padding:10px 18px;background:none;color:var(--muted);cursor:pointer}
 .tab[aria-selected="true"]{color:var(--text);border-bottom-color:var(--cyan);background:linear-gradient(0deg,rgba(53,208,255,.10),transparent)}
 .tab:disabled{opacity:.4;cursor:not-allowed}
+@media(max-width:420px){nav.tabs .tab{padding:10px 11px;font-size:14px;letter-spacing:0}}
 [hidden]{display:none!important}
 
 /* lesson */
@@ -163,6 +164,62 @@ a{color:var(--cyan)}
 .bdg .medal{width:64px;height:70px;margin:0 auto 8px;display:grid;place-items:center;font-family:"Chakra Petch";font-weight:700;font-size:18px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
 .bdg.lock{opacity:.4;filter:grayscale(1)}
 .bar-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+
+/* teams · CORE CHARGE */
+.team-coulomb{--tc:#35d0ff;--tcs:rgba(53,208,255,.14)}
+.team-volta{--tc:#ffb020;--tcs:rgba(255,176,32,.14)}
+.strip{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-bottom:14px}
+.ts{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-top:2px solid var(--tc);background:linear-gradient(180deg,var(--tcs),var(--bg2) 70%);padding:8px 10px;cursor:pointer;color:var(--text);text-align:left;font:inherit;min-width:0;
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
+.ts.r{flex-direction:row-reverse;text-align:right}
+.ts img{width:54px;height:54px;flex:none;object-fit:cover}
+.ts .tx{flex:1;min-width:0}
+.ts .tn,.ts .tr,.ts .tp{display:block}
+.ts .tn{font-family:"Chakra Petch";font-weight:700;font-size:15px;letter-spacing:1.5px;color:var(--tc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ts .tr{font-size:12px;color:var(--muted)}
+.ts .tp{font-family:"Chakra Petch";font-weight:700;font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+.ts .tp small{font-size:13px;color:var(--muted);margin-left:2px}
+.ts.mine{box-shadow:inset 0 0 0 1px var(--tc)}
+.cells{display:grid;grid-template-columns:repeat(20,1fr);gap:2px;height:8px;margin-top:5px}
+.cells i{background:#1b2436}
+.cells i.on{background:var(--tc);box-shadow:0 0 6px var(--tc)}
+.ts.r .cells{direction:rtl}
+.vs{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:"Chakra Petch";font-weight:700;color:var(--muted);font-size:12px;letter-spacing:2px;text-align:center;line-height:1.2}
+.vs b{font-size:20px;color:var(--text);letter-spacing:1px}
+@media(max-width:620px){
+  .strip{gap:6px}.ts{flex-direction:column;align-items:flex-start;gap:6px;padding:8px}.ts.r{flex-direction:column;align-items:flex-end}
+  .ts img{width:44px;height:44px}.ts .tn{font-size:13px;letter-spacing:1px}.ts .tp{font-size:22px}.vs{font-size:10px;letter-spacing:1px}.vs b{font-size:16px}.ts .tx{width:100%}
+}
+.arena{display:grid;gap:18px}
+@media(min-width:880px){.arena{grid-template-columns:1fr 1fr}}
+.tp-card{position:relative;border:1px solid var(--line);border-top:2px solid var(--tc);padding:22px 18px;overflow:hidden;background:var(--bg2);
+  clip-path:polygon(0 0,calc(100% - var(--cut)) 0,100% var(--cut),100% 100%,var(--cut) 100%,0 calc(100% - var(--cut)))}
+.tp-card .art{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.55}
+.tp-card .art:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,11,18,.25),rgba(8,11,18,.85))}
+.tp-card>*:not(.art){position:relative}
+.tp-head{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.tp-head img{width:120px;height:120px;object-fit:cover;flex:none;box-shadow:0 0 24px var(--tcs)}
+.tp-head .kicker{color:var(--tc)}
+.tp-head h2{font-size:28px;letter-spacing:2px;color:var(--tc);line-height:1.1}
+.mine-tag{display:inline-block;margin-top:6px;font-family:"Chakra Petch";font-weight:700;font-size:12px;letter-spacing:2px;border:1px solid var(--tc);color:var(--tc);padding:1px 8px}
+.gauge{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:18px}
+.ring{width:150px;height:150px;flex:none}
+.ring .v{font-family:"Chakra Petch";font-weight:700;font-size:30px;fill:var(--text)}
+.ring .u{font-family:"Chakra Petch";font-size:11px;letter-spacing:2px;fill:var(--muted)}
+.ring .arc{transition:stroke-dashoffset 1.2s ease}
+.parts{flex:1;min-width:200px}
+.part{margin-bottom:12px}
+.part .lb{display:flex;justify-content:space-between;font-size:13.5px}
+.part .lb b{font-family:"Chakra Petch";color:var(--tc)}
+.part .bar{height:6px;background:#1b2436;margin-top:4px}
+.part .bar i{display:block;height:100%;width:0;background:var(--tc);transition:width 1.2s ease}
+.wait-tag{font-family:"Chakra Petch";font-weight:600;letter-spacing:2px;font-size:12px;color:var(--amber);border:1px solid rgba(255,176,32,.5);padding:2px 10px;display:inline-block}
+.formula{font-family:"Chakra Petch";font-size:16px;border:1px solid var(--line2);background:var(--bg2);padding:10px 14px;margin:10px 0}
+.formula b{color:var(--cyan)}
+.avatar polygon.team{stroke:var(--tc,#ffb020)}
+.player-team{display:flex;gap:10px;align-items:center;margin-top:12px;border:1px solid var(--line);border-left:3px solid var(--tc);background:var(--tcs);padding:6px 10px}
+.player-team img{width:40px;height:40px;object-fit:cover}
+.player-team b{font-family:"Chakra Petch";letter-spacing:1.5px;color:var(--tc)}
 .foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:30px;font-family:"Chakra Petch";letter-spacing:1px}
 </style>
 </head>
@@ -179,8 +236,12 @@ a{color:var(--cyan)}
 
   <div class="announce" id="announce" hidden><b>ประกาศ</b><span id="announceText"></span></div>
 
+  <!-- แถบพลังทีม (อ่านจาก data/teams.js) กดแล้วไปหน้าสนามทีม -->
+  <div class="strip" id="teamStrip" hidden></div>
+
   <nav class="tabs" role="tablist">
     <button class="tab" role="tab" id="tabLesson" aria-selected="true" aria-controls="viewLesson">คาบนี้เรียนอะไร</button>
+    <button class="tab" role="tab" id="tabArena" aria-selected="false" aria-controls="viewArena">สนามทีม</button>
     <button class="tab" role="tab" id="tabMe" aria-selected="false" aria-controls="viewMe">ข้อมูลของฉัน</button>
   </nav>
 
@@ -214,6 +275,38 @@ a{color:var(--cyan)}
     <div class="muted" style="margin-top:8px">ข้อมูลคาบเรียนแก้ล่าสุด <span id="lessonUpd"></span></div>
   </section>
 
+  <!-- ================= ส่วนที่ 1.5: สนามทีม ================= -->
+  <section id="viewArena" role="tabpanel" hidden>
+    <div class="wk-head">
+      <div><div class="kicker">TEAM ARENA · CORE CHARGE</div><h1 class="wk-title">สนามทีม ม.5/2 และ ม.5/4</h1></div>
+      <div id="arenaWait"></div>
+    </div>
+    <div class="arena" id="arena"></div>
+
+    <div class="grid g2" style="margin-top:22px">
+      <div class="card">
+        <div class="sec-title"><div class="sec-num">CC</div><h2>CORE CHARGE คิดอย่างไร</h2></div>
+        <div class="formula" id="ccFormula"></div>
+        <ul class="list">
+          <li><b>ส่งงาน</b> = งานที่ส่งแล้วของทั้งห้อง เทียบกับงานที่ต้องส่ง (ทุกคน ทุกชิ้นที่สั่งไปแล้ว)</li>
+          <li><b>คะแนนสอบ</b> = คะแนนสอบรวมของทั้งห้อง เทียบกับคะแนนเต็มของการสอบที่ผ่านมาแล้ว</li>
+          <li>คิดเป็นค่าเฉลี่ยต่อคน ห้องที่มีคนมากหรือน้อยจึงแข่งกันได้อย่างยุติธรรม</li>
+          <li>ทุกคนในทีมมีผลต่อเกจเท่ากัน ส่งงานครบและตั้งใจสอบ คือการเติมพลังให้ทีม</li>
+        </ul>
+        <div class="muted" style="margin-top:8px">นับถึง: <span id="ccBasis"></span> · อัปเดตล่าสุด <span id="ccUpd"></span></div>
+      </div>
+      <div class="card amber">
+        <div class="sec-title"><div class="sec-num">!!</div><h2>กติกาของสนาม</h2></div>
+        <ul class="list">
+          <li>เกจแสดงเฉพาะภาพรวมของห้อง ไม่มีการจัดอันดับรายคน และไม่มีใครเห็นคะแนนของคนอื่น</li>
+          <li>คะแนนของตัวเองดูได้ในแท็บ "ข้อมูลของฉัน" ด้วยรหัสของเราเท่านั้น</li>
+          <li>ช่วยเพื่อนในทีมให้ส่งงานและเข้าใจเนื้อหา คือวิธีเติมเกจที่เร็วที่สุด</li>
+          <li>ครูอัปเดตเกจหลังตรวจงานหรือประกาศผลสอบแต่ละครั้ง</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
   <!-- ================= ส่วนที่ 2: ข้อมูลของฉัน ================= -->
   <section id="viewMe" role="tabpanel" hidden>
 
@@ -243,8 +336,8 @@ a{color:var(--cyan)}
           <svg class="avatar" viewBox="0 0 200 204" aria-hidden="true">
             <defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2740"/><stop offset="1" stop-color="#0a0f19"/></linearGradient></defs>
             <polygon points="100,8 180,52 180,140 100,184 20,140 20,52" fill="url(#pg)"/>
-            <polygon points="100,8 180,52 180,140 100,184 20,140 20,52" fill="none" stroke="#ffb020" stroke-width="4"/>
-            <polygon points="100,16 172,56 172,136 100,176 28,136 28,56" fill="none" stroke="#ffb020" stroke-opacity=".35"/>
+            <polygon class="team" points="100,8 180,52 180,140 100,184 20,140 20,52" fill="none" stroke="#ffb020" stroke-width="4"/>
+            <polygon class="team" points="100,16 172,56 172,136 100,176 28,136 28,56" fill="none" stroke="#ffb020" stroke-opacity=".35"/>
             <text x="100" y="92" text-anchor="middle" font-family="Chakra Petch" font-weight="700" font-size="22" fill="#8793aa" letter-spacing="2" id="avRoom"></text>
             <text x="100" y="132" text-anchor="middle" font-family="Chakra Petch" font-weight="700" font-size="40" fill="#35d0ff" id="avNo"></text>
           </svg>
@@ -252,6 +345,7 @@ a{color:var(--cyan)}
             <div class="nick" id="pNick"></div>
             <h1 id="pName"></h1>
             <div class="meta" id="pMeta"></div>
+            <div class="player-team" id="pTeam" hidden></div>
             <div class="speech"><b>BRIEFING</b><span id="pBrief"></span></div>
           </div>
         </div>
@@ -310,6 +404,7 @@ a{color:var(--cyan)}
 </div>
 
 <script src="data/lesson.js"></script>
+<script src="data/teams.js"></script>
 <script src="data/vault.js"></script>
 <script>
 "use strict";
@@ -318,15 +413,66 @@ const esc=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const safeUrl=u=>/^(https?:\/\/|[\w.\-\/]+\.(html?|pdf)(#.*)?$)/i.test(u||"")?u:"";
 
 /* ===== tabs ===== */
+const VIEWS={lesson:["viewLesson","tabLesson","#"],arena:["viewArena","tabArena","#arena"],me:["viewMe","tabMe","#me"]};
 function showView(which){
-  const me=which==="me";
-  $("viewLesson").hidden=me;$("viewMe").hidden=!me;
-  $("tabLesson").setAttribute("aria-selected",!me);$("tabMe").setAttribute("aria-selected",me);
-  try{history.replaceState(null,"",me?"#me":"#")}catch(e){}
+  if(!VIEWS[which])which="lesson";
+  for(const k in VIEWS){const on=k===which;$(VIEWS[k][0]).hidden=!on;$(VIEWS[k][1]).setAttribute("aria-selected",on)}
+  try{history.replaceState(null,"",VIEWS[which][2])}catch(e){}
 }
 $("tabLesson").onclick=()=>showView("lesson");
+$("tabArena").onclick=()=>showView("arena");
 $("tabMe").onclick=()=>showView("me");
 if(location.hash==="#me")showView("me");
+if(location.hash==="#arena")showView("arena");
+
+/* ===== ทีมและเกจ CORE CHARGE (อ่านจาก data/teams.js) ===== */
+const TEAM_ART={coulomb:{emblem:"assets/teams/coulomb-emblem.jpg",bg:"assets/teams/coulomb-bg.jpg"},volta:{emblem:"assets/teams/volta-emblem.jpg",bg:"assets/teams/volta-bg.jpg"}};
+const clampPct=v=>Math.max(0,Math.min(100,+v||0));
+const TEAMS=(()=>{
+  const T=window.P4_TEAMS||{};const w=T.weights||{work:50,score:50};const ws=(+w.work||0)+(+w.score||0)||100;
+  return {T,ww:(+w.work||0)/ws,sw:(+w.score||0)/ws,list:(T.teams||[]).filter(t=>t&&TEAM_ART[t.key]).map(t=>{
+    const work=clampPct(t.work),score=clampPct(t.score);
+    return {...t,work,score,charge:Math.round((work*((+w.work||0)/ws)+score*((+w.score||0)/ws))*10)/10};
+  })};
+})();
+const teamOfRoom=room=>TEAMS.list.find(t=>t.room===room);
+let myRoom="";try{myRoom=localStorage.getItem("p4_room")||""}catch(e){}
+const fmtPct=v=>(Math.round(v*10)/10).toLocaleString("th-TH",{maximumFractionDigits:1});
+function renderTeams(){
+  const L=TEAMS.list;if(L.length<2){$("tabArena").hidden=true;return}
+  const started=!!TEAMS.T.started;
+  const cells=v=>[...Array(20)].map((_,i)=>`<i class="${started&&v>=(i+1)*5-2.5?"on":""}"></i>`).join("");
+  const side=(t,r)=>`<button type="button" class="ts team-${t.key}${r?" r":""}${t.room===myRoom?" mine":""}" data-go="arena" aria-label="${esc(t.name)} ${esc(t.room)} CORE CHARGE ${fmtPct(t.charge)} เปอร์เซ็นต์">
+      <img src="${TEAM_ART[t.key].emblem}" alt="">
+      <span class="tx"><span class="tn">${esc(t.name)}</span><span class="tr">${esc(t.room)} · ${esc(t.members)} PLAYERS</span>
+      <span class="tp">${started?fmtPct(t.charge):"--"}<small>%</small></span><span class="cells">${cells(t.charge)}</span></span></button>`;
+  $("teamStrip").innerHTML=side(L[0],false)+`<div class="vs"><b>VS</b>CORE<br>CHARGE</div>`+side(L[1],true);
+  $("teamStrip").hidden=false;
+  $("teamStrip").onclick=e=>{if(e.target.closest("[data-go]")){showView("arena");$("viewArena").scrollIntoView({behavior:"smooth",block:"start"})}};
+  // หน้าสนามทีม
+  const C=2*Math.PI*62;
+  $("arena").innerHTML=L.map(t=>`<article class="tp-card team-${t.key}">
+      <div class="art" style="background-image:url('${TEAM_ART[t.key].bg}')"></div>
+      <div class="tp-head"><img src="${TEAM_ART[t.key].emblem}" alt="ตราทีม ${esc(t.name)}">
+        <div><div class="kicker">${esc(t.room)} · ${esc(t.members)} PLAYERS</div><h2>${esc(t.name)}</h2>${t.room===myRoom?'<span class="mine-tag">ทีมของฉัน</span>':""}</div></div>
+      <div class="gauge">
+        <svg class="ring" viewBox="0 0 150 150" role="img" aria-label="CORE CHARGE ${fmtPct(t.charge)}%">
+          <circle cx="75" cy="75" r="62" fill="none" stroke="#1b2436" stroke-width="12"/>
+          <circle class="arc" cx="75" cy="75" r="62" fill="none" stroke="var(--tc)" stroke-width="12" stroke-dasharray="${C}" stroke-dashoffset="${C}" data-off="${C*(1-(started?t.charge:0)/100)}" transform="rotate(-90 75 75)"/>
+          <text class="v" x="75" y="80" text-anchor="middle">${started?fmtPct(t.charge):"--"}%</text>
+          <text class="u" x="75" y="102" text-anchor="middle">CORE CHARGE</text>
+        </svg>
+        <div class="parts">
+          <div class="part"><div class="lb"><span>ส่งงาน (${Math.round(TEAMS.ww*100)}%)</span><b>${started?fmtPct(t.work)+"%":"--"}</b></div><div class="bar"><i data-w="${started?t.work:0}"></i></div></div>
+          <div class="part"><div class="lb"><span>คะแนนสอบ (${Math.round(TEAMS.sw*100)}%)</span><b>${started?fmtPct(t.score)+"%":"--"}</b></div><div class="bar"><i data-w="${started?t.score:0}"></i></div></div>
+        </div>
+      </div></article>`).join("");
+  $("arenaWait").innerHTML=started?"":'<span class="wait-tag">รอข้อมูลชุดแรก · ทุกทีมเริ่มที่ 0%</span>';
+  $("ccFormula").innerHTML=`CORE CHARGE = <b>ส่งงาน</b> × ${Math.round(TEAMS.ww*100)}% + <b>คะแนนสอบ</b> × ${Math.round(TEAMS.sw*100)}%`;
+  $("ccBasis").textContent=TEAMS.T.basis||"-";$("ccUpd").textContent=TEAMS.T.updated||"-";
+  setTimeout(()=>{document.querySelectorAll("#arena .arc").forEach(a=>a.style.strokeDashoffset=a.dataset.off);document.querySelectorAll("#arena .bar i").forEach(b=>b.style.width=b.dataset.w+"%")},150);
+}
+renderTeams();
 
 /* ===== ส่วนที่ 1: คาบนี้เรียนอะไร (อ่านจาก data/lesson.js) ===== */
 (function renderLesson(){
@@ -404,7 +550,7 @@ $("loginForm").addEventListener("submit",async e=>{
     $("loginErr").textContent=err.message==="nocrypto"?"เบราว์เซอร์นี้ถอดรหัสไม่ได้ ลองเปิดด้วย Chrome หรือ Safari รุ่นใหม่":err.message==="novault"?"ยังไม่มีข้อมูลรายคนบนหน้าเว็บ ลองใหม่ภายหลัง":"Username หรือ Password ไม่ถูกต้อง";
   }finally{$("loginBtn").disabled=false;$("loginBtn").textContent="เข้าสู่ระบบ"}
 });
-$("logoutBtn").onclick=()=>{$("profile").hidden=true;$("loginCard").hidden=false;["pName","pNick","pMeta","quizList","scoreRow","missions","badges"].forEach(i=>$(i).innerHTML="")};
+$("logoutBtn").onclick=()=>{$("profile").hidden=true;$("profile").className="";$("pTeam").hidden=true;$("loginCard").hidden=false;["pName","pNick","pMeta","quizList","scoreRow","missions","badges"].forEach(i=>$(i).innerHTML="")};
 
 /* ===== ค่าคงที่ของระบบ (ไฟล์ 01 หัวข้อ 3, 4, 8) ===== */
 const RANKS=[{n:"ประกายไฟ",min:0},{n:"อิเล็กตรอน",min:100},{n:"ตัวเก็บประจุ",min:250},{n:"วงจรไฟฟ้า",min:450},{n:"สนามไฟฟ้า",min:700},{n:"สายฟ้า",min:1000}];
@@ -475,6 +621,13 @@ function renderProfile(D){
   $("avRoom").textContent=D.room||"";$("avNo").textContent=D.no??"";
   $("pMeta").innerHTML=`<span class="tag">${esc(D.room)}</span><span class="tag">เลขที่ ${esc(D.no)}</span><span class="tag">ID ${esc(D.id)}</span>`;
   $("pBrief").textContent=D.note||"ยินดีต้อนรับสู่ P4 Journey ข้อมูลของเราจะเริ่มขึ้นหลังครูตรวจงานชิ้นแรก";
+
+  // ทีมของผู้เล่น
+  const tm=teamOfRoom(D.room);
+  $("profile").className=tm?"team-"+tm.key:"";
+  $("pTeam").hidden=!tm;
+  $("pTeam").innerHTML=tm?`<img src="${TEAM_ART[tm.key].emblem}" alt=""><div><b>${esc(tm.name)}</b><div class="muted">PLAYER ${esc(D.room)} · CORE CHARGE ของทีม ${TEAMS.T.started?fmtPct(tm.charge)+"%":"รอข้อมูลชุดแรก"}</div></div>`:"";
+  if(tm&&myRoom!==D.room){myRoom=D.room;try{localStorage.setItem("p4_room",D.room)}catch(e){}renderTeams()}
 
   // rank & xp
   const xp=+D.xp||0;let cur=0;RANKS.forEach((r,i)=>{if(xp>=r.min)cur=i});
