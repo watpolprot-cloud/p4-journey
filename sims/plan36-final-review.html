@@ -210,7 +210,7 @@ sub,sup{font-size:72%}
         <div class="card"><h2>ตั้งค่า</h2>
           <div class="seg" id="md5"><button class="btn sel" data-m="all">ทั้งคาบ 50 นาที</button><button class="btn" data-m="post">ทดสอบหลังเรียน 20 นาที</button></div>
           <div class="seg"><button class="btn sel" id="sd5">เสียงสัญญาณ: เปิด</button></div>
-          <div class="rule">ทดสอบหลังเรียนทำออนไลน์จากเว็บ P4 Journey แผนที่ 36 (ลิงก์เดียวกับก่อนเรียน) · ทำด้วยตนเอง ไม่เปิดเอกสาร ไม่ปรึกษากัน · ไม่แน่ใจให้เลือก "ไม่แน่ใจ" แทนการเดา</div></div>
+          <div class="rule">ลำดับคาบ: ทดสอบหลังเรียนก่อน (นาทีที่ 4–24) แล้วจึงทบทวน · ทดสอบหลังเรียนทำออนไลน์จากเว็บ P4 Journey แผนที่ 36 (ลิงก์เดียวกับก่อนเรียน) · ทำด้วยตนเอง ไม่เปิดเอกสาร ไม่ปรึกษากัน · ไม่แน่ใจให้เลือก "ไม่แน่ใจ" แทนการเดา</div></div>
       </div>
     </div>
   </section>
@@ -382,12 +382,12 @@ each("#mu .btn", function(b){ b.onclick = function(){ segSel("mu", b); mu = b.da
 each("#ml .btn", function(b){ b.onclick = function(){ segSel("ml", b); ml = +b.dataset.l; new4(); }; });
 
 /* ---------- 5 period clock ---------- */
-var SEQ = {all: [["ดูรายงาน เลือก 2 แนวคิด", 240], ["เพื่อนสอนเพื่อน 4 ข้อ", 720], ["เฉลยและแผนที่ความคิด", 420], ["สอบปลายภาคและการแก้ Quiz", 420], ["ทดสอบหลังเรียน", 1200]], post: [["ทดสอบหลังเรียน", 1200]]};
+var SEQ = {all: [["เปิดคาบ เตรียมเครื่อง", 240], ["ทดสอบหลังเรียน", 1200], ["รายงานรายแนวคิดและเพื่อนสอนเพื่อน", 720], ["เฉลยและแผนที่ความคิด", 420], ["สอบปลายภาคและการแก้ Quiz", 420]], post: [["ทดสอบหลังเรียน", 1200]]};
 var S5 = {m: "all", idx: 0, left: 240, run: false, last: 0};
 function reset5(){ S5.idx = 0; S5.left = SEQ[S5.m][0][1]; S5.run = false; $("ms5").textContent = ""; show5(); }
 function show5(){ var s = SEQ[S5.m]; $("ph5").textContent = s[S5.idx][0]; $("ck5").textContent = mmss(S5.left); $("ck5").className = "clock" + (S5.left <= 0 ? " end" : S5.left <= (s[S5.idx][1] >= 1200 ? 300 : 60) ? " warn" : "");
   var h = "<tr><th>ช่วง</th><th>เวลา</th></tr>"; s.forEach(function(x, i){ h += "<tr" + (i === S5.idx ? " style='color:var(--amber);font-weight:600'" : "") + "><td>" + x[0] + "</td><td>" + x[1] / 60 + " นาที</td></tr>"; }); $("tb5").innerHTML = h; }
-function next5(){ var s = SEQ[S5.m]; if (S5.idx < s.length - 1) { S5.idx++; S5.left = s[S5.idx][1]; beep(2); $("ms5").textContent = ""; show5(); return true; } S5.run = false; beep(3); $("ms5").textContent = S5.m === "post" || S5.idx === s.length - 1 ? "หมดเวลา กดส่งแบบทดสอบ" : ""; return false; }
+function next5(){ var s = SEQ[S5.m]; if (S5.idx < s.length - 1) { var wasPost = s[S5.idx][0] === "ทดสอบหลังเรียน"; S5.idx++; S5.left = s[S5.idx][1]; beep(2); $("ms5").textContent = wasPost ? "หมดเวลาทดสอบ กดส่งแบบทดสอบ" : ""; show5(); return true; } S5.run = false; beep(3); $("ms5").textContent = S5.m === "post" ? "หมดเวลา กดส่งแบบทดสอบ" : "จบคาบ"; return false; }
 $("go5").onclick = function(){ if (S5.run) return; S5.run = true; S5.last = performance.now(); loop("t5", function(t){ if (!S5.run) return false; S5.left -= (t - S5.last) / 1000; S5.last = t; if (S5.left <= 0) { S5.left = 0; show5(); if (!next5()) return false; } show5(); }); };
 $("pz5").onclick = function(){ S5.run = false; }; $("rs5").onclick = reset5; $("sk5").onclick = function(){ next5(); };
 each("#md5 .btn", function(b){ b.onclick = function(){ segSel("md5", b); S5.m = b.dataset.m; reset5(); }; });
