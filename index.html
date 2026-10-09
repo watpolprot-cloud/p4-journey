@@ -384,7 +384,7 @@ a{color:var(--cyan)}
           <div class="card">
             <div class="sec-title"><div class="sec-num">04</div><h2>คะแนนสะสม</h2></div>
             <div class="score-row" id="scoreRow"></div>
-            <div class="muted" style="margin-top:8px">รวมตอนนี้ <b id="scoreTotal" class="num"></b> · Quiz ได้ครึ่งหนึ่งขึ้นไปได้เต็มทันที ยังไม่ถึงแก้ได้ด้วยการสอบใหม่หรือส่งชีท จนถึงวันตัดสินผล</div>
+            <div class="muted" style="margin-top:8px">รวมตอนนี้ <b id="scoreTotal" class="num"></b> · Quiz ครั้งละ 10 = งาน 5 (ส่งใบงาน + Quick Check ทุกคาบครบ ถูกผิดไม่เป็นไร ส่งไม่ครบได้ตามสัดส่วน) + สอบ 5 (ได้ 2.5 ขึ้นไปได้เต็ม 5 ยังไม่ถึงแก้ได้ด้วยการสอบใหม่หรือใบงานซ่อม 4 หน้า) ส่งงานย้อนหลังและแก้ได้ถึงวันก่อนตัดสินผล</div>
           </div>
           <div class="card" style="margin-top:22px">
             <div class="sec-title"><div class="sec-num">05</div><h2>ภารกิจแนะนำ</h2></div>
@@ -562,13 +562,16 @@ const UNITS=[
   {name:"ไฟฟ้ากระแส",items:[["C1","กระแส"],["C2","โอห์ม"],["C3","อนุกรม-ขนาน"],["C4","emf"],["C5","เคอร์ชอฟฟ์"],["C6","กำลังไฟฟ้า"]]}
 ];
 const QUIZZES=[
-  {k:"1",name:"Quiz 1 · คลื่นเสียง",when:"สัปดาห์ที่ 4"},
-  {k:"2",name:"Quiz 2 · ประจุและคูลอมบ์",when:"สัปดาห์ที่ 6"},
-  {k:"3",name:"Quiz 3 · สนามไฟฟ้า",when:"สัปดาห์ที่ 8"},
-  {k:"4",name:"Quiz 4 · ศักย์ไฟฟ้า ตัวเก็บประจุ",when:"สัปดาห์ที่ 13"},
-  {k:"5",name:"Quiz 5 · วงจรไฟฟ้า",when:"สัปดาห์ที่ 16"},
-  {k:"6",name:"Quiz 6 · emf พลังงาน การต่อเซลล์",when:"สัปดาห์ที่ 18"}
+  {k:"1",name:"Quiz 1 · คลื่นเสียง",when:"สัปดาห์ที่ 4",plans:"แผนที่ 1–8"},
+  {k:"2",name:"Quiz 2 · ประจุและคูลอมบ์",when:"สัปดาห์ที่ 6",plans:"แผนที่ 9–12"},
+  {k:"3",name:"Quiz 3 · สนามไฟฟ้า",when:"สัปดาห์ที่ 8",plans:"แผนที่ 13–16"},
+  {k:"4",name:"Quiz 4 · ศักย์ไฟฟ้า ตัวเก็บประจุ",when:"สัปดาห์ที่ 13",plans:"แผนที่ 17–24"},
+  {k:"5",name:"Quiz 5 · วงจรไฟฟ้า",when:"สัปดาห์ที่ 16",plans:"แผนที่ 25–30"},
+  {k:"6",name:"Quiz 6 · emf พลังงาน การต่อเซลล์",when:"สัปดาห์ที่ 18",plans:"แผนที่ 31–36"}
 ];
+/* Quiz ครั้งละ 10 = ส่วนงาน 5 (ส่งใบงาน + Quick Check ของช่วงนั้น ตามสัดส่วน ปัดทีละ 0.5) + ส่วนสอบ 5 (ได้ 2.5 ขึ้นไปได้เต็ม 5) */
+const EXAM_PASS=2.5;
+const workPts=w=>{const due=+((w||{}).due)||0,sent=Math.min(+((w||{}).sent)||0,due);return due?Math.round(sent/due*5*2)/2:null};
 const BADGES=[
   {n:"ด่านแรกผ่าน",d:"ผ่าน Quiz แรก",t:"1",c:"#3ddc97"},
   {n:"ไม่ยอมแพ้",d:"สอบแก้จนผ่าน",t:"3x",c:"#ff8a3d"},
@@ -608,9 +611,9 @@ function drawRadar(svg,labels,series,opt={}){
 
 /* ===== วาดหน้าโปรไฟล์ ===== */
 function quizState(q){
-  const r=q||{},tries=r.tries||[],passIdx=tries.findIndex(t=>t>=5);
+  const r=q||{},tries=r.tries||[],passIdx=tries.findIndex(t=>t>=EXAM_PASS);
   if(passIdx===0)return "pass";
-  if(passIdx>0||r.via==="sheet")return "fixed";
+  if(passIdx>0||r.via==="remedial"||r.via==="sheet")return "fixed";
   return tries.length?"fix":"wait";
 }
 function renderProfile(D){
@@ -659,17 +662,21 @@ function renderProfile(D){
   showUnit(0);
 
   // quizzes
-  const stamp={pass:"CLEARED<br>ผ่าน ได้เต็ม",fixed:"RECOVERED<br>แก้ผ่าน ได้เต็ม",fix:"PENDING<br>รอแก้",wait:"UPCOMING<br>ยังไม่สอบ"};
+  const stamp={pass:"CLEARED<br>สอบผ่าน 5/5",fixed:"RECOVERED<br>แก้ผ่าน 5/5",fix:"PENDING<br>สอบรอแก้",wait:"UPCOMING<br>ยังไม่สอบ"};
   const Q=D.quizzes||{};
+  const examPts=r=>{const s=quizState(r);return s==="pass"||s==="fixed"?5:(s==="fix"?0:null)};
   $("quizList").innerHTML=QUIZZES.map(qz=>{
-    const r=Q[qz.k]||{},st=quizState(r),tries=r.tries||[];
-    const tr=tries.length?tries.map((t,i)=>`<span class="try ${t>=5?"ok":""}">รอบ ${i+1}: ${esc(t)}/10</span>`).join('<span class="muted">&rarr;</span>'):`<span class="muted">สอบ${esc(qz.when)}</span>`;
-    const extra=st==="fixed"&&r.via==="sheet"?`<div class="muted">แก้ผ่านด้วยการส่งชีทครบทุกส่วน</div>`:st==="fix"?`<div class="muted">ต้องได้ 5/10 ขึ้นไป หรือส่งชีทที่เขียนครบทุกส่วน แก้ได้ถึงวันตัดสินผล</div>`:"";
-    return `<div class="q ${st}"><div class="stamp">${stamp[st]}</div><div><h3>${esc(qz.name)}</h3><div class="tries">${tr}</div>${extra}</div></div>`;
+    const r=Q[qz.k]||{},st=quizState(r),tries=r.tries||[],w=r.work||null,wp=workPts(w),ep=examPts(r);
+    const wl=wp==null?`<span class="muted">ส่งใบงาน + Quick Check ของ${esc(qz.plans)} ครบได้ 5 (ถูกผิดไม่เป็นไร)</span>`
+      :`<span class="try ${wp>=5?"ok":""}">ส่งแล้ว ${esc(Math.min(+w.sent||0,+w.due||0))}/${esc(w.due)} ชิ้น = ${wp}/5</span>`;
+    const tr=tries.length?tries.map((t,i)=>`<span class="try ${t>=EXAM_PASS?"ok":""}">รอบ ${i+1}: ${esc(t)}/5</span>`).join('<span class="muted">&rarr;</span>'):`<span class="muted">สอบ${esc(qz.when)}</span>`;
+    const extra=st==="fixed"&&(r.via==="remedial"||r.via==="sheet")?`<div class="muted">แก้ผ่านด้วยใบงานซ่อม 4 หน้า (ครบและถูกทุกข้อ)</div>`:st==="fix"?`<div class="muted">ส่วนสอบต้องได้ 2.5/5 ขึ้นไป: สอบใหม่นอกเวลา (ชุด B/C ไม่จำกัดครั้ง) หรือทำใบงานซ่อม 4 หน้าให้ครบและถูกทุกข้อ แก้ได้ถึงวันก่อนตัดสินผล</div>`:"";
+    const sum=wp==null&&ep==null?"":`<div class="muted">รวม Quiz นี้ <b class="num">${(wp||0)+(ep||0)}</b> / 10</div>`;
+    return `<div class="q ${st}"><div class="stamp">${stamp[st]}</div><div><h3>${esc(qz.name)}</h3><div class="tries"><b>งาน</b> ${wl}</div><div class="tries"><b>สอบ</b> ${tr}</div>${extra}${sum}</div></div>`;
   }).join("");
 
   // score
-  const qpts=k=>{const s=quizState(Q[k]);return s==="pass"||s==="fixed"?10:null};
+  const qpts=k=>{const r=Q[k]||{},wp=workPts(r.work),ep=examPts(r);return wp==null&&ep==null?null:(wp||0)+(ep||0)};
   const sumQ=ks=>{const v=ks.map(qpts);return v.some(x=>x!==null)?v.reduce((a,b)=>a+(b||0),0):null};
   const mid=D.midterm==null?null:(D.midterm.fixed&&D.midterm.raw<12?12:D.midterm.raw);
   const fin=D.final==null?null:D.final;
