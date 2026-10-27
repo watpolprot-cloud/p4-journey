@@ -9,6 +9,21 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+.demo-band{border:1px dashed var(--amber);color:#f3dfb5;background:rgba(255,176,32,.08);padding:8px 14px;margin-bottom:14px;font-size:14px}
+.demo-band b{font-family:"Chakra Petch";color:var(--amber);letter-spacing:2px;margin-right:8px}
+.wlog{width:100%;border-collapse:collapse;font-size:14px}
+.wlog th{font-family:"Chakra Petch";font-weight:600;font-size:12px;letter-spacing:1px;color:var(--muted);text-align:left;border-bottom:1px solid var(--line2);padding:6px 8px}
+.wlog td{border-bottom:1px solid var(--line);padding:7px 8px;vertical-align:top}
+.wlog .st{font-family:"Chakra Petch";font-weight:600;font-size:12.5px;white-space:nowrap}
+.wlog .ok{color:var(--green)}.wlog .late{color:var(--amber)}.wlog .miss{color:var(--red)}
+.wlog .qc{font-family:"Chakra Petch";white-space:nowrap}
+.wlog-sum{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 12px}
+.wlog-wrap{overflow-x:auto}
+@media (max-width:640px){.wlog thead{display:none}.wlog,.wlog tbody,.wlog tr,.wlog td{display:block;width:100%}
+.wlog tr{display:grid;grid-template-columns:34px 1fr auto;gap:2px 8px;border-bottom:1px solid var(--line);padding:8px 0}
+.wlog td{border:0;padding:0}.wlog td:nth-child(1){grid-row:1/4}.wlog td:nth-child(2){grid-column:2/4}
+.wlog td:nth-child(3){grid-column:2}.wlog td:nth-child(4){grid-column:3;text-align:right}.wlog td:nth-child(4):before{content:"QC ";color:var(--muted)}
+.wlog td:nth-child(5){grid-column:2/4;font-size:13px}}
 :root{
   --bg:#080b12;--bg2:#0d121c;--panel:#111827;--panel2:#161f31;--line:#26324a;--line2:#34446a;
   --text:#e7ecf5;--muted:#8793aa;--cyan:#35d0ff;--amber:#ffb020;--red:#ff4d5e;--green:#3ddc97;--violet:#9b7bff;--orange:#ff8a3d;
@@ -331,6 +346,7 @@ a{color:var(--cyan)}
         <button class="btn alt" id="logoutBtn" type="button">ออกจากระบบ</button>
       </div>
 
+      <div class="demo-band" id="pDemo" hidden><b>DEMO</b>บัญชีตัวอย่าง ข้อมูลทั้งหมดเป็นข้อมูลสมมติ ไม่ใช่คะแนนของนักเรียนคนใด</div>
       <div class="grid g-hero">
         <div class="card hero">
           <svg class="avatar" viewBox="0 0 200 204" aria-hidden="true">
@@ -393,8 +409,15 @@ a{color:var(--cyan)}
         </div>
       </div>
 
+      <div class="card" style="margin-top:22px" id="logCard" hidden>
+        <div class="sec-title"><div class="sec-num">06</div><h2>ใบงานและ Quick Check ที่ส่งแล้ว · WORK LOG</h2></div>
+        <div class="muted">ใบงานตรวจว่าส่งครบทุกส่วนพร้อมคำแนะนำสั้น ๆ · Quick Check ตรวจให้คะแนนจริง · ยังไม่ส่งตามส่งย้อนหลังได้ถึงวันก่อนตัดสินผล</div>
+        <div class="wlog-sum" id="logSum"></div>
+        <div class="wlog-wrap"><table class="wlog"><thead><tr><th>แผน</th><th>งาน</th><th>สถานะ</th><th>Quick Check</th><th>คำแนะนำจากการตรวจ</th></tr></thead><tbody id="logBody"></tbody></table></div>
+      </div>
+
       <div class="card" style="margin-top:22px">
-        <div class="sec-title"><div class="sec-num">06</div><h2>เหรียญที่สะสมได้</h2></div>
+        <div class="sec-title"><div class="sec-num">07</div><h2>เหรียญที่สะสมได้</h2></div>
         <div class="badges" id="badges"></div>
       </div>
     </div>
@@ -550,7 +573,7 @@ $("loginForm").addEventListener("submit",async e=>{
     $("loginErr").textContent=err.message==="nocrypto"?"เบราว์เซอร์นี้ถอดรหัสไม่ได้ ลองเปิดด้วย Chrome หรือ Safari รุ่นใหม่":err.message==="novault"?"ยังไม่มีข้อมูลรายคนบนหน้าเว็บ ลองใหม่ภายหลัง":"Username หรือ Password ไม่ถูกต้อง";
   }finally{$("loginBtn").disabled=false;$("loginBtn").textContent="เข้าสู่ระบบ"}
 });
-$("logoutBtn").onclick=()=>{$("profile").hidden=true;$("profile").className="";$("pTeam").hidden=true;$("loginCard").hidden=false;["pName","pNick","pMeta","quizList","scoreRow","missions","badges"].forEach(i=>$(i).innerHTML="")};
+$("logoutBtn").onclick=()=>{$("profile").hidden=true;$("profile").className="";$("pTeam").hidden=true;$("loginCard").hidden=false;["pName","pNick","pMeta","quizList","scoreRow","missions","badges","logBody","logSum"].forEach(i=>$(i).innerHTML="")};
 
 /* ===== ค่าคงที่ของระบบ (ไฟล์ 01 หัวข้อ 3, 4, 8) ===== */
 const RANKS=[{n:"ประกายไฟ",min:0},{n:"อิเล็กตรอน",min:100},{n:"ตัวเก็บประจุ",min:250},{n:"วงจรไฟฟ้า",min:450},{n:"สนามไฟฟ้า",min:700},{n:"สายฟ้า",min:1000}];
@@ -624,12 +647,13 @@ function renderProfile(D){
   $("avRoom").textContent=D.room||"";$("avNo").textContent=D.no??"";
   $("pMeta").innerHTML=`<span class="tag">${esc(D.room)}</span><span class="tag">เลขที่ ${esc(D.no)}</span><span class="tag">ID ${esc(D.id)}</span>`;
   $("pBrief").textContent=D.note||"ยินดีต้อนรับสู่ P4 Journey ข้อมูลของเราจะเริ่มขึ้นหลังครูตรวจงานชิ้นแรก";
+  $("pDemo").hidden=!D.demo;
 
   // ทีมของผู้เล่น
   const tm=teamOfRoom(D.room);
   $("profile").className=tm?"team-"+tm.key:"";
   $("pTeam").hidden=!tm;
-  $("pTeam").innerHTML=tm?`<img src="${TEAM_ART[tm.key].emblem}" alt=""><div><b>${esc(tm.name)}</b><div class="muted">PLAYER ${esc(D.room)} · CORE CHARGE ของทีม ${TEAMS.T.started?fmtPct(tm.charge)+"%":"รอข้อมูลชุดแรก"}</div></div>`:"";
+  $("pTeam").innerHTML=tm?`<img src="${TEAM_ART[tm.key].emblem}" alt=""><div><b>${esc(tm.name)}</b><div class="muted">PLAYER ${esc(D.room)} · CORE CHARGE ของทีม ${D.demo&&D.demoCharge!=null?fmtPct(D.demoCharge)+"% (ค่าสมมติ)":TEAMS.T.started?fmtPct(tm.charge)+"%":"รอข้อมูลชุดแรก"}</div></div>`:"";
   if(tm&&myRoom!==D.room){myRoom=D.room;try{localStorage.setItem("p4_room",D.room)}catch(e){}renderTeams()}
 
   // rank & xp
@@ -690,6 +714,16 @@ function renderProfile(D){
   const M=D.missions||[];
   $("missions").innerHTML=M.length?M.map(m=>`<div class="mission"><div class="ico" style="border-color:${esc(m.c||"#35d0ff")};color:${esc(m.c||"#35d0ff")}">${esc(m.s||"")}</div><div><b>${esc(m.t)}</b><div class="muted">${esc(m.d||"")}</div></div>${m.xp?`<div class="xp">+${esc(m.xp)} XP</div>`:""}</div>`).join("")
     :`<div class="muted">ภารกิจรายคนจะขึ้นหลังครูตรวจงานชิ้นแรก ระหว่างนี้ดูภารกิจของคาบในแท็บ "คาบนี้เรียนอะไร"</div>`;
+
+  // work log (ใบงาน + Quick Check รายแผน)
+  const LG=Array.isArray(D.log)?D.log:[];
+  $("logCard").hidden=!LG.length;
+  const ST={ok:["ok","ส่งครบ"],late:["late","ส่งช้า"],miss:["miss","ยังไม่ส่ง"]};
+  $("logBody").innerHTML=LG.map(r=>{const st=ST[r.st]||ST.ok;const qc=r.qc?(r.qc.got==null?'<span class="miss">ยังไม่ส่ง</span>':`${esc(r.qc.got)}/${esc(r.qc.max)}`):'<span class="muted">-</span>';
+    return `<tr><td class="qc">${esc(r.p)}</td><td>${esc(r.t)}</td><td class="st ${st[0]}">${st[1]}</td><td class="qc">${qc}</td><td class="muted">${esc(r.fb||"")}</td></tr>`}).join("");
+  if(LG.length){const sent=LG.filter(r=>r.st!=="miss").length,qs=LG.filter(r=>r.qc),qsent=qs.filter(r=>r.qc.got!=null);
+    const qg=qsent.reduce((a,r)=>a+(+r.qc.got||0),0),qm=qsent.reduce((a,r)=>a+(+r.qc.max||0),0);
+    $("logSum").innerHTML=`<span class="tag c">ใบงานส่งแล้ว ${sent}/${LG.length}</span>`+(qs.length?`<span class="tag a">Quick Check ส่งแล้ว ${qsent.length}/${qs.length} · รวม ${qg}/${qm}</span>`:"")}
 
   // badges
   const got=new Set(D.badges||[]);
