@@ -17,6 +17,8 @@
 .wlog .st{font-family:"Chakra Petch";font-weight:600;font-size:12.5px;white-space:nowrap}
 .wlog .ok{color:var(--green)}.wlog .late{color:var(--amber)}.wlog .miss{color:var(--red)}
 .wlog .qc{font-family:"Chakra Petch";white-space:nowrap}
+.wfile{display:inline-block;margin:5px 6px 0 0;font-family:"Chakra Petch";font-weight:600;font-size:12px;letter-spacing:.5px;border:1px solid var(--cyan);padding:1px 9px;background:rgba(53,208,255,.10);color:var(--cyan);text-decoration:none;white-space:nowrap}
+.wfile:hover{background:rgba(53,208,255,.25)}
 .wlog-sum{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 12px}
 .wlog-wrap{overflow-x:auto}
 @media (max-width:640px){.wlog thead{display:none}.wlog,.wlog tbody,.wlog tr,.wlog td{display:block;width:100%}
@@ -411,7 +413,7 @@ a{color:var(--cyan)}
 
       <div class="card" style="margin-top:22px" id="logCard" hidden>
         <div class="sec-title"><div class="sec-num">06</div><h2>ใบงานและ Quick Check ที่ส่งแล้ว · WORK LOG</h2></div>
-        <div class="muted">ใบงานตรวจว่าส่งครบทุกส่วนพร้อมคำแนะนำสั้น ๆ · Quick Check ตรวจให้คะแนนจริง · ยังไม่ส่งตามส่งย้อนหลังได้ถึงวันก่อนตัดสินผล</div>
+        <div class="muted">ใบงานตรวจว่าส่งครบทุกส่วนพร้อมคำแนะนำสั้น ๆ · Quick Check ตรวจให้คะแนนจริง · กดปุ่ม "เปิดใบงาน" หรือ "เปิด Quick Check" เพื่อดูงานที่ตัวเองเขียนส่ง (เห็นเฉพาะเจ้าของรหัส) · ยังไม่ส่งตามส่งย้อนหลังได้ถึงวันก่อนตัดสินผล</div>
         <div class="wlog-sum" id="logSum"></div>
         <div class="wlog-wrap"><table class="wlog"><thead><tr><th>แผน</th><th>งาน</th><th>สถานะ</th><th>Quick Check</th><th>คำแนะนำจากการตรวจ</th></tr></thead><tbody id="logBody"></tbody></table></div>
       </div>
@@ -718,12 +720,14 @@ function renderProfile(D){
   // work log (ใบงาน + Quick Check รายแผน)
   const LG=Array.isArray(D.log)?D.log:[];
   $("logCard").hidden=!LG.length;
-  const ST={ok:["ok","ส่งครบ"],late:["late","ส่งช้า"],miss:["miss","ยังไม่ส่ง"]};
+  const ST={ok:["ok","ส่งครบ"],late:["late","ส่งช้า"],inc:["late","ยังไม่ครบ"],miss:["miss","ยังไม่ส่ง"],none:["muted","-"]};
+  // ลิงก์ไฟล์ที่นักเรียนส่ง (ไฟล์ PDF รายคนใน Google Drive ของครู) อยู่ในข้อมูลที่เข้ารหัส เห็นเฉพาะเจ้าของรหัส
+  const fileLinks=fs=>(Array.isArray(fs)?fs:[]).filter(f=>/^https:\/\/drive\.google\.com\//.test(f.u||"")).map(f=>`<a class="wfile" href="${esc(f.u)}" target="_blank" rel="noopener noreferrer">เปิด${/^[A-Za-z]/.test(f.k||"")?" ":""}${esc(f.k||"ไฟล์")}</a>`).join("");
   $("logBody").innerHTML=LG.map(r=>{const st=ST[r.st]||ST.ok;const qc=r.qc?(r.qc.got==null?'<span class="miss">ยังไม่ส่ง</span>':`${esc(r.qc.got)}/${esc(r.qc.max)}`):'<span class="muted">-</span>';
-    return `<tr><td class="qc">${esc(r.p)}</td><td>${esc(r.t)}</td><td class="st ${st[0]}">${st[1]}</td><td class="qc">${qc}</td><td class="muted">${esc(r.fb||"")}</td></tr>`}).join("");
-  if(LG.length){const sent=LG.filter(r=>r.st!=="miss").length,qs=LG.filter(r=>r.qc),qsent=qs.filter(r=>r.qc.got!=null);
+    return `<tr><td class="qc">${esc(r.p)}</td><td>${esc(r.t)}${r.files&&r.files.length?"<br>"+fileLinks(r.files):""}</td><td class="st ${st[0]}">${st[1]}</td><td class="qc">${qc}</td><td class="muted">${esc(r.fb||"")}</td></tr>`}).join("");
+  if(LG.length){const sent=LG.filter(r=>r.st==="ok"||r.st==="late").length,qs=LG.filter(r=>r.qc),qsent=qs.filter(r=>r.qc.got!=null);
     const qg=qsent.reduce((a,r)=>a+(+r.qc.got||0),0),qm=qsent.reduce((a,r)=>a+(+r.qc.max||0),0);
-    $("logSum").innerHTML=`<span class="tag c">ใบงานส่งแล้ว ${sent}/${LG.length}</span>`+(qs.length?`<span class="tag a">Quick Check ส่งแล้ว ${qsent.length}/${qs.length} · รวม ${qg}/${qm}</span>`:"")}
+    $("logSum").innerHTML=`<span class="tag c">ใบงานส่งแล้ว ${sent}/${LG.filter(r=>r.st!=="none").length}</span>`+(qs.length?`<span class="tag a">Quick Check ส่งแล้ว ${qsent.length}/${qs.length} · รวม ${qg}/${qm}</span>`:"")}
 
   // badges
   const got=new Set(D.badges||[]);
