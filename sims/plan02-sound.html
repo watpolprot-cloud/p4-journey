@@ -163,7 +163,7 @@ var $ = function(id){ return document.getElementById(id); };
 
 /* ---------- canvas helper ---------- */
 function setup(cv){
-  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, h = +cv.getAttribute("height");
+  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, h = +(cv.dataset.h || (cv.dataset.h = cv.getAttribute("height")));
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px";
   var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0);
   return {g: g, w: w, h: h};
@@ -447,6 +447,7 @@ $("tone").addEventListener("click", function(){
   if (toneNode) { stopTone(); return; }
   if (!soundOn) { $("snd").click(); }
   if (!ac()) return;
+  if (f4() >= AC.sampleRate / 2) { $("h4").textContent = nice(f4()) + " สูงเกินกว่าที่ลำโพงคอมพิวเตอร์หรือโทรศัพท์จะสร้างได้ และหูมนุษย์ก็ไม่ได้ยินอยู่แล้ว (อัลตราซาวนด์) จึงไม่มีเสียงให้ฟัง"; return; }
   var o = AC.createOscillator(), gn = AC.createGain(); o.type = "sine"; o.frequency.value = f4(); gn.gain.value = 0.06;
   o.connect(gn).connect(AC.destination); o.start(); toneNode = {o: o}; this.textContent = "หยุดเสียง";
   setTimeout(stopTone, 4000);
@@ -461,17 +462,19 @@ function draw4(){
   g.fillStyle = "rgba(53,208,255,.22)"; g.fillRect(X(20), y, X(20000) - X(20), hgt);
   g.fillStyle = "rgba(255,176,32,.20)"; g.fillRect(X(20000), y, x1 - X(20000), hgt);
   g.strokeStyle = C.line; g.strokeRect(x0, y, x1 - x0, hgt);
-  txt(g, "อินฟราซาวนด์", (x0 + X(20)) / 2, y + hgt / 2, C.muted, 13, "center", true);
-  txt(g, "มนุษย์ได้ยิน 20 – 20000 Hz", (X(20) + X(20000)) / 2, y + hgt / 2, C.cyan, 14, "center", true);
-  txt(g, "อัลตราซาวนด์", (X(20000) + x1) / 2, y + hgt / 2, C.amber, 13, "center", true);
+  var nar = W < 520; // จอมือถือ: ย่อป้ายไม่ให้ทับกัน
+  txt(g, nar ? "อินฟรา" : "อินฟราซาวนด์", (x0 + X(20)) / 2, y + hgt / 2, C.muted, nar ? 11 : 13, "center", true);
+  txt(g, nar ? "ได้ยิน 20–20000 Hz" : "มนุษย์ได้ยิน 20 – 20000 Hz", (X(20) + X(20000)) / 2, y + hgt / 2, C.cyan, nar ? 12 : 14, "center", true);
+  txt(g, nar ? "อัลตรา" : "อัลตราซาวนด์", (X(20000) + x1) / 2, y + hgt / 2, C.amber, nar ? 11 : 13, "center", true);
   [10, 100, 1000, 10000].forEach(function(f){ var xx = X(f); g.strokeStyle = C.line; g.beginPath(); g.moveTo(xx, y + hgt); g.lineTo(xx, y + hgt + 8); g.stroke(); txt(g, nice(f), xx, y + hgt + 20, C.muted, 11, "center"); });
   var ex = [[12, "ช้างสื่อสารระยะไกล"], [100, "เสียงพูดผู้ชาย"], [440, "โน้ตลา (A4)"], [4000, "เสียงนกหวีด"], [40000, "ค้างคาว / เครื่องไล่สัตว์"]];
-  ex.forEach(function(e, i){ var xx = X(e[0]); g.strokeStyle = "rgba(231,236,245,.25)"; g.beginPath(); g.moveTo(xx, y - 4); g.lineTo(xx, y - 22 - (i % 2) * 22); g.stroke();
-    txt(g, e[1], xx, y - 30 - (i % 2) * 22, C.muted, 12, i === ex.length - 1 ? "right" : (i === 0 ? "left" : "center")); });
+  var lv = nar ? 3 : 2, step = nar ? 18 : 22;
+  ex.forEach(function(e, i){ var xx = X(e[0]), k = i % lv; g.strokeStyle = "rgba(231,236,245,.25)"; g.beginPath(); g.moveTo(xx, y - 4); g.lineTo(xx, y - 22 - k * step); g.stroke();
+    txt(g, e[1], xx, y - 30 - k * step, C.muted, nar ? 11 : 12, i === ex.length - 1 ? "right" : (i === 0 ? "left" : "center")); });
   var f = f4(), xf = X(f);
   g.fillStyle = C.text; g.beginPath(); g.moveTo(xf, y + hgt + 30); g.lineTo(xf - 7, y + hgt + 44); g.lineTo(xf + 7, y + hgt + 44); g.closePath(); g.fill();
   g.strokeStyle = C.text; g.lineWidth = 2; g.beginPath(); g.moveTo(xf, y - 2); g.lineTo(xf, y + hgt + 2); g.stroke();
-  txt(g, nice(f), xf, y + hgt + 58, C.text, 15, "center", true);
+  txt(g, nice(f), Math.max(x0 + 30, Math.min(x1 - 30, xf)), y + hgt + 58, C.text, 15, "center", true);
 }
 
 /* ---------- loop ---------- */

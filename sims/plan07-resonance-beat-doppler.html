@@ -36,7 +36,7 @@ h1,h2,h3,.disp{font-family:"Chakra Petch",sans-serif;font-weight:600;margin:0}
 .card h2{font-size:17px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
 .card h2:before{content:"";width:4px;height:17px;background:var(--cyan);display:inline-block;flex:none}
 .card.q:before{background:var(--amber)} .card.q h2:before{background:var(--amber)}
-canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:none}
+canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:manipulation}
 .btn{font-family:"Chakra Petch";font-weight:600;font-size:15px;border:1px solid var(--cyan);padding:8px 14px;background:rgba(53,208,255,.12);color:var(--cyan);cursor:pointer;
   clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);margin:0 6px 8px 0;text-decoration:none;display:inline-block}
 .btn:hover{background:rgba(53,208,255,.25)}
@@ -212,8 +212,8 @@ var $ = function(id){ return document.getElementById(id); };
 var each = function(sel, f){ Array.prototype.forEach.call(document.querySelectorAll(sel), f); };
 function fmt(x, d){ return (+x).toFixed(d); }
 function setup(cv){
-  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +cv.getAttribute("height");
-  var h = Math.round(Math.min(attr, Math.max(150, w * 0.9)));
+  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +(cv.dataset.h || (cv.dataset.h = cv.getAttribute("height")));
+  var h = Math.round(Math.min(attr, Math.max(+(cv.dataset.min || 150), w * 0.9)));
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px";
   var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return {g: g, w: w, h: h};
 }
@@ -261,7 +261,7 @@ $("bottle").addEventListener("click", function(e){ var b = e.target.closest("but
 $("play1").addEventListener("click", function(){ tone(fn1(), 1.5, 0.12); });
 function draw1(dt){
   var V = $("c1")._v; if (!V) return; var g = V.g, W = V.w, H = V.h; clear(V); P1.ph += dt * 2.2;
-  var top = 46, maxH = H - 100, len = maxH * P1.L / 1.0, bot = top + len, tw = Math.min(150, W * 0.3), cx = W * 0.32;
+  var top = 46, maxH = H - 100, len = maxH * P1.L / 1.0, bot = top + len, nar = W < 520, tw = nar ? W * 0.22 : Math.min(150, W * 0.3), cx = nar ? W * 0.2 : W * 0.32; // จอแคบ: ย้ายท่อไปซ้าย ให้ข้อความด้านขวาไม่ล้น
   var m = 2 * P1.n - 1, A = tw * 0.34;
   g.fillStyle = "#101a2b"; g.fillRect(cx - tw / 2, top, tw, len);
   line(g, cx - tw / 2, top, cx - tw / 2, bot, C.steel, 3); line(g, cx + tw / 2, top, cx + tw / 2, bot, C.steel, 3);
@@ -277,7 +277,7 @@ function draw1(dt){
   g.strokeStyle = C.amber; g.lineWidth = 2.2; [1, -1].forEach(function(s){ g.beginPath(); for (var k = 0; k <= 80; k++) { var y0 = k / 80, x = cx + s * A * Math.cos(m * Math.PI / 2 * y0); if (k) g.lineTo(x, top + y0 * len); else g.moveTo(x, top + y0 * len); } g.stroke(); });
   for (var q = 0; q <= m; q++) { var yq = top + q / m * len; txt(g, q % 2 ? "N" : "A", cx + tw / 2 + 12, yq, q % 2 ? C.muted : C.amber, 14, "left", true); }
   // right info
-  var rx = Math.max(cx + tw / 2 + 50, W * 0.6);
+  var rx = nar ? cx + tw / 2 + 34 : Math.max(cx + tw / 2 + 50, W * 0.6);
   txt(g, "L = " + m + "λ/4", rx, top + 10, C.amber, 18, "left", true);
   txt(g, "f = " + (m === 1 ? "f₁" : m + "f₁") + " = " + fmt(fn1(), 1) + " Hz", rx, top + 40, C.text, 15, "left", true);
   txt(g, "ฮาร์มอนิกส์ที่เกิดได้", rx, top + 84, C.muted, 13);

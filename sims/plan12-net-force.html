@@ -36,7 +36,7 @@ h1,h2,h3,.disp{font-family:"Chakra Petch",sans-serif;font-weight:600;margin:0}
 .card h2{font-size:17px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
 .card h2:before{content:"";width:4px;height:17px;background:var(--cyan);display:inline-block;flex:none}
 .card.q:before{background:var(--amber)} .card.q h2:before{background:var(--amber)}
-canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:none}
+canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:manipulation}
 .btn{font-family:"Chakra Petch";font-weight:600;font-size:15px;border:1px solid var(--cyan);padding:8px 14px;background:rgba(53,208,255,.12);color:var(--cyan);cursor:pointer;
   clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);margin:0 6px 8px 0;text-decoration:none;display:inline-block}
 .btn:hover{background:rgba(53,208,255,.25)}
@@ -203,8 +203,8 @@ var each = function(sel, f){ Array.prototype.forEach.call(document.querySelector
 function fmt(x, d){ return (+x).toFixed(d); }
 function sci(x, d){ if (x === 0) return "0"; var e = Math.floor(Math.log10(Math.abs(x))), m = x / Math.pow(10, e); if (Math.abs(+m.toFixed(d)) >= 10) { m /= 10; e++; } return m.toFixed(d) + " × 10<sup>" + e + "</sup>"; }
 function setup(cv){
-  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +cv.getAttribute("height");
-  var h = Math.round(Math.min(attr, Math.max(260, w * 0.95)));
+  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +(cv.dataset.h || (cv.dataset.h = cv.getAttribute("height")));
+  var h = Math.round(Math.min(attr, Math.max(+(cv.dataset.min || 260), w * 0.95)));
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px";
   var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return {g: g, w: w, h: h};
 }
@@ -266,8 +266,11 @@ function draw1(){
   var R = forces1(), t = P1.t, mx = 1e-12;
   R.f.forEach(function(f){ mx = Math.max(mx, Math.abs(f.fx)); }); mx = Math.max(mx, Math.abs(R.net));
   var sc = Math.min(170, (W - 80) * 0.3) / mx, cols = [C.cyan, C.steel, C.green];
+  // ป้ายชื่อประจุที่อยู่ชิดกันเกินไป ให้สลับขึ้นแถวบน ไม่ให้ตัวหนังสือทับกัน
+  var LV = [0, 0, 0], ord = [0, 1, 2].sort(function(p, q){ return P1.x[p] - P1.x[q]; });
+  for (var o = 1; o < 3; o++) if (X(P1.x[ord[o]]) - X(P1.x[ord[o - 1]]) < 74 && LV[ord[o - 1]] === 0) LV[ord[o]] = 1;
   for (i = 0; i < 3; i++){ var rr = 10 + Math.sqrt(Math.abs(P1.q[i])) * 4; if (P1.q[i]) chg(g, X(P1.x[i]), y, P1.q[i], rr); else { g.strokeStyle = C.muted; g.beginPath(); g.arc(X(P1.x[i]), y, 10, 0, 7); g.stroke(); }
-    txt(g, NM[i] + " " + sgn(P1.q[i]) + " μC", X(P1.x[i]), y - rr - 14, i === t ? C.amber : C.text, 13, "center", true); }
+    txt(g, NM[i] + " " + sgn(P1.q[i]) + " μC", X(P1.x[i]), y - rr - 14 - LV[i] * 18, i === t ? C.amber : C.text, W < 520 ? 12 : 13, "center", true); }
   if (R.bad) return;
   var x0 = X(P1.x[t]);
   R.f.forEach(function(f, k){ var yy = y - 70 - k * 26 + (H < 300 ? 10 : 0); if (Math.abs(f.fx) > 0){ arrow(g, x0, yy, x0 + f.fx * sc, yy, cols[f.j], 3); }
@@ -331,9 +334,11 @@ function zeros3(){ var a = g3("s3a"), b = g3("s3b"), d = g3("s3d"), z = []; if (
 function upd3(){
   $("v3a").textContent = sgn(g3("s3a")); $("v3b").textContent = sgn(g3("s3b")); $("v3d").textContent = g3("s3d").toFixed(2); $("v3x").textContent = g3("s3x").toFixed(2);
   var x = g3("s3x"), d = g3("s3d"), F = net3(x), z = zeros3(), on = Math.abs(x) < 1e-6 || Math.abs(x - d) < 1e-6;
-  $("r3f").innerHTML = on ? "-" : (F >= 0 ? "+" : "−") + nf(Math.abs(F)); $("r3z").textContent = z.length ? z.map(function(v){ return v.toFixed(3); }).join(", ") : "ไม่มี";
+  var ref = Math.max(Math.abs(K * g3("s3a") * 1e-12 / Math.max(1e-6, x * x)), Math.abs(K * g3("s3b") * 1e-12 / Math.max(1e-6, (x - d) * (x - d))));
+  if (Math.abs(F) < 1e-9 * ref) F = 0; // ตัดเศษจากการคำนวณทศนิยมของคอมพิวเตอร์ ที่จุดสมดุลแรงลัพธ์เป็นศูนย์พอดี
+  $("r3f").innerHTML = on ? "-" : F === 0 ? "0" : (F > 0 ? "+" : "−") + nf(Math.abs(F)); $("r3z").textContent = z.length ? z.map(function(v){ return v.toFixed(3); }).join(", ") : "ไม่มี";
   var a = g3("s3a"), b = g3("s3b");
-  $("h3").innerHTML = on ? "ประจุทดสอบทับประจุ A หรือ B ให้เลื่อนออก" : "แรงลัพธ์บนประจุทดสอบ " + nf(Math.abs(F)) + " N ทิศ " + (F > 0 ? "+x" : "−x") +
+  $("h3").innerHTML = on ? "ประจุทดสอบทับประจุ A หรือ B ให้เลื่อนออก" : (F === 0 ? "แรงลัพธ์บนประจุทดสอบเป็นศูนย์ (อยู่ที่จุดแรงเป็นศูนย์พอดี)" : "แรงลัพธ์บนประจุทดสอบ " + nf(Math.abs(F)) + " N ทิศ " + (F > 0 ? "+x" : "−x")) +
     (z.length ? " · จุดแรงเป็นศูนย์ x = " + z[0].toFixed(3) + " m " + (a * b > 0 ? "(ประจุชนิดเดียวกัน จุดนี้อยู่ระหว่างประจุ ใกล้ประจุที่เล็กกว่า)" : "(ประจุต่างชนิด จุดนี้อยู่นอกประจุ ด้านประจุที่เล็กกว่า)") : (a && b ? " · ประจุต่างชนิดขนาดเท่ากัน ไม่มีจุดแรงเป็นศูนย์" : ""));
 }
 ["s3a", "s3b", "s3d", "s3x"].forEach(function(id){ $(id).addEventListener("input", upd3); });

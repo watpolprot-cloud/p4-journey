@@ -36,7 +36,7 @@ h1,h2,h3,.disp{font-family:"Chakra Petch",sans-serif;font-weight:600;margin:0}
 .card h2{font-size:17px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
 .card h2:before{content:"";width:4px;height:17px;background:var(--cyan);display:inline-block;flex:none}
 .card.q:before{background:var(--amber)} .card.q h2:before{background:var(--amber)}
-canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:none}
+canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:manipulation}
 .btn{font-family:"Chakra Petch";font-weight:600;font-size:15px;border:1px solid var(--cyan);padding:8px 14px;background:rgba(53,208,255,.12);color:var(--cyan);cursor:pointer;
   clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);margin:0 6px 8px 0;text-decoration:none;display:inline-block}
 .btn:hover{background:rgba(53,208,255,.25)}
@@ -215,7 +215,7 @@ var each = function(sel, f){ Array.prototype.forEach.call(document.querySelector
 function sci(x, d){ d = d || 2; if (!isFinite(x)) return "-"; if (x === 0) return "0"; var s = x < 0 ? "−" : ""; x = Math.abs(x); var e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e); if (+m.toFixed(d) >= 10) { m /= 10; e++; }
   if (e >= -2 && e <= 3) return s + (+x.toPrecision(d + 1)).toString(); return s + m.toFixed(d) + " × 10<sup>" + e + "</sup>"; }
 function sciT(x, d){ return sci(x, d).replace(/<sup>/g, "^").replace(/<\/sup>/g, ""); }
-function setup(cv){ var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +cv.getAttribute("height"); var h = Math.round(Math.min(attr, Math.max(220, w * 0.9)));
+function setup(cv){ var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +(cv.dataset.h || (cv.dataset.h = cv.getAttribute("height"))); var h = Math.round(Math.min(attr, Math.max(+(cv.dataset.min || 220), w * 0.9)));
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px"; var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return {g: g, w: w, h: h}; }
 function txt(g, s, x, y, col, size, align, bold){ g.fillStyle = col || C.text; g.font = (bold ? "600 " : "400 ") + (size || 14) + "px " + FONT; g.textAlign = align || "left"; g.textBaseline = "middle"; g.fillText(s, x, y); }
 function line(g, x1, y1, x2, y2, col, w, dash){ g.strokeStyle = col; g.lineWidth = w || 1; g.setLineDash(dash || []); g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); g.setLineDash([]); }
@@ -270,13 +270,14 @@ function switchH(g, x, y, closed){ g.fillStyle = C.bg; g.fillRect(x - 30, y - 22
   if (closed) line(g, x - 24, y, x + 24, y, C.amber, 3.5); else line(g, x - 24, y, x + 18, y - 18, C.text, 3.5); }
 function dotJ(g, x, y){ circ(g, x, y, 4, C.text); }
 function n2(x){ return +x.toPrecision(3); }
+function niceStep(raw){ var p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p; return p * (m <= 1 ? 1 : m <= 2 ? 2 : m <= 2.5 ? 2.5 : m <= 5 ? 5 : 10); }
 function fx(x, d){ return isFinite(x) ? x.toFixed(d) : "-"; }
 /* real-source box: ideal cell + r, vertical, between yTop and yBot at x */
 function sourceBox(g, x, yT, yB, inside, n, I, r){
   var h = yB - yT; g.save(); g.setLineDash([6, 5]); g.strokeStyle = C.line2; g.lineWidth = 1.5; g.strokeRect(x - 34, yT, 68, h); g.restore();
   wireP(g, [[x, yT - 6], [x, yB + 6]], C.steel, 3);
   if (inside) { cellsV(g, x, yT + h * 0.3, n || 1, 18); zig(g, x, yT + h * 0.55, x, yT + h * 0.88, C.amber); txt(g, "ε", x + 28, yT + h * 0.3, C.cyan, 18, "left", true); txt(g, "r", x + 22, yT + h * 0.72, C.amber, 17, "left", true);
-    if (I > 0 && r) txt(g, "Ir = " + fx(I * r, 2) + " V", x - 40, yT + h * 0.72, C.amber, 12, "right", true); }
+    if (I > 0 && r) txt(g, "Ir = " + fx(I * r, 2) + " V", x + 40, yT + h * 0.72, C.amber, 12, "left", true); }
   else { g.fillStyle = "#1b2740"; g.fillRect(x - 30, yT + 4, 60, h - 8); g.strokeStyle = C.steel; g.lineWidth = 2; g.strokeRect(x - 30, yT + 4, 60, h - 8); txt(g, "ถ่าน", x, yT + h / 2, C.text, 13, "center", true); }
   txt(g, "+", x - 44, yT + 10, C.text, 16, "center", true);
 }
@@ -292,7 +293,7 @@ function upd1(){ var R = calc1(); $("t1").textContent = R.c.name + " · " + (S1.
 function draw1(){ var V = setup($("c1")), g = V.g; clear(V); var R = calc1();
   var L = V.w * 0.2, Rt = V.w * 0.78, T = 50, B = V.h - 50, cy = (T + B) / 2, rb = Math.min(26, V.w * 0.05);
   var loopP = [[L, T], [Rt, T], [Rt, B], [L, B], [L, T]];
-  if (S1.s) { wireP(g, loopP, C.steel, 3); flow(g, loopP, true, R.I / 0.2); bulbC(g, Rt, cy, rb, Math.min(1, R.P / 0.35)); txt(g, "หลอด 6.0 Ω", Rt - rb - 8, cy + rb + 18, C.muted, 12, "right"); }
+  if (S1.s) { wireP(g, loopP, C.steel, 3); flow(g, loopP, true, R.I / 0.2); bulbC(g, Rt, cy, rb, Math.min(1, R.P / 0.35)); txt(g, "หลอด 6.0 Ω", Rt - rb - 8, V.w < 520 ? cy - rb - 8 : cy + rb + 18, C.muted, 12, "right"); }
   else { wireP(g, [[L, T], [L + 30, T]], C.steel, 3); wireP(g, [[L, B], [L + 30, B]], C.steel, 3); g.setLineDash([6, 6]); wireP(g, [[L + 40, T], [Rt, T], [Rt, B], [L + 40, B]], C.line2, 2); g.setLineDash([]);
     bulbC(g, Rt, cy, rb, 0); txt(g, "ยังไม่ต่อหลอด", Rt - rb - 8, cy + rb + 18, C.muted, 12, "right"); }
   sourceBox(g, L, cy - 70, cy + 70, S1.inside, 1, R.I, R.c.r);
@@ -361,9 +362,11 @@ function upd3(){ S3.e = num("s3e", 1.5); S3.r = num("s3r", 0.5); S3.R = num("s3R
   $("f3").innerHTML = "I = " + S3.e.toFixed(1) + "/(" + S3.R.toFixed(1) + " + " + S3.r.toFixed(2) + ") = " + n2(I) + " A<br>V = " + S3.e.toFixed(1) + " − (" + n2(I) + ")(" + S3.r.toFixed(2) + ") = " + n2(Vt) + " V"; draw3(); }
 function draw3(){ var V = setup($("c3")), g = V.g; clear(V); var I = S3.e / (S3.R + S3.r), Vt = S3.e - I * S3.r, Isc = S3.e / S3.r;
   var bw = Math.min(150, V.w * 0.3), gx = 48, gy = 20, gw = V.w - bw - 80, gh = V.h - 62;
-  var Imax = Math.max(I * 1.6, Math.min(Isc, I * 4)), Vmax = Math.max(1, Math.ceil(S3.e * 1.2 * 2) / 2); Imax = Math.max(Imax, 0.01);
+  var Imax = Math.max(I * 1.6, Math.min(Isc, I * 4)); Imax = Math.max(Imax, 0.01);
+  var nT = V.w < 520 ? 4 : 5, sI = niceStep(Imax / nT), sV = niceStep(S3.e * 1.15 / 5); Imax = Math.ceil(Imax / sI - 1e-9) * sI; var Vmax = Math.max(sV, Math.ceil(S3.e * 1.15 / sV - 1e-9) * sV);
   var X = function(i){ return gx + i / Imax * gw; }, Y = function(v){ return gy + gh - v / Vmax * gh; };
-  for (var k = 0; k <= 5; k++) { line(g, gx, Y(k * Vmax / 5), gx + gw, Y(k * Vmax / 5), "#18233a", 1); txt(g, n2(k * Vmax / 5) + "", gx - 6, Y(k * Vmax / 5), C.muted, 11, "right"); line(g, X(Imax * k / 5), gy, X(Imax * k / 5), gy + gh, "#18233a", 1); txt(g, n2(Imax * k / 5) + "", X(Imax * k / 5), gy + gh + 13, C.muted, 11, "center"); }
+  for (var k = 0; k * sV <= Vmax + 1e-9; k++) { line(g, gx, Y(k * sV), gx + gw, Y(k * sV), "#18233a", 1); txt(g, n2(k * sV) + "", gx - 6, Y(k * sV), C.muted, 11, "right"); }
+  for (k = 0; k * sI <= Imax + 1e-9; k++) { line(g, X(k * sI), gy, X(k * sI), gy + gh, "#18233a", 1); txt(g, n2(k * sI) + "", X(k * sI), gy + gh + 13, C.muted, 11, "center"); }
   arrow(g, gx, gy + gh, gx + gw + 14, gy + gh, C.steel, 1.5); arrow(g, gx, gy + gh, gx, gy - 6, C.steel, 1.5); txt(g, "I (A)", gx + gw + 10, gy + gh + 28, C.muted, 12, "right"); txt(g, "V ที่ขั้ว (V)", gx + 8, gy + 8, C.muted, 12, "left");
   var iEnd = Math.min(Isc, Imax); g.save(); g.beginPath(); g.rect(gx, gy - 4, gw + 4, gh + 8); g.clip(); line(g, X(0), Y(S3.e), X(iEnd), Y(S3.e - S3.r * iEnd), C.cyan, 3); g.restore();
   circ(g, X(0), Y(S3.e), 5, C.amber); txt(g, "ε", X(0) + 10, Y(S3.e) - 10, C.amber, 15, "left", true);

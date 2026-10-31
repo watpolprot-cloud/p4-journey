@@ -36,7 +36,8 @@ h1,h2,h3,.disp{font-family:"Chakra Petch",sans-serif;font-weight:600;margin:0}
 .card h2{font-size:17px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
 .card h2:before{content:"";width:4px;height:17px;background:var(--cyan);display:inline-block;flex:none}
 .card.q:before{background:var(--amber)} .card.q h2:before{background:var(--amber)}
-canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:none}
+canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:manipulation}
+#c2{touch-action:none} /* ภาพที่ต้องลากด้วยนิ้ว */
 .btn{font-family:"Chakra Petch";font-weight:600;font-size:15px;border:1px solid var(--cyan);padding:8px 14px;background:rgba(53,208,255,.12);color:var(--cyan);cursor:pointer;
   clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);margin:0 6px 8px 0;text-decoration:none;display:inline-block}
 .btn:hover{background:rgba(53,208,255,.25)}
@@ -242,7 +243,7 @@ var each = function(sel, f){ Array.prototype.forEach.call(document.querySelector
 function sci(x, d){ d = d || 2; if (!isFinite(x)) return "-"; if (x === 0) return "0"; var s = x < 0 ? "−" : ""; x = Math.abs(x); var e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e); if (+m.toFixed(d) >= 10) { m /= 10; e++; }
   if (e >= -2 && e <= 3) return s + (+x.toPrecision(d + 1)).toString(); return s + m.toFixed(d) + " × 10<sup>" + e + "</sup>"; }
 function sciT(x, d){ return sci(x, d).replace(/<sup>/g, "^").replace(/<\/sup>/g, ""); }
-function setup(cv){ var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +cv.getAttribute("height"); var h = Math.round(Math.min(attr, Math.max(220, w * 0.9)));
+function setup(cv){ var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +(cv.dataset.h || (cv.dataset.h = cv.getAttribute("height"))); var h = Math.round(Math.min(attr, Math.max(+(cv.dataset.min || 220), w * 0.9)));
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px"; var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return {g: g, w: w, h: h}; }
 function txt(g, s, x, y, col, size, align, bold){ g.fillStyle = col || C.text; g.font = (bold ? "600 " : "400 ") + (size || 14) + "px " + FONT; g.textAlign = align || "left"; g.textBaseline = "middle"; g.fillText(s, x, y); }
 function line(g, x1, y1, x2, y2, col, w, dash){ g.strokeStyle = col; g.lineWidth = w || 1; g.setLineDash(dash || []); g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); g.setLineDash([]); }

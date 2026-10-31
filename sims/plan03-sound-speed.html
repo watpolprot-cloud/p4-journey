@@ -36,7 +36,8 @@ h1,h2,h3,.disp{font-family:"Chakra Petch",sans-serif;font-weight:600;margin:0}
 .card h2{font-size:17px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
 .card h2:before{content:"";width:4px;height:17px;background:var(--cyan);display:inline-block;flex:none}
 .card.q:before{background:var(--amber)} .card.q h2:before{background:var(--amber)}
-canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:none}
+canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:manipulation}
+#c1{touch-action:none} /* ภาพที่ต้องลากด้วยนิ้ว */
 .btn{font-family:"Chakra Petch";font-weight:600;font-size:15px;border:1px solid var(--cyan);padding:8px 14px;background:rgba(53,208,255,.12);color:var(--cyan);cursor:pointer;
   clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);margin:0 6px 8px 0;text-decoration:none;display:inline-block}
 .btn:hover{background:rgba(53,208,255,.25)}
@@ -83,7 +84,7 @@ table.data th{color:var(--muted);font-weight:500;background:var(--bg2)}
   <!-- 1 -->
   <section class="panel on" id="p1">
     <div class="grid">
-      <div class="card"><h2>คลื่นเสียงในอากาศ: การกระจัดของอนุภาค และความดันที่เปลี่ยนไป</h2><canvas id="c1" height="440"></canvas>
+      <div class="card"><h2>คลื่นเสียงในอากาศ: การกระจัดของอนุภาค และความดันที่เปลี่ยนไป</h2><canvas id="c1" data-min="380" height="440"></canvas>
         <div class="hint" id="h1">ภาพแสดงแบบช้าลง · เส้นประสีอำพันคือตำแหน่งที่เลือก ลากบนภาพหรือใช้แถบเลื่อนเพื่อย้ายตำแหน่ง แล้วเทียบกราฟทั้งสอง</div></div>
       <div>
         <div class="card"><h2>ควบคุม</h2>
@@ -101,7 +102,7 @@ table.data th{color:var(--muted);font-weight:500;background:var(--bg2)}
   <!-- 2 -->
   <section class="panel" id="p2">
     <div class="grid">
-      <div class="card"><h2>เห็นฟ้าแลบก่อน ได้ยินฟ้าร้องทีหลัง</h2><canvas id="c2" height="430"></canvas>
+      <div class="card"><h2>เห็นฟ้าแลบก่อน ได้ยินฟ้าร้องทีหลัง</h2><canvas id="c2" data-min="420" height="430"></canvas>
         <div class="hint" id="h2">ตั้งระยะและอุณหภูมิ แล้วกด “ฟ้าแลบ” นับเวลาจากเห็นแสงจนได้ยินเสียง (ภาพเดินตามเวลาจริง แสงถึงผู้สังเกตแทบทันที)</div></div>
       <div>
         <div class="card"><h2>ควบคุม</h2>
@@ -172,8 +173,8 @@ function vs(T){ return 331 + 0.6 * T; }
 function fmt(x, d){ return (+x).toFixed(d); }
 
 function setup(cv){
-  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +cv.getAttribute("height");
-  var h = Math.round(Math.min(attr, Math.max(300, w * 0.95)));
+  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +(cv.dataset.h || (cv.dataset.h = cv.getAttribute("height")));
+  var h = Math.round(Math.min(attr, Math.max(+(cv.dataset.min || 300), w * 0.95)));
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px";
   var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0);
   return {g: g, w: w, h: h};
@@ -308,8 +309,10 @@ function upd2(){
   $("r2v").textContent = fmt(vs(S2.T), 0) + " m/s";
   if (!S2.done) { $("r2t").textContent = "-"; $("r2d").textContent = "-"; }
 }
-$("t2").addEventListener("input", function(){ S2.t0 = -1; S2.done = false; upd2(); });
-$("d2").addEventListener("input", function(){ S2.t0 = -1; S2.done = false; upd2(); });
+function reset2(){ var was = S2.t0 > 0 || S2.done; S2.t0 = -1; S2.done = false; upd2();
+  if (was) $("h2").textContent = "เปลี่ยนค่าแล้ว ภาพเริ่มใหม่ กด “ฟ้าแลบ” อีกครั้งเพื่อนับเวลาใหม่"; }
+$("t2").addEventListener("input", reset2);
+$("d2").addEventListener("input", reset2);
 $("hide2").addEventListener("click", function(){ S2.hide = !S2.hide; this.textContent = S2.hide ? "แสดงระยะ" : "ซ่อนระยะ (ให้นักเรียนคำนวณ)"; this.classList.toggle("sel", S2.hide); upd2(); if (S2.done) showRes2(); });
 $("flash").addEventListener("click", function(){ S2.t0 = performance.now() / 1000; S2.done = false; S2.flashA = 1; upd2();
   $("h2").textContent = "เห็นแสงแล้ว เริ่มนับเวลา... เสียงกำลังเดินทางด้วยอัตราเร็ว " + fmt(vs(S2.T), 0) + " m/s"; });
@@ -320,6 +323,7 @@ function showRes2(){
 function draw2(){
   var V = $("c2")._v; if (!V) return; var g = V.g, W = V.w, H = V.h, now = performance.now() / 1000;
   var gy = H * 0.56, xs = 50, xo = W - 50;
+  g.fillStyle = C.bg; g.fillRect(0, 0, W, H); // ล้างทั้งภาพทุกเฟรม กันตัวเลขและจุดซ้อนกัน
   var sky = g.createLinearGradient(0, 0, 0, gy); sky.addColorStop(0, "#05080f"); sky.addColorStop(1, "#0d1626");
   g.fillStyle = sky; g.fillRect(0, 0, W, gy); g.fillStyle = "#0b1410"; g.fillRect(0, gy, W, H * 0.06);
   line(g, 0, gy, W, gy, C.line, 1);
@@ -346,8 +350,9 @@ function draw2(){
   }
   // timer
   var shown = S2.done ? S2.tHit : (S2.t0 > 0 ? elapsed : 0);
-  txt(g, fmt(shown, 2) + " s", W / 2, 40, S2.done ? C.amber : C.text, 30, "center", true);
-  txt(g, "เวลาหลังเห็นฟ้าแลบ", W / 2, 70, C.muted, 12.5, "center");
+  var tx = W < 520 ? W * 0.64 : W / 2; // จอแคบ: เลื่อนตัวเลขเวลาออกจากก้อนเมฆ
+  txt(g, fmt(shown, 2) + " s", tx, 40, S2.done ? C.amber : C.text, 30, "center", true);
+  txt(g, "เวลาหลังเห็นฟ้าแลบ", tx, 70, C.muted, 12.5, "center");
   // graph v-T
   var gx0 = 60, gx1 = W - 24, gy0 = H - 34, gy1 = Math.max(H * 0.70, gy + 80);
   line(g, gx0, gy0, gx1, gy0, C.line, 1); line(g, gx0, gy0, gx0, gy1, C.line, 1);
@@ -466,6 +471,7 @@ function draw4(){
   var V = $("c4")._v; if (!V) return; var g = V.g, W = V.w, H = V.h, now = performance.now() / 1000;
   var x0 = 70, x1 = W - 16, y0 = H - 40, y1 = 24;
   function X(x){ return x0 + x / XMAX * (x1 - x0); } function Y(y){ return y0 - y / YMAX * (y0 - y1); }
+  g.fillStyle = C.bg; g.fillRect(0, 0, W, H);
   // ชั้นอากาศตามอุณหภูมิ
   for (var yy = 0; yy < YMAX; yy += 10) {
     var T = T4(yy + 5), a = (T - 18) / 17; // 0 เย็น .. 1 ร้อน

@@ -36,7 +36,7 @@ h1,h2,h3,.disp{font-family:"Chakra Petch",sans-serif;font-weight:600;margin:0}
 .card h2{font-size:17px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
 .card h2:before{content:"";width:4px;height:17px;background:var(--cyan);display:inline-block;flex:none}
 .card.q:before{background:var(--amber)} .card.q h2:before{background:var(--amber)}
-canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:none}
+canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:manipulation}
 .btn{font-family:"Chakra Petch";font-weight:600;font-size:15px;border:1px solid var(--cyan);padding:8px 14px;background:rgba(53,208,255,.12);color:var(--cyan);cursor:pointer;
   clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);margin:0 6px 8px 0;text-decoration:none;display:inline-block}
 .btn:hover{background:rgba(53,208,255,.25)}
@@ -152,8 +152,8 @@ var SUP = {"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6
 function sci(x, d){ var e = Math.floor(Math.log10(Math.abs(x))), m = x / Math.pow(10, e); if (+m.toFixed(d) >= 10) { m /= 10; e++; }
   return m.toFixed(d) + " × 10" + String(e).split("").map(function(c){ return SUP[c]; }).join(""); }
 function setup(cv){
-  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +cv.getAttribute("height");
-  var h = Math.round(Math.min(attr, Math.max(140, w * 0.8)));
+  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +(cv.dataset.h || (cv.dataset.h = cv.getAttribute("height")));
+  var h = Math.round(Math.min(attr, Math.max(+(cv.dataset.min || 140), w * 0.8)));
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px";
   var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return {g: g, w: w, h: h};
 }
@@ -188,7 +188,8 @@ function draw1(){
   a.forEach(function(s, k){ var col = colors[NAMES.indexOf(s.n)];
     g.fillStyle = col; g.globalAlpha = 0.85; g.fillRect(L, y, Math.max(2, s.I * scale), rowH * 0.62); g.globalAlpha = 1;
     txt(g, s.n + " " + s.b + " dB", 8, y + rowH * 0.31, col, 13, "left", true);
-    txt(g, sci(s.I, 2) + " W/m²", Math.min(R - 4, L + s.I * scale + 8), y + rowH * 0.31, C.text, 12, s.I * scale > (R - L) * 0.6 ? "right" : "left");
+    var inBar = s.I * scale > (R - L) * 0.6; // แถบยาว: วางตัวเลขไว้ในแถบ ไม่ให้ล้นขอบภาพ
+    txt(g, sci(s.I, 2) + " W/m²", inBar ? L + s.I * scale - 8 : L + s.I * scale + 8, y + rowH * 0.31, inBar ? "#0a0f19" : C.text, 12, inBar ? "right" : "left", inBar);
     y += rowH; });
   line(g, L, y + 2, R, y + 2, C.line2, 1); y += 12;
   var x = L; a.forEach(function(s){ var col = colors[NAMES.indexOf(s.n)]; g.fillStyle = col; g.globalAlpha = 0.85; g.fillRect(x, y, s.I * scale, rowH * 0.62); g.globalAlpha = 1; x += s.I * scale; });

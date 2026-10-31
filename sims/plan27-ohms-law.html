@@ -36,7 +36,7 @@ h1,h2,h3,.disp{font-family:"Chakra Petch",sans-serif;font-weight:600;margin:0}
 .card h2{font-size:17px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
 .card h2:before{content:"";width:4px;height:17px;background:var(--cyan);display:inline-block;flex:none}
 .card.q:before{background:var(--amber)} .card.q h2:before{background:var(--amber)}
-canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:none}
+canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:manipulation}
 .btn{font-family:"Chakra Petch";font-weight:600;font-size:15px;border:1px solid var(--cyan);padding:8px 14px;background:rgba(53,208,255,.12);color:var(--cyan);cursor:pointer;
   clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);margin:0 6px 8px 0;text-decoration:none;display:inline-block}
 .btn:hover{background:rgba(53,208,255,.25)}
@@ -219,7 +219,7 @@ var each = function(sel, f){ Array.prototype.forEach.call(document.querySelector
 function sci(x, d){ d = d || 2; if (!isFinite(x)) return "-"; if (x === 0) return "0"; var s = x < 0 ? "−" : ""; x = Math.abs(x); var e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e); if (+m.toFixed(d) >= 10) { m /= 10; e++; }
   if (e >= -2 && e <= 3) return s + (+x.toPrecision(d + 1)).toString(); return s + m.toFixed(d) + " × 10<sup>" + e + "</sup>"; }
 function sciT(x, d){ return sci(x, d).replace(/<sup>/g, "^").replace(/<\/sup>/g, ""); }
-function setup(cv){ var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +cv.getAttribute("height"); var h = Math.round(Math.min(attr, Math.max(220, w * 0.9)));
+function setup(cv){ var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +(cv.dataset.h || (cv.dataset.h = cv.getAttribute("height"))); var h = Math.round(Math.min(attr, Math.max(+(cv.dataset.min || 220), w * 0.9)));
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px"; var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return {g: g, w: w, h: h}; }
 function txt(g, s, x, y, col, size, align, bold){ g.fillStyle = col || C.text; g.font = (bold ? "600 " : "400 ") + (size || 14) + "px " + FONT; g.textAlign = align || "left"; g.textBaseline = "middle"; g.fillText(s, x, y); }
 function line(g, x1, y1, x2, y2, col, w, dash){ g.strokeStyle = col; g.lineWidth = w || 1; g.setLineDash(dash || []); g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); g.setLineDash([]); }
@@ -274,7 +274,7 @@ function switchH(g, x, y, closed){ g.fillStyle = C.bg; g.fillRect(x - 32, y - 22
   if (closed) line(g, x - 26, y, x + 26, y, C.amber, 3.5); else line(g, x - 26, y, x + 20, y - 20, C.text, 3.5); }
 var BV = [0, 1.5, 3, 4.5, 6], BI = [0, 0.12, 0.19, 0.25, 0.30];
 function bulbI(V, k){ V = Math.max(0, V); if (V >= 6) return k * (0.30 + (V - 6) * 0.035); var i = 0; while (V > BV[i + 1]) i++; var f = (V - BV[i]) / (BV[i + 1] - BV[i]); return k * (BI[i] + f * (BI[i + 1] - BI[i])); }
-function fmtI(I){ return I < 0.1 ? (I * 1000).toFixed(1) + " mA" : I.toFixed(3) + " A"; }
+function fmtI(I){ var m = I * 1000; return I < 0.1 ? m.toFixed(m < 1 ? 3 : m < 10 ? 2 : 1) + " mA" : I.toFixed(3) + " A"; }
 
 /* ---------- 1 cells and bulb ---------- */
 var S1 = {n: 1, b: "A", show: false};
@@ -319,7 +319,7 @@ function draw2(){ var V = setup($("c2")), g = V.g; clear(V);
 function graph2(){ var V = setup($("c2g")), g = V.g; clear(V); var rows = S2.rows[S2.d], mA = S2.d === "r";
   var gx = 52, gy = 18, gw = V.w - gx - 22, gh = V.h - 62, imax = mA ? 30 : 0.35, vmax = 7;
   var X = function(i){ return gx + i / imax * gw; }, Y = function(v){ return gy + gh - v / vmax * gh; };
-  for (var k = 0; k <= 6; k++) { var iv = imax * k / 6; line(g, X(iv), gy, X(iv), gy + gh, C.line, 1); txt(g, mA ? iv.toFixed(0) : iv.toFixed(2), X(iv), gy + gh + 14, C.muted, 11, "center"); }
+  for (var nT = mA ? 6 : 7, k = 0; k <= nT; k++) { var iv = imax * k / nT; line(g, X(iv), gy, X(iv), gy + gh, C.line, 1); txt(g, mA ? iv.toFixed(0) : iv.toFixed(2), X(iv), gy + gh + 14, C.muted, 11, "center"); }
   for (k = 0; k <= 7; k++) { line(g, gx, Y(k), gx + gw, Y(k), C.line, 1); txt(g, k, gx - 8, Y(k), C.muted, 11, "right"); }
   arrow(g, gx, gy + gh, gx + gw + 14, gy + gh, C.steel, 2); arrow(g, gx, gy + gh, gx, gy - 6, C.steel, 2);
   txt(g, mA ? "I (mA)" : "I (A)", gx + gw, gy + gh + 32, C.text, 13, "right", true); txt(g, "V (V)", gx + 6, gy + 4, C.text, 13, "left", true);

@@ -36,7 +36,8 @@ h1,h2,h3,.disp{font-family:"Chakra Petch",sans-serif;font-weight:600;margin:0}
 .card h2{font-size:17px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
 .card h2:before{content:"";width:4px;height:17px;background:var(--cyan);display:inline-block;flex:none}
 .card.q:before{background:var(--amber)} .card.q h2:before{background:var(--amber)}
-canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:none}
+canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:manipulation}
+#c5{touch-action:none} /* ภาพที่ต้องลากด้วยนิ้ว */
 .btn{font-family:"Chakra Petch";font-weight:600;font-size:15px;border:1px solid var(--cyan);padding:8px 14px;background:rgba(53,208,255,.12);color:var(--cyan);cursor:pointer;
   clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);margin:0 6px 8px 0;text-decoration:none;display:inline-block}
 .btn:hover{background:rgba(53,208,255,.25)}
@@ -277,8 +278,8 @@ var $ = function(id){ return document.getElementById(id); };
 var each = function(sel, f){ Array.prototype.forEach.call(document.querySelectorAll(sel), f); };
 function sci(x, d){ if (!isFinite(x)) return "-"; if (x === 0) return "0"; var s = x < 0 ? "−" : ""; x = Math.abs(x); var e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e); if (+m.toFixed(d) >= 10) { m /= 10; e++; } if (e >= -2 && e <= 3) return s + (+(x).toPrecision(d + 1)).toString(); return s + m.toFixed(d) + " × 10<sup>" + e + "</sup>"; }
 function setup(cv){
-  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +cv.getAttribute("height");
-  var h = Math.round(Math.min(attr, Math.max(220, w * 0.9)));
+  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +(cv.dataset.h || (cv.dataset.h = cv.getAttribute("height")));
+  var h = Math.round(Math.min(attr, Math.max(+(cv.dataset.min || 220), w * 0.9)));
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px";
   var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return {g: g, w: w, h: h, cv: cv};
 }
@@ -380,7 +381,11 @@ function drawSpheres(){
   s.push("ศักย์เท่ากัน รัศมีเล็กกว่า " + (+(R / r).toPrecision(3)) + " เท่า สนามจึงแรงกว่า " + (+(R / r).toPrecision(3)) + " เท่า · ปลายแหลมของสายล่อฟ้าเหมือนทรงกลมรัศมีเล็กมาก");
   $("h1").innerHTML = s.join(" · ");
 }
-function fmtE(x){ var e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e); return m.toFixed(1) + "e" + e; }
+function supT(x, d){ // เลขยกกำลังแบบตัวยก สำหรับข้อความในภาพ เช่น 2.0 × 10⁵
+  var e = Math.floor(Math.log10(Math.abs(x))), m = x / Math.pow(10, e); if (+Math.abs(m).toFixed(d) >= 10) { m /= 10; e++; }
+  var S = {"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"};
+  return m.toFixed(d) + " × 10" + String(e).split("").map(function(c){ return S[c]; }).join(""); }
+function fmtE(x){ return supT(x, 1); }
 ["rb1", "rs1", "v1"].forEach(function(id){ $(id).addEventListener("input", drawSpheres); });
 $("w41").onclick = function(){ $("rb1").value = 10; $("rs1").value = 0.5; $("v1").value = 20; drawSpheres(); };
 $("hide1").onclick = function(){ L1.hide = !L1.hide; this.textContent = L1.hide ? "แสดงคำตอบ" : "ซ่อนคำตอบ"; drawSpheres(); };
@@ -425,12 +430,12 @@ function stepAir(){
 function stepPaint(){
   if (active !== "p2" || A2.mode !== "paint") return false;
   var V = setup($("c2")), g = V.g, w = V.w, h = V.h; clear(V);
-  var gx = w * 0.1, gy = h * 0.5, ox = w * 0.66, oy = h * 0.5, R = Math.min(w, h) * 0.17;
+  var gx = Math.max(w * 0.1, 48), gy = h * 0.5, ox = w * 0.66, oy = h * 0.5, R = Math.min(w, h) * 0.17;
   // object (grounded sphere-like car part)
   var gr = g.createRadialGradient(ox - R * .3, oy - R * .3, 4, ox, oy, R); gr.addColorStop(0, "#7d8fb0"); gr.addColorStop(1, "#26324a"); g.fillStyle = gr; g.beginPath(); g.arc(ox, oy, R, 0, 7); g.fill();
   if (A2.ground) { line(g, ox, oy + R, ox, h - 16, C.cyan, 2, [5, 4]); line(g, ox - 20, h - 16, ox + 20, h - 16, C.cyan, 2); txt(g, "ต่อลงดิน", ox + 26, h - 18, C.muted, 12); }
   // gun
-  g.fillStyle = "#3a4a66"; g.fillRect(gx - 40, gy - 12, 46, 24); g.fillRect(gx - 28, gy + 10, 12, 30); txt(g, A2.ground ? "ปืนพ่นสี (ละอองมีประจุ −)" : "ปืนพ่นสีธรรมดา", gx - 40, gy - 26, C.muted, 12);
+  g.fillStyle = "#3a4a66"; g.fillRect(gx - 40, gy - 12, 46, 24); g.fillRect(gx - 28, gy + 10, 12, 30); txt(g, A2.ground ? "ปืนพ่นสี (ละอองมีประจุ −)" : "ปืนพ่นสีธรรมดา", Math.max(4, gx - 40), gy - 26, C.muted, 12);
   if (Math.random() < 0.9) for (var n = 0; n < 2; n++) A2.parts.push({x: gx + 8, y: gy + (Math.random() - .5) * 6, vx: 2.2 + Math.random(), vy: (Math.random() - .5) * 1.8, done: 0});
   A2.parts.forEach(function(p){
     if (p.done) return;
@@ -460,10 +465,10 @@ var D3 = {step: 0, ang: 0, play: false, t: 0};
 var IMGP = [[0,0],[0,1],[0,2],[0,3],[0,4],[1,0],[2,0],[2,1],[1,2],[4,0],[4,1],[4,2],[3,2],[5,2],[4,3],[4,4]]; // pattern "P4" (col,row)
 function drawCopier(){
   var V = setup($("c3")), g = V.g, w = V.w, h = V.h; clear(V);
-  var cx = w * 0.42, cy = h * 0.44, R = Math.min(w * 0.26, h * 0.32), st = D3.step;
-  // original document strip at top-right
-  var ox = w * 0.74, oy = 20, cw = 14;
-  g.fillStyle = "#e7ecf5"; g.fillRect(ox, oy, cw * 6 + 12, cw * 5 + 12); txt(g, "ต้นฉบับ", ox + 42, oy + cw * 5 + 26, C.muted, 12, "center");
+  var nar = w < 520, cx = w * (nar ? 0.36 : 0.42), cy = h * 0.44, R = Math.min(w * (nar ? 0.22 : 0.26), h * 0.32), st = D3.step;
+  // original document strip at top-right (smaller on phones so it does not cover the labels)
+  var cw = nar ? 8 : 14, ox = nar ? w - cw * 6 - 16 : w * 0.74, oy = nar ? 6 : 20;
+  g.fillStyle = "#e7ecf5"; g.fillRect(ox, oy, cw * 6 + 12, cw * 5 + 12); txt(g, "ต้นฉบับ", ox + cw * 3 + 6, oy + cw * 5 + 26, C.muted, 12, "center");
   IMGP.forEach(function(p){ g.fillStyle = "#0a0f19"; g.fillRect(ox + 6 + p[0] * cw, oy + 6 + p[1] * cw, cw - 1, cw - 1); });
   // drum
   sphere(g, cx, cy, R);
@@ -481,7 +486,7 @@ function drawCopier(){
   mk.forEach(function(m, k){ var a = m[0], x = cx + (R + 34) * Math.cos(a), y = cy + (R + 34) * Math.sin(a); var on = st === k + 1;
     g.fillStyle = on ? C.amber : "#16213a"; g.strokeStyle = on ? C.amber : C.line2; g.beginPath(); g.arc(x, y, 13, 0, 7); g.fill(); g.stroke(); txt(g, String(k + 1), x, y + 1, on ? "#05121a" : C.text, 13, "center", true);
     txt(g, m[1].slice(2), x + (Math.cos(a) > 0 ? 18 : -18), y + (k === 3 ? 22 : 0), on ? C.amber : C.muted, 12, Math.cos(a) > 0 ? "left" : "right"); });
-  if (st === 2) { for (i = 0; i < 4; i++) arrow(g, ox, oy + 30 + i * 10, cx + (R + 6) * Math.cos(-0.35), cy + (R + 6) * Math.sin(-0.35) + i * 4, "rgba(255,240,180,.7)", 1.2); }
+  if (st === 2) { for (i = 0; i < 4; i++) arrow(g, ox, oy + (nar ? 20 : 30) + i * (nar ? 7 : 10), cx + (R + 6) * Math.cos(-0.35), cy + (R + 6) * Math.sin(-0.35) + i * 4, "rgba(255,240,180,.7)", 1.2); }
   if (st === 3) { g.fillStyle = "#1b2740"; g.fillRect(cx + R * 0.6, cy + R * 0.85, 60, 26); txt(g, "ผงหมึก", cx + R * 0.6 + 30, cy + R * 0.85 + 13, C.text, 12, "center"); }
   // paper
   var py = cy + R + 8, pw = w * 0.72, pxs = w * 0.08;
@@ -537,7 +542,7 @@ function drawGraph(P){
   g.fillStyle = C.amber; g.fillRect(ax + aw * 0.78, ay - scale(pd), 8, scale(pd)); txt(g, "ปล่อย " + (P.t * 1000) + " ms: P ≈ " + (F4.hide ? "?" : sciT(pd)) + " W", ax + aw * 0.78 - 6, ay - scale(pd) + 10, C.amber, 12, "right");
   txt(g, "แกน P เป็นสเกลลอการิทึม (ความสูงไม่ตามสัดส่วนจริง)", w - 8, 12, C.muted, 11, "right");
 }
-function sciT(x){ var e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e); if (e >= -1 && e <= 3) return (+x.toPrecision(2)).toString(); return m.toFixed(1) + "×10^" + e; }
+function sciT(x){ var e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e); if (e >= -1 && e <= 3) return (+x.toPrecision(2)).toString(); return supT(x, 1); }
 $("chg4").onclick = function(){ F4.phase = "chg"; loop("f4", function(){ if (F4.phase !== "chg") return false; F4.lvl = Math.min(1, F4.lvl + 0.006); if (F4.lvl >= 1) F4.phase = "full"; drawFlash(); if (F4.lvl >= 1) return false; }); };
 $("dis4").onclick = function(){ if (F4.lvl <= 0) { $("h4").innerHTML = "ยังไม่มีประจุ กด <b>ชาร์จ</b> ก่อน"; return; } F4.phase = "dis"; F4.flash = F4.lvl; F4.lvl = 0; loop("f4", function(){ F4.flash = Math.max(0, F4.flash - 0.04); drawFlash(); if (F4.flash === 0) { F4.phase = "idle"; drawFlash(); return false; } }); };
 $("hide4").onclick = function(){ F4.hide = !F4.hide; this.textContent = F4.hide ? "แสดงคำตอบ" : "ซ่อนคำตอบ"; drawFlash(); };

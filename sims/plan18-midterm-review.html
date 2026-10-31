@@ -36,7 +36,8 @@ h1,h2,h3,.disp{font-family:"Chakra Petch",sans-serif;font-weight:600;margin:0}
 .card h2{font-size:17px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
 .card h2:before{content:"";width:4px;height:17px;background:var(--cyan);display:inline-block;flex:none}
 .card.q:before{background:var(--amber)} .card.q h2:before{background:var(--amber)}
-canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:none}
+canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:manipulation}
+#c3{touch-action:none} /* ภาพที่ต้องลากด้วยนิ้ว */
 .btn{font-family:"Chakra Petch";font-weight:600;font-size:15px;border:1px solid var(--cyan);padding:8px 14px;background:rgba(53,208,255,.12);color:var(--cyan);cursor:pointer;
   clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);margin:0 6px 8px 0;text-decoration:none;display:inline-block}
 .btn:hover{background:rgba(53,208,255,.25)}
@@ -143,7 +144,7 @@ sub,sup{font-size:72%}
   <section class="panel" id="p3">
     <div class="grid">
       <div>
-        <div class="card"><h2>ลากจุด P บนแกน x · ลูกศรคือสนามจากแต่ละประจุ (สเกลแบบลอการิทึม) · กราฟล่างคือ Eₓ และ V ตามแนวแกน</h2><canvas id="c3" height="460"></canvas>
+        <div class="card"><h2>ลากจุด P บนแกน x · ลูกศรคือสนามจากแต่ละประจุ (สเกลแบบลอการิทึม) · กราฟล่างคือ Eₓ และ V ตามแนวแกน</h2><canvas id="c3" data-min="400" height="460"></canvas>
           <div class="hint" id="h3"></div></div>
       </div>
       <div>
@@ -213,8 +214,8 @@ var each = function(sel, f){ Array.prototype.forEach.call(document.querySelector
 function fmt(x, d){ return (+x).toFixed(d); }
 function sci(x, d){ if (x === 0) return "0"; var e = Math.floor(Math.log10(Math.abs(x))), m = x / Math.pow(10, e); if (Math.abs(+m.toFixed(d)) >= 10) { m /= 10; e++; } return m.toFixed(d) + " × 10<sup>" + e + "</sup>"; }
 function setup(cv){
-  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +cv.getAttribute("height");
-  var h = Math.round(Math.min(attr, Math.max(260, w * 0.95)));
+  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +(cv.dataset.h || (cv.dataset.h = cv.getAttribute("height")));
+  var h = Math.round(Math.min(attr, Math.max(+(cv.dataset.min || 260), w * 0.95)));
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px";
   var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return {g: g, w: w, h: h};
 }
@@ -296,8 +297,8 @@ function upd3(){ $("vq1").textContent = sg(P3.q1); $("vq2").textContent = sg(P3.
   var F = fld(P3.x), z = zero3(); $("r3x").textContent = P3.x.toFixed(2); $("r3e").innerHTML = Math.abs(F.e) < 1e-3 ? "0" : nf(F.e); $("r3a").innerHTML = nf(F.v1); $("r3b").innerHTML = nf(F.v2); $("r3v").innerHTML = nf(F.v1 + F.v2);
   $("h3").innerHTML = (z === null ? "กรณีนี้ไม่มีจุดที่ E = 0 บนแกน (นอกจากที่ระยะไกลมาก)" : "จุดที่ E = 0 อยู่ที่ x = " + z.toFixed(2) + " m (" + (P3.q1 * P3.q2 > 0 ? "ประจุชนิดเดียวกัน อยู่ระหว่างประจุ" : "ประจุต่างชนิดกัน อยู่นอกช่วง ด้านประจุที่เล็กกว่า") + ") ศักย์ที่จุดนั้น V = " + nf(fld(z).v1 + fld(z).v2) + " V") + " · สนามรวมแบบเวกเตอร์หักล้างกันได้ ศักย์รวมแบบสเกลาร์ตามเครื่องหมาย"; }
 function draw3(){ var V = $("c3")._v; if (!V) return; var g = V.g, M = map3(V); clear(V); var ya = M.ya;
-  line(g, 10, ya, V.w - 10, ya, C.muted, 1.2); for (var t = -0.4; t <= 1.0001; t += 0.1){ var xx = M.X(t); line(g, xx, ya + 18, xx, ya + 24, C.muted, 1); if (Math.abs(Math.round(t * 10) % 2) === 0) txt(g, t.toFixed(1), xx, ya + 34, C.muted, 11, "center"); }
-  txt(g, "x (m)", V.w - 12, ya + 34, C.muted, 11, "right");
+  line(g, 10, ya, V.w - 10, ya, C.muted, 1.2); for (var t = -0.4; t <= 1.0001; t += 0.1){ var xx = M.X(t); line(g, xx, ya + 18, xx, ya + 24, C.muted, 1); if (Math.abs(Math.round(t * 10) % 2) === 0) txt(g, (Math.abs(t) < 1e-9 ? 0 : t).toFixed(1), xx, ya + 34, C.muted, 11, "center"); }
+  txt(g, "x (m)", V.w - 12, ya - 12, C.muted, 11, "right"); // ไว้เหนือแกน ไม่ทับตัวเลข 1.0
   chg(g, M.X(0), ya, P3.q1, 14); txt(g, "q₁ " + sg(P3.q1), M.X(0), ya - 28, C.text, 12, "center", true);
   chg(g, M.X(P3.d), ya, P3.q2, 12); txt(g, "q₂ " + sg(P3.q2), M.X(P3.d), ya - 28, C.text, 12, "center", true);
   var F = fld(P3.x), px = M.X(P3.x);

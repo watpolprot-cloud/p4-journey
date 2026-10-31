@@ -36,7 +36,7 @@ h1,h2,h3,.disp{font-family:"Chakra Petch",sans-serif;font-weight:600;margin:0}
 .card h2{font-size:17px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
 .card h2:before{content:"";width:4px;height:17px;background:var(--cyan);display:inline-block;flex:none}
 .card.q:before{background:var(--amber)} .card.q h2:before{background:var(--amber)}
-canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:none}
+canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:manipulation}
 .btn{font-family:"Chakra Petch";font-weight:600;font-size:15px;border:1px solid var(--cyan);padding:8px 14px;background:rgba(53,208,255,.12);color:var(--cyan);cursor:pointer;
   clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);margin:0 6px 8px 0;text-decoration:none;display:inline-block}
 .btn:hover{background:rgba(53,208,255,.25)}
@@ -256,7 +256,7 @@ var each = function(sel, f){ Array.prototype.forEach.call(document.querySelector
 function sci(x, d){ d = d || 2; if (!isFinite(x)) return "-"; if (x === 0) return "0"; var s = x < 0 ? "−" : ""; x = Math.abs(x); var e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e); if (+m.toFixed(d) >= 10) { m /= 10; e++; }
   if (e >= -2 && e <= 3) return s + (+x.toPrecision(d + 1)).toString(); return s + m.toFixed(d) + " × 10<sup>" + e + "</sup>"; }
 function sciT(x, d){ return sci(x, d).replace(/<sup>/g, "^").replace(/<\/sup>/g, ""); }
-function setup(cv){ var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +cv.getAttribute("height"); var h = Math.round(Math.min(attr, Math.max(220, w * 0.9)));
+function setup(cv){ var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +(cv.dataset.h || (cv.dataset.h = cv.getAttribute("height"))); var h = Math.round(Math.min(attr, Math.max(+(cv.dataset.min || 220), w * 0.9)));
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px"; var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return {g: g, w: w, h: h}; }
 function txt(g, s, x, y, col, size, align, bold){ g.fillStyle = col || C.text; g.font = (bold ? "600 " : "400 ") + (size || 14) + "px " + FONT; g.textAlign = align || "left"; g.textBaseline = "middle"; g.fillText(s, x, y); }
 function line(g, x1, y1, x2, y2, col, w, dash){ g.strokeStyle = col; g.lineWidth = w || 1; g.setLineDash(dash || []); g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); g.setLineDash([]); }
@@ -334,7 +334,8 @@ function upd2h(){ var hv = val("hv", 220, 1), hp = val("hp", 1100, 1), R = hv * 
   $("r2hp").textContent = n2(P) + " W"; $("r2hr").textContent = (P / hp).toFixed(2) + " เท่า"; draw2(R, hv, hp, V, P); }
 function draw2(R, hv, hp, V0, P0){ var Vw = setup($("c2")), g = Vw.g; clear(Vw); var gx = 54, gy = 16, gw = Vw.w - 74, gh = Vw.h - 50, Vm = 240, Pm = Vm * Vm / R;
   var X = function(v){ return gx + v / Vm * gw; }, Y = function(p){ return gy + gh - p / Pm * gh; };
-  for (var k = 0; k <= 4; k++) { line(g, gx, Y(Pm * k / 4), gx + gw, Y(Pm * k / 4), "#18233a", 1); txt(g, n2(Pm * k / 4) + "", gx - 6, Y(Pm * k / 4), C.muted, 11, "right"); }
+  var pp = Math.pow(10, Math.floor(Math.log10(Pm / 4))), pm = Pm / 4 / pp, sP = pp * (pm <= 1 ? 1 : pm <= 2 ? 2 : pm <= 2.5 ? 2.5 : pm <= 5 ? 5 : 10);
+  for (var k = 0; k * sP <= Pm + 1e-9; k++) { line(g, gx, Y(k * sP), gx + gw, Y(k * sP), "#18233a", 1); txt(g, n2(k * sP) + "", gx - 6, Y(k * sP), C.muted, 11, "right"); }
   for (k = 0; k <= 240; k += 40) txt(g, String(k), X(k), gy + gh + 13, C.muted, 11, "center");
   arrow(g, gx, gy + gh, gx + gw + 10, gy + gh, C.steel, 1.5); arrow(g, gx, gy + gh, gx, gy - 6, C.steel, 1.5); txt(g, "V (V)", gx + gw, gy + gh + 30, C.muted, 12, "right"); txt(g, "P (W)", gx + 6, gy + 2, C.muted, 12, "left");
   g.strokeStyle = C.cyan; g.lineWidth = 2.5; g.beginPath(); for (var v = 0; v <= Vm; v += 4) { if (v === 0) g.moveTo(X(v), Y(0)); else g.lineTo(X(v), Y(v * v / R)); } g.stroke();
@@ -351,10 +352,12 @@ function upd3(){ var pa = val("pa", 60, 0), pb = val("pb", 9, 0), h = val("hr3",
   var V = setup($("c3")), g = V.g; clear(V); var gx = 60, gy = 16, gw = V.w - 80, gh = V.h - 50, D = Math.max(d, dp > 0 && sd > 0 ? Math.ceil(dp / sd) * 1.2 : 0, 10);
   var ca = function(t){ return pa / 1000 * h * t * r; }, cb = function(t){ return dp + pb / 1000 * h * t * r; }, M = Math.max(ca(D), cb(D), 1);
   var X = function(t){ return gx + t / D * gw; }, Y = function(c){ return gy + gh - c / M * gh; };
-  for (var k = 0; k <= 4; k++) { line(g, gx, Y(M * k / 4), gx + gw, Y(M * k / 4), "#18233a", 1); txt(g, n2(M * k / 4) + "", gx - 6, Y(M * k / 4), C.muted, 11, "right"); txt(g, String(Math.round(D * k / 4)), X(D * k / 4), gy + gh + 13, C.muted, 11, "center"); }
+  var nS = function(raw){ var p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p; return p * (m <= 1 ? 1 : m <= 2 ? 2 : m <= 2.5 ? 2.5 : m <= 5 ? 5 : 10); }, sD = nS(D / 5), sM = nS(M / 4);
+  for (var k = 0; k * sM <= M + 1e-9; k++) { line(g, gx, Y(k * sM), gx + gw, Y(k * sM), "#18233a", 1); txt(g, n2(k * sM) + "", gx - 6, Y(k * sM), C.muted, 11, "right"); }
+  for (k = 0; k * sD <= D + 1e-9; k++) txt(g, n2(k * sD) + "", X(k * sD), gy + gh + 13, C.muted, 11, "center");
   arrow(g, gx, gy + gh, gx + gw + 10, gy + gh, C.steel, 1.5); arrow(g, gx, gy + gh, gx, gy - 6, C.steel, 1.5); txt(g, "วัน", gx + gw, gy + gh + 30, C.muted, 12, "right"); txt(g, "บาทสะสม", gx + 6, gy + 2, C.muted, 12, "left");
   line(g, X(0), Y(0), X(D), Y(ca(D)), C.amber, 2.5); line(g, X(0), Y(cb(0)), X(D), Y(cb(D)), C.cyan, 2.5);
-  txt(g, "หลอดไส้", X(D) - 4, Y(ca(D)) + 14, C.amber, 12, "right", true); txt(g, "LED (+ส่วนต่างราคา)", X(D) - 4, Y(cb(D)) - 12, C.cyan, 12, "right", true);
+  line(g, gx + 14, gy + 24, gx + 34, gy + 24, C.amber, 2.5); txt(g, "หลอดไส้", gx + 40, gy + 24, C.amber, 12, "left", true); line(g, gx + 14, gy + 42, gx + 34, gy + 42, C.cyan, 2.5); txt(g, "LED (+ส่วนต่างราคา)", gx + 40, gy + 42, C.cyan, 12, "left", true);
   if (dp > 0 && sd > 0) { var tp = dp / sd; if (tp <= D) { circ(g, X(tp), Y(ca(tp)), 5, C.green); txt(g, "คุ้มทุน " + Math.ceil(tp) + " วัน", X(tp) + 8, Y(ca(tp)) + 14, C.green, 12, "left", true); } }
   upd3e(); }
 function upd3e(){ var pi = val("ein", 500, 0.0001), po = Math.min(val("eout", 400, 0), pi), eta = po / pi; $("r3n").textContent = Math.round(eta * 1000) / 10 + "%"; $("r3l").textContent = n2(pi - po) + " W";

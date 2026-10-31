@@ -36,7 +36,8 @@ h1,h2,h3,.disp{font-family:"Chakra Petch",sans-serif;font-weight:600;margin:0}
 .card h2{font-size:17px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
 .card h2:before{content:"";width:4px;height:17px;background:var(--cyan);display:inline-block;flex:none}
 .card.q:before{background:var(--amber)} .card.q h2:before{background:var(--amber)}
-canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:none}
+canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:manipulation}
+#c1{touch-action:none} /* ภาพที่ต้องลากด้วยนิ้ว */
 .btn{font-family:"Chakra Petch";font-weight:600;font-size:15px;border:1px solid var(--cyan);padding:8px 14px;background:rgba(53,208,255,.12);color:var(--cyan);cursor:pointer;
   clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);margin:0 6px 8px 0;text-decoration:none;display:inline-block}
 .btn:hover{background:rgba(53,208,255,.25)}
@@ -149,8 +150,8 @@ var FONT = '"IBM Plex Sans Thai", sans-serif', VS = 340;
 var $ = function(id){ return document.getElementById(id); };
 function fmt(x, d){ return (+x).toFixed(d); }
 function setup(cv){
-  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +cv.getAttribute("height");
-  var h = Math.round(Math.min(attr, Math.max(300, w * 0.9)));
+  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +(cv.dataset.h || (cv.dataset.h = cv.getAttribute("height")));
+  var h = Math.round(Math.min(attr, Math.max(+(cv.dataset.min || 300), w * 0.9)));
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px";
   var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0);
   return {g: g, w: w, h: h, dirty: true};
@@ -307,7 +308,7 @@ function draw2(){
   function Y(y){ return cy - y * sc; }
   [S.d / 2, -S.d / 2].forEach(function(y, i){ g.fillStyle = C.steel; g.fillRect(xs - 10, Y(y) - 7, 10, 14); txt(g, i ? "S₂" : "S₁", xs - 22, Y(y), C.text, 13, "center", true); });
   line(g, xl, Y(YR), xl, Y(-YR), "rgba(231,236,245,.5)", 1.2, [5, 5]);
-  txt(g, "แนวที่ผู้ฟังเดิน (ห่าง 4.0 m)", xl + 8, Y(YR) + 6, C.muted, 12);
+  txt(g, W < 520 ? "แนวผู้ฟังเดิน" : "แนวที่ผู้ฟังเดิน (ห่าง 4.0 m)", W < 520 ? xl - 6 : xl + 8, Y(YR) + 6, C.muted, 12, W < 520 ? "right" : "left");
   line(g, xs, Y(S.d / 2), xl, Y(S2.y), "rgba(255,176,32,.6)", 1, [4, 4]); line(g, xs, Y(-S.d / 2), xl, Y(S2.y), "rgba(255,176,32,.6)", 1, [4, 4]);
   g.fillStyle = C.amber; g.beginPath(); g.arc(xl, Y(S2.y), 6, 0, 7); g.fill();
   // กราฟความดัง
@@ -355,15 +356,17 @@ function build3(){
   D.ratio = I(cx, sj) / Math.max(1e-6, I(cx, cj));
   updText3();
 }
+function sci3(x){ var e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e), sup = {"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"};
+  return fmt(m, 1) + " × 10" + String(e).split("").map(function(ch){ return sup[ch]; }).join(""); }
 function updText3(){
   var L = lam3();
-  $("f3v").textContent = D.light ? "แสง" : D.f; $("a3v").textContent = fmt(D.a, 2);
+  $("f3v").textContent = D.light ? "แสง ≈ 6 × 10¹⁴" : D.f; $("a3v").textContent = fmt(D.a, 2);
   $("r3l").textContent = D.light ? "≈ 5 × 10⁻⁷ m" : fmt(L, 2) + " m";
-  $("r3r").textContent = D.light ? "≈ 6 × 10⁻⁷" : (D.mode === "slit" ? fmt(L / D.a, 2) : "-");
+  $("r3r").textContent = D.mode !== "slit" ? "-" : D.light ? "≈ " + sci3(5e-7 / D.a) : fmt(L / D.a, 2);
   var big = !D.light && (D.mode === "edge" ? L > 0.3 : L / D.a > 0.4);
   $("r3k").textContent = D.light ? "แทบไม่เลี้ยวเบน (เกิดเงาคมชัด)" : big ? "เลี้ยวเบนมาก (เสียงแผ่เข้าเขตเงา)" : "เลี้ยวเบนน้อย (เสียงพุ่งตรงเป็นลำ)";
   $("r3k").style.color = big ? C.cyan : C.amber;
-  $("h3").textContent = D.light ? "แสงมีความยาวคลื่นประมาณ 5 × 10⁻⁷ m เล็กกว่าประตูราวหนึ่งล้านเท่า จึงแทบไม่เลี้ยวเบน (ภาพนี้ใช้ความยาวคลื่นสั้นที่สุดที่วาดได้แทน)" :
+  $("h3").textContent = D.light ? "แสงมีความยาวคลื่นประมาณ 5 × 10⁻⁷ m เล็กกว่าประตูราวหนึ่งล้านเท่า จึงแทบไม่เลี้ยวเบน (ภาพนี้ใช้ความยาวคลื่นสั้นที่สุดที่วาดได้แทน และแสดงเป็นความสว่างเฉลี่ย สว่าง = มีแสง มืด = เงา)" :
     (D.mode === "slit" ? "เส้นประคือขอบของลำที่ควรเป็นถ้าคลื่นเดินทางเป็นเส้นตรง ส่วนที่เลยเส้นประออกไปคือเสียงที่เลี้ยวเบนเข้าเขตเงา · λ = " + fmt(L, 2) + " m เทียบกับช่องเปิด " + fmt(D.a, 2) + " m" :
      "มุมตึก: ด้านล่างเส้นประคือเขตที่มองไม่เห็นแหล่งกำเนิด เสียงความยาวคลื่นยาวแผ่อ้อมมุมเข้าไปได้มาก จึงได้ยินแม้มองไม่เห็น");
 }
@@ -377,7 +380,8 @@ function draw3(dt){
   if (!D.buf || V.dirty) { V.dirty = false; build3(); }
   D.ph += dt * 2 * Math.PI * 0.5;
   var B = D.buf, d = B.img.data, c = Math.cos(D.ph), s = Math.sin(D.ph), n = B.nx * B.ny;
-  for (var i = 0; i < n; i++) { var rgb = waveRGB((B.re[i] * c + B.im[i] * s) * 0.9); d[i * 4] = rgb[0]; d[i * 4 + 1] = rgb[1]; d[i * 4 + 2] = rgb[2]; d[i * 4 + 3] = 255; }
+  // แสง: ความยาวคลื่นสั้นกว่าช่องพิกเซล ถ้าวาดคลื่นขณะหนึ่งจะเกิดลายรบกวน จึงแสดงความสว่างเฉลี่ยแทน
+  for (var i = 0; i < n; i++) { var rgb = D.light ? intRGB(Math.min(1, (B.re[i] * B.re[i] + B.im[i] * B.im[i]) * 0.8)) : waveRGB((B.re[i] * c + B.im[i] * s) * 0.9); d[i * 4] = rgb[0]; d[i * 4 + 1] = rgb[1]; d[i * 4 + 2] = rgb[2]; d[i * 4 + 3] = 255; }
   B.off.getContext("2d").putImageData(B.img, 0, 0);
   g.imageSmoothingEnabled = true; g.drawImage(B.off, 0, 0, B.nx * B.cell, B.ny * B.cell);
   // กำแพง

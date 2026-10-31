@@ -36,7 +36,8 @@ h1,h2,h3,.disp{font-family:"Chakra Petch",sans-serif;font-weight:600;margin:0}
 .card h2{font-size:17px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
 .card h2:before{content:"";width:4px;height:17px;background:var(--cyan);display:inline-block;flex:none}
 .card.q:before{background:var(--amber)} .card.q h2:before{background:var(--amber)}
-canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:none}
+canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:manipulation}
+#c1,#c2{touch-action:none} /* ภาพที่ต้องลากด้วยนิ้ว */
 .btn{font-family:"Chakra Petch";font-weight:600;font-size:15px;border:1px solid var(--cyan);padding:8px 14px;background:rgba(53,208,255,.12);color:var(--cyan);cursor:pointer;
   clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);margin:0 6px 8px 0;text-decoration:none;display:inline-block}
 .btn:hover{background:rgba(53,208,255,.25)}
@@ -215,8 +216,8 @@ var each = function(sel, f){ Array.prototype.forEach.call(document.querySelector
 function fmt(x, d){ return (+x).toFixed(d); }
 function sci(x, d){ if (x === 0) return "0"; var e = Math.floor(Math.log10(Math.abs(x))), m = x / Math.pow(10, e); if (Math.abs(+m.toFixed(d)) >= 10) { m /= 10; e++; } return m.toFixed(d) + " × 10<sup>" + e + "</sup>"; }
 function setup(cv){
-  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +cv.getAttribute("height");
-  var h = Math.round(Math.min(attr, Math.max(260, w * 0.95)));
+  var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +(cv.dataset.h || (cv.dataset.h = cv.getAttribute("height")));
+  var h = Math.round(Math.min(attr, Math.max(+(cv.dataset.min || 260), w * 0.95)));
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px";
   var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return {g: g, w: w, h: h};
 }
@@ -314,7 +315,7 @@ $("rr2").addEventListener("click", function(e){ var b = e.target.closest("button
 $("vec2").addEventListener("click", function(){ P2.vec = !P2.vec; this.classList.toggle("sel", P2.vec); });
 $("gm2").addEventListener("click", function(e){ var b = e.target.closest("button[data-g]"); if (!b) return; segSel("gm2", b); P2.gm = b.dataset.g; drawG2(); });
 $("clr2").addEventListener("click", function(){ P2.data = []; tab2(); drawG2(); });
-$("rec2").addEventListener("click", function(){ var r = Math.hypot(P2.sx, P2.sy); if (!P2.Q || r < 0.05) return; P2.data.push({Q: P2.Q, r: r, E: K * Math.abs(P2.Q) * 1e-9 / (r * r)}); tab2(); drawG2(); });
+$("rec2").addEventListener("click", function(){ var r = Math.hypot(P2.sx, P2.sy); if (!P2.Q || r < 0.05) { $("h2").textContent = !P2.Q ? "ตั้ง Q ไม่ให้เป็นศูนย์ก่อนกดบันทึกค่า" : "ประจุทดสอบอยู่ชิดประจุ Q เกินไป ลากออกห่างก่อนกดบันทึกค่า"; return; } P2.data.push({Q: P2.Q, r: r, E: K * Math.abs(P2.Q) * 1e-9 / (r * r)}); tab2(); drawG2(); });
 (function(){ var cv = $("c2");
   cv.addEventListener("pointerdown", function(e){ if (!cv._v) return; var p = ptr(cv, e), M = map2(cv._v); if (Math.hypot(p.x - (M.ox + P2.sx * M.s), p.y - (M.oy - P2.sy * M.s)) < 30){ P2.drag = true; cv.setPointerCapture(e.pointerId); } });
   cv.addEventListener("pointermove", function(e){ if (!P2.drag) return; var p = ptr(cv, e), M = map2(cv._v), x = (p.x - M.ox) / M.s, y = (M.oy - p.y) / M.s;

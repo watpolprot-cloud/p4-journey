@@ -36,7 +36,7 @@ h1,h2,h3,.disp{font-family:"Chakra Petch",sans-serif;font-weight:600;margin:0}
 .card h2{font-size:17px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
 .card h2:before{content:"";width:4px;height:17px;background:var(--cyan);display:inline-block;flex:none}
 .card.q:before{background:var(--amber)} .card.q h2:before{background:var(--amber)}
-canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:none}
+canvas{display:block;width:100%;background:#0a0f19;border:1px solid var(--line);touch-action:manipulation}
 .btn{font-family:"Chakra Petch";font-weight:600;font-size:15px;border:1px solid var(--cyan);padding:8px 14px;background:rgba(53,208,255,.12);color:var(--cyan);cursor:pointer;
   clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);margin:0 6px 8px 0;text-decoration:none;display:inline-block}
 .btn:hover{background:rgba(53,208,255,.25)}
@@ -176,7 +176,7 @@ sub,sup{font-size:72%}
   <section class="panel" id="p4">
     <div class="grid">
       <div>
-        <div class="card"><h2>ความเร็วลอยเลื่อน v<sub>d</sub> = I/(nqA)</h2><canvas id="c4" height="300"></canvas>
+        <div class="card"><h2><span>ความเร็วลอยเลื่อน v<sub>d</sub> = I/(nqA)</span></h2><canvas id="c4" height="300"></canvas>
           <div class="read"><div><b id="r4a">-</b><span>พื้นที่หน้าตัด A (m²)</span></div><div><b id="r4v">-</b><span>ความเร็วลอยเลื่อน v<sub>d</sub></span></div><div><b id="r4t">-</b><span>เวลาเดินทางตามลวดยาว L</span></div><div><b id="r4r">-</b><span>สัญญาณ 2 × 10<sup>8</sup> m/s เร็วกว่า</span></div></div>
           <ol class="steps sol" id="so4"></ol></div>
       </div>
@@ -243,7 +243,7 @@ var each = function(sel, f){ Array.prototype.forEach.call(document.querySelector
 function sci(x, d){ d = d || 2; if (!isFinite(x)) return "-"; if (x === 0) return "0"; var s = x < 0 ? "−" : ""; x = Math.abs(x); var e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e); if (+m.toFixed(d) >= 10) { m /= 10; e++; }
   if (e >= -2 && e <= 3) return s + (+x.toPrecision(d + 1)).toString(); return s + m.toFixed(d) + " × 10<sup>" + e + "</sup>"; }
 function sciT(x, d){ return sci(x, d).replace(/<sup>/g, "^").replace(/<\/sup>/g, ""); }
-function setup(cv){ var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +cv.getAttribute("height"); var h = Math.round(Math.min(attr, Math.max(220, w * 0.9)));
+function setup(cv){ var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +(cv.dataset.h || (cv.dataset.h = cv.getAttribute("height"))); var h = Math.round(Math.min(attr, Math.max(+(cv.dataset.min || 220), w * 0.9)));
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px"; var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return {g: g, w: w, h: h}; }
 function txt(g, s, x, y, col, size, align, bold){ g.fillStyle = col || C.text; g.font = (bold ? "600 " : "400 ") + (size || 14) + "px " + FONT; g.textAlign = align || "left"; g.textBaseline = "middle"; g.fillText(s, x, y); }
 function line(g, x1, y1, x2, y2, col, w, dash){ g.strokeStyle = col; g.lineWidth = w || 1; g.setLineDash(dash || []); g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); g.setLineDash([]); }
@@ -375,7 +375,8 @@ function draw3(dt){ var V = setup($("c3")), g = V.g; clear(V); var v = vals3(), 
   txt(g, "หน้าตัดที่นับ", mx, cy - 64, C.amber, 13, "center", true);
   if (!S3.parts.length) for (var i = 0; i < 40; i++) S3.parts.push([Math.random(), Math.random()]);
   var sp = S3.run ? 0.25 : 0; S3.parts.forEach(function(p){ p[0] -= sp * dt; if (p[0] < 0) p[0] += 1; electron(g, 14 + p[0] * (V.w - 28), cy - 40 + p[1] * 80, 5); });
-  arrow(g, V.w - 160, cy + 75, V.w - 40, cy + 75, C.amber, 2); txt(g, "กระแส I", V.w - 170, cy + 75, C.amber, 13, "right"); arrow(g, 160, cy + 75, 40, cy + 75, C.cyan, 2); txt(g, "อิเล็กตรอน", 170, cy + 75, C.cyan, 13);
+  var nar = V.w < 520, aL = nar ? 60 : 120, aP = nar ? 16 : 40;
+  arrow(g, V.w - aP - aL, cy + 75, V.w - aP, cy + 75, C.amber, 2); txt(g, "กระแส I", V.w - aP - aL - 10, cy + 75, C.amber, 13, "right"); arrow(g, aP + aL, cy + 75, aP, cy + 75, C.cyan, 2); txt(g, "อิเล็กตรอน", aP + aL + 10, cy + 75, C.cyan, 13);
   if (S3.run) { S3.t += dt / 4 * v.t; if (S3.t >= v.t) { S3.t = v.t; S3.run = false; beep(1); } }
   var q = v.I * S3.t; $("r3t").textContent = (+S3.t.toPrecision(3)) + " s"; $("r3q").innerHTML = sci(q) + " C"; $("r3n").innerHTML = sci(q / QE); }
 function run3(){ loop("p3", function(t, dt){ if (active !== "p3") return false; draw3(dt); if (!S3.run) { draw3(0); return false; } }); }
@@ -401,7 +402,8 @@ function draw4(dt){ var V = setup($("c4")), g = V.g; clear(V); var v = vals4(), 
   if (!S4.parts.length) for (var i = 0; i < 60; i++) S4.parts.push([Math.random(), Math.random()]);
   var spx = v.vd * 1000 * mmpx; S4.parts.forEach(function(p){ p[0] -= spx * dt / (x1 - x0); if (p[0] < 0) p[0] += 1; electron(g, x0 + p[0] * (x1 - x0), cy - dpx / 2 + 6 + p[1] * Math.max(0, dpx - 12), 4); });
   line(g, x0, V.h - 30, x0 + mmpx, V.h - 30, C.amber, 3); txt(g, "1 mm (ขยาย 50 เท่า)", x0 + mmpx + 8, V.h - 30, C.amber, 12);
-  txt(g, "ในภาพอิเล็กตรอนเคลื่อน " + (spx).toFixed(1) + " px/s ตามความเร็วจริงเทียบสเกล", V.w - 10, V.h - 30, C.muted, 12, "right");
+  if (V.w < 520) txt(g, "อิเล็กตรอนในภาพเคลื่อน " + (spx).toFixed(1) + " px/s", V.w - 10, V.h - 12, C.muted, 12, "right");
+  else txt(g, "ในภาพอิเล็กตรอนเคลื่อน " + (spx).toFixed(1) + " px/s ตามความเร็วจริงเทียบสเกล", V.w - 10, V.h - 30, C.muted, 12, "right");
   arrow(g, x1 - 10, cy - dpx / 2 - 16, x1 - 120, cy - dpx / 2 - 16, C.cyan, 2); txt(g, "อิเล็กตรอน v", x1 - 130, cy - dpx / 2 - 16, C.cyan, 13, "right"); }
 function run4(){ loop("p4", function(t, dt){ if (active !== "p4") return false; draw4(dt); }); }
 each("#mt4 .btn", function(b){ b.onclick = function(){ segSel("mt4", b); S4.n = +b.dataset.n; upd4(); }; });
