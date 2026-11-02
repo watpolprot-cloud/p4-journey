@@ -23,7 +23,7 @@ window.P4_TEAMS = {
       "room": "ม.5/4",
       "name": "TEAM VOLTA",
       "members": 40,
-      "work": 50.0,
+      "work": 59.2,
       "score": 0
     }
   ]
