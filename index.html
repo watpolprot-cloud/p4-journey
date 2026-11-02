@@ -402,7 +402,7 @@ a{color:var(--cyan)}
           <div class="card">
             <div class="sec-title"><div class="sec-num">04</div><h2>คะแนนสะสม</h2></div>
             <div class="score-row" id="scoreRow"></div>
-            <div class="muted" style="margin-top:8px">รวมตอนนี้ <b id="scoreTotal" class="num"></b> · Quiz ครั้งละ 10 = งาน 5 (ส่งใบงาน + Quick Check ทุกคาบครบ ถูกผิดไม่เป็นไร ส่งไม่ครบได้ตามสัดส่วน) + สอบ 5 (ได้ 2.5 ขึ้นไปได้เต็ม 5 ยังไม่ถึงแก้ได้ด้วยการสอบใหม่หรือใบงานซ่อม 4 หน้า) ส่งงานย้อนหลังและแก้ได้ถึงวันก่อนตัดสินผล</div>
+            <div class="muted" style="margin-top:8px">รวมตอนนี้ <b id="scoreTotal" class="num"></b> · Quiz ครั้งละ 10 = งาน 5 (ส่งใบงานทุกคาบครบ ถูกผิดไม่เป็นไร ส่งไม่ครบได้ตามสัดส่วน · Quick Check ไม่นับคะแนน) + สอบ 5 (ได้ 2.5 ขึ้นไปได้เต็ม 5 ยังไม่ถึงแก้ได้ด้วยการสอบใหม่หรือใบงานซ่อม 4 หน้า) ส่งงานย้อนหลังและแก้ได้ถึงวันก่อนตัดสินผล</div>
           </div>
           <div class="card" style="margin-top:22px">
             <div class="sec-title"><div class="sec-num">05</div><h2>ภารกิจแนะนำ</h2></div>
@@ -412,8 +412,8 @@ a{color:var(--cyan)}
       </div>
 
       <div class="card" style="margin-top:22px" id="logCard" hidden>
-        <div class="sec-title"><div class="sec-num">06</div><h2>ใบงานและ Quick Check ที่ส่งแล้ว · WORK LOG</h2></div>
-        <div class="muted">ใบงานตรวจว่าส่งครบทุกส่วนพร้อมคำแนะนำสั้น ๆ · Quick Check ตรวจให้คะแนนจริง · กดปุ่ม "เปิดใบงาน" หรือ "เปิด Quick Check" เพื่อดูงานที่ตัวเองเขียนส่ง (เห็นเฉพาะเจ้าของรหัส) · ยังไม่ส่งตามส่งย้อนหลังได้ถึงวันก่อนตัดสินผล</div>
+        <div class="sec-title"><div class="sec-num">06</div><h2>ใบงานที่ส่งและ Quick Check ที่ทำ · WORK LOG</h2></div>
+        <div class="muted">ใบงานตรวจว่าส่งครบทุกส่วนพร้อมคำแนะนำสั้น ๆ · Quick Check ทำในคาบเพื่อดูความเข้าใจของตัวเอง ได้ผลประเมินและ XP แต่ไม่นับคะแนน ถ้าคาบนั้นไม่ได้มาไม่ต้องทำย้อนหลัง · กดปุ่ม "เปิดใบงาน" หรือ "เปิด Quick Check" เพื่อดูงานที่ตัวเองเขียนส่ง (เห็นเฉพาะเจ้าของรหัส) · ใบงานที่ยังไม่ส่งตามส่งย้อนหลังได้ถึงวันก่อนตัดสินผล</div>
         <div class="wlog-sum" id="logSum"></div>
         <div class="wlog-wrap"><table class="wlog"><thead><tr><th>แผน</th><th>งาน</th><th>สถานะ</th><th>Quick Check</th><th>คำแนะนำจากการตรวจ</th></tr></thead><tbody id="logBody"></tbody></table></div>
       </div>
@@ -594,13 +594,13 @@ const QUIZZES=[
   {k:"5",name:"Quiz 5 · วงจรไฟฟ้า",when:"สัปดาห์ที่ 16",plans:"แผนที่ 25–30"},
   {k:"6",name:"Quiz 6 · emf พลังงาน การต่อเซลล์",when:"สัปดาห์ที่ 18",plans:"แผนที่ 31–36"}
 ];
-/* Quiz ครั้งละ 10 = ส่วนงาน 5 (ส่งใบงาน + Quick Check ของช่วงนั้น ตามสัดส่วน ปัดทีละ 0.5) + ส่วนสอบ 5 (ได้ 2.5 ขึ้นไปได้เต็ม 5) */
+/* Quiz ครั้งละ 10 = ส่วนงาน 5 (ส่งใบงานของช่วงนั้น ตามสัดส่วน ปัดทีละ 0.5 · Quick Check ไม่นับ ครูกำหนด 2 พ.ย. 2569) + ส่วนสอบ 5 (ได้ 2.5 ขึ้นไปได้เต็ม 5) */
 const EXAM_PASS=2.5;
 const workPts=w=>{const due=+((w||{}).due)||0,sent=Math.min(+((w||{}).sent)||0,due);return due?Math.round(sent/due*5*2)/2:null};
 const BADGES=[
   {n:"ด่านแรกผ่าน",d:"ผ่าน Quiz แรก",t:"1",c:"#3ddc97"},
   {n:"ไม่ยอมแพ้",d:"สอบแก้จนผ่าน",t:"3x",c:"#ff8a3d"},
-  {n:"ขยันต่อเนื่อง",d:"Quick Check 4 สัปดาห์ติด",t:"4",c:"#35d0ff"},
+  {n:"ขยันต่อเนื่อง",d:"ทำ Quick Check 4 สัปดาห์ติด (โบนัส)",t:"4",c:"#35d0ff"},
   {n:"เจ้าแห่งเสียง",d:"ผ่าน L3 ครบหน่วยเสียง",t:"S",c:"#ffb020"},
   {n:"พลังพุ่ง",d:"พลังด้านใดเพิ่ม 20+",t:"+20",c:"#9b7bff"},
   {n:"ปรมาจารย์คูลอมบ์",d:"ผ่าน E2 ระดับ L5",t:"E2",c:"#ff4d5e"},
@@ -693,7 +693,7 @@ function renderProfile(D){
   const examPts=r=>{const s=quizState(r);return s==="pass"||s==="fixed"?5:(s==="fix"?0:null)};
   $("quizList").innerHTML=QUIZZES.map(qz=>{
     const r=Q[qz.k]||{},st=quizState(r),tries=r.tries||[],w=r.work||null,wp=workPts(w),ep=examPts(r);
-    const wl=wp==null?`<span class="muted">ส่งใบงาน + Quick Check ของ${esc(qz.plans)} ครบได้ 5 (ถูกผิดไม่เป็นไร)</span>`
+    const wl=wp==null?`<span class="muted">ส่งใบงานของ${esc(qz.plans)} ครบได้ 5 (ถูกผิดไม่เป็นไร)</span>`
       :`<span class="try ${wp>=5?"ok":""}">ส่งแล้ว ${esc(Math.min(+w.sent||0,+w.due||0))}/${esc(w.due)} ชิ้น = ${wp}/5</span>`;
     const tr=tries.length?tries.map((t,i)=>`<span class="try ${t>=EXAM_PASS?"ok":""}">รอบ ${i+1}: ${esc(t)}/5</span>`).join('<span class="muted">&rarr;</span>'):`<span class="muted">สอบ${esc(qz.when)}</span>`;
     const extra=st==="fixed"&&(r.via==="remedial"||r.via==="sheet")?`<div class="muted">แก้ผ่านด้วยใบงานซ่อม 4 หน้า (ครบและถูกทุกข้อ)</div>`:st==="fix"?`<div class="muted">ส่วนสอบต้องได้ 2.5/5 ขึ้นไป: สอบใหม่นอกเวลา (ชุด B/C ไม่จำกัดครั้ง) หรือทำใบงานซ่อม 4 หน้าให้ครบและถูกทุกข้อ แก้ได้ถึงวันก่อนตัดสินผล</div>`:"";
@@ -723,11 +723,11 @@ function renderProfile(D){
   const ST={ok:["ok","ส่งครบ"],late:["late","ส่งช้า"],inc:["late","ยังไม่ครบ"],miss:["miss","ยังไม่ส่ง"],none:["muted","-"]};
   // ลิงก์ไฟล์ที่นักเรียนส่ง (ไฟล์ PDF รายคนใน Google Drive ของครู) อยู่ในข้อมูลที่เข้ารหัส เห็นเฉพาะเจ้าของรหัส
   const fileLinks=fs=>(Array.isArray(fs)?fs:[]).filter(f=>/^https:\/\/drive\.google\.com\//.test(f.u||"")).map(f=>`<a class="wfile" href="${esc(f.u)}" target="_blank" rel="noopener noreferrer">เปิด${/^[A-Za-z]/.test(f.k||"")?" ":""}${esc(f.k||"ไฟล์")}</a>`).join("");
-  $("logBody").innerHTML=LG.map(r=>{const st=ST[r.st]||ST.ok;const qc=r.qc?(r.qc.got==null?'<span class="miss">ยังไม่ส่ง</span>':`${esc(r.qc.got)}/${esc(r.qc.max)}`):'<span class="muted">-</span>';
+  $("logBody").innerHTML=LG.map(r=>{const st=ST[r.st]||ST.ok;const qc=r.qc&&r.qc.got!=null?`${esc(r.qc.got)}/${esc(r.qc.max)}`:'<span class="muted">-</span>';
     return `<tr><td class="qc">${esc(r.p)}</td><td>${esc(r.t)}${r.files&&r.files.length?"<br>"+fileLinks(r.files):""}</td><td class="st ${st[0]}">${st[1]}</td><td class="qc">${qc}</td><td class="muted">${esc(r.fb||"")}</td></tr>`}).join("");
   if(LG.length){const sent=LG.filter(r=>r.st==="ok"||r.st==="late").length,qs=LG.filter(r=>r.qc),qsent=qs.filter(r=>r.qc.got!=null);
     const qg=qsent.reduce((a,r)=>a+(+r.qc.got||0),0),qm=qsent.reduce((a,r)=>a+(+r.qc.max||0),0);
-    $("logSum").innerHTML=`<span class="tag c">ใบงานส่งแล้ว ${sent}/${LG.filter(r=>r.st!=="none").length}</span>`+(qs.length?`<span class="tag a">Quick Check ส่งแล้ว ${qsent.length}/${qs.length} · รวม ${qg}/${qm}</span>`:"")}
+    $("logSum").innerHTML=`<span class="tag c">ใบงานส่งแล้ว ${sent}/${LG.filter(r=>r.st!=="none").length}</span>`+(qs.length?`<span class="tag a">Quick Check ที่ทำ ${qsent.length} ครั้ง · รวม ${qg}/${qm} (ไม่นับคะแนน)</span>`:"")}
 
   // badges
   const got=new Set(D.badges||[]);

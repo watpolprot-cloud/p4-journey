@@ -8,14 +8,14 @@ window.P4_TEAMS = {
     "work": 50,
     "score": 50
   },
-  "basis": "ม.5/2: งาน 3 ชิ้น · Quiz - | ม.5/4: งาน 3 ชิ้น · Quiz -",
+  "basis": "ม.5/2: งาน 2 ชิ้น · Quiz - | ม.5/4: งาน 2 ชิ้น · Quiz -",
   "teams": [
     {
       "key": "coulomb",
       "room": "ม.5/2",
       "name": "TEAM COULOMB",
       "members": 28,
-      "work": 21.4,
+      "work": 0.0,
       "score": 0
     },
     {
@@ -23,7 +23,7 @@ window.P4_TEAMS = {
       "room": "ม.5/4",
       "name": "TEAM VOLTA",
       "members": 40,
-      "work": 59.2,
+      "work": 38.8,
       "score": 0
     }
   ]
