@@ -2,20 +2,20 @@
    work = % ส่งงานเฉลี่ยของห้อง · score = % คะแนนสอบเฉลี่ยของห้องเทียบคะแนนเต็มที่สอบไปแล้ว
    ถ้าแก้มือ ให้แก้ตัวเลข work / score ได้ แต่รัน build_vault.py ครั้งถัดไปจะคำนวณทับ */
 window.P4_TEAMS = {
-  "updated": "6 พ.ย. 2569",
+  "updated": "9 พ.ย. 2569",
   "started": true,
   "weights": {
     "work": 50,
     "score": 50
   },
-  "basis": "ม.5/2: งาน 2 ชิ้น · Quiz - | ม.5/4: งาน 2 ชิ้น · Quiz -",
+  "basis": "ม.5/2: งาน 4 ชิ้น · Quiz - | ม.5/4: งาน 4 ชิ้น · Quiz -",
   "teams": [
     {
       "key": "coulomb",
       "room": "ม.5/2",
       "name": "TEAM COULOMB",
       "members": 28,
-      "work": 1.8,
+      "work": 0.9,
       "score": 0
     },
     {
@@ -23,7 +23,7 @@ window.P4_TEAMS = {
       "room": "ม.5/4",
       "name": "TEAM VOLTA",
       "members": 40,
-      "work": 41.2,
+      "work": 20.6,
       "score": 0
     }
   ]
