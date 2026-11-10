@@ -164,6 +164,27 @@ table.data th{color:var(--muted);font-weight:500;background:var(--bg2)}
 </div>
 
 <script>
+/* กันข้อความในภาพหลุดขอบ: ถ้าป้ายจะล้นขอบภาพ ให้เลื่อนกลับเข้ามาในกรอบ (ไม่ยุ่งกับข้อความที่หมุน) */
+(function(){
+  var P = CanvasRenderingContext2D.prototype, o = P.fillText;
+  if (P.__p4fit) return; P.__p4fit = true;
+  P.fillText = function(s, x, y, mw){
+    try {
+      var m = this.getTransform();
+      if (Math.abs(m.b) < 0.01 && Math.abs(m.c) < 0.01 && m.a > 0 && m.d > 0 && String(s).trim()) {
+        var c = this.canvas, pad = 3, t = this.measureText(s);
+        var L = (0 - m.e) / m.a + pad, R = (c.width - m.e) / m.a - pad, T = (0 - m.f) / m.d + pad, B = (c.height - m.f) / m.d - pad;
+        var wl = t.actualBoundingBoxLeft, wr = t.actualBoundingBoxRight, k = 1;
+        if (mw !== undefined && wl + wr > mw && wl + wr > 0) { k = mw / (wl + wr); wl *= k; wr *= k; }
+        if (wl + wr > R - L) { var a = this.textAlign; x = (a === "center") ? (L + R) / 2 : (a === "right" || a === "end") ? R : L; mw = R - L; }
+        else if (x - wl < L) x = L + wl; else if (x + wr > R) x = R - wr;
+        var up = t.actualBoundingBoxAscent, dn = t.actualBoundingBoxDescent;
+        if (up + dn < B - T) { if (y - up < T) y = T + up; else if (y + dn > B) y = B - dn; }
+      }
+    } catch (e) {}
+    return mw === undefined ? o.call(this, s, x, y) : o.call(this, s, x, y, mw);
+  };
+})();
 (function(){
 "use strict";
 var C = {bg:"#0a0f19", line:"#26324a", text:"#e7ecf5", muted:"#8793aa", cyan:"#35d0ff", amber:"#ffb020", green:"#3ddc97", red:"#ff4d5e", steel:"#9fb4d0"};
@@ -430,7 +451,7 @@ function draw3(){
       S3.exp = null;
     }
   }
-  if (!S3.exp) txt(g, S3.slow > 1 ? "ภาพช้าลง 10 เท่า (เสียงยังเป็นเวลาจริง)" : "ตามเวลาจริง", W / 2, 50, C.muted, 13, "center");
+  if (!S3.exp) txt(g, S3.slow > 1 ? "ภาพช้าลง 10 เท่า (เสียงยังเป็นเวลาจริง)" : "ตามเวลาจริง", W < 520 ? 16 : W / 2, 50, C.muted, 13, W < 520 ? "left" : "center");
 }
 
 /* =========================================================
@@ -496,7 +517,7 @@ function draw4(){
   // source + listener
   g.fillStyle = C.amber; g.fillRect(X(0) - 6, Y(4) - 8, 12, 12); txt(g, "แหล่งกำเนิด", X(0), y0 + 16, C.muted, 12, "left");
   var xl = X(S4.xL); g.fillStyle = S4.hits ? C.cyan : C.red; g.beginPath(); g.arc(xl, Y(6), 6, 0, 7); g.fill();
-  txt(g, "ผู้ฟัง " + S4.xL + " m", xl, y0 + 16, C.text, 12, "center", true);
+  g.font = "600 12px " + FONT; var lw4 = g.measureText("ผู้ฟัง " + S4.xL + " m").width / 2; txt(g, "ผู้ฟัง " + S4.xL + " m", Math.max(xl, X(0) + 80 + lw4), y0 + 16, C.text, 12, "center", true);
   txt(g, {day: "กลางวัน", night: "กลางคืน", flat: "อุณหภูมิเท่ากัน"}[S4.mode], x1 - 4, y1 + 4, C.amber, 15, "right", true);
 }
 

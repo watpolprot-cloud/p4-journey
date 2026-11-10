@@ -202,6 +202,27 @@ sub,sup{font-size:72%}
 </div>
 
 <script>
+/* กันข้อความในภาพหลุดขอบ: ถ้าป้ายจะล้นขอบภาพ ให้เลื่อนกลับเข้ามาในกรอบ (ไม่ยุ่งกับข้อความที่หมุน) */
+(function(){
+  var P = CanvasRenderingContext2D.prototype, o = P.fillText;
+  if (P.__p4fit) return; P.__p4fit = true;
+  P.fillText = function(s, x, y, mw){
+    try {
+      var m = this.getTransform();
+      if (Math.abs(m.b) < 0.01 && Math.abs(m.c) < 0.01 && m.a > 0 && m.d > 0 && String(s).trim()) {
+        var c = this.canvas, pad = 3, t = this.measureText(s);
+        var L = (0 - m.e) / m.a + pad, R = (c.width - m.e) / m.a - pad, T = (0 - m.f) / m.d + pad, B = (c.height - m.f) / m.d - pad;
+        var wl = t.actualBoundingBoxLeft, wr = t.actualBoundingBoxRight, k = 1;
+        if (mw !== undefined && wl + wr > mw && wl + wr > 0) { k = mw / (wl + wr); wl *= k; wr *= k; }
+        if (wl + wr > R - L) { var a = this.textAlign; x = (a === "center") ? (L + R) / 2 : (a === "right" || a === "end") ? R : L; mw = R - L; }
+        else if (x - wl < L) x = L + wl; else if (x + wr > R) x = R - wr;
+        var up = t.actualBoundingBoxAscent, dn = t.actualBoundingBoxDescent;
+        if (up + dn < B - T) { if (y - up < T) y = T + up; else if (y + dn > B) y = B - dn; }
+      }
+    } catch (e) {}
+    return mw === undefined ? o.call(this, s, x, y) : o.call(this, s, x, y, mw);
+  };
+})();
 (function(){
 "use strict";
 var C = {bg:"#0a0f19", line:"#26324a", line2:"#34446a", text:"#e7ecf5", muted:"#8793aa", cyan:"#35d0ff", amber:"#ffb020", green:"#3ddc97", red:"#ff4d5e", steel:"#9fb4d0", metal:"#3a4a66"};
@@ -270,7 +291,7 @@ function draw1(){ var V = $("c1")._v; if (!V) return; var g = V.g, M = map1(V); 
   P1.trail.forEach(function(p){ g.fillStyle = C.amber; g.beginPath(); g.arc(X(p[0]), Y(p[1]), 3, 0, 7); g.fill(); });
   var P = PART[P1.k], px = X(P1.x), py = Y(P1.y), a = acc1();
   chg(g, px, py, P.q, 10); arrow(g, px + 16, py, px + 16, py - (a > 0 ? 50 : -50), C.amber, 3); txt(g, "F", px + 26, py - (a > 0 ? 40 : -40), C.amber, 14, "left", true);
-  if (!P1.run && !P1.res) txt(g, "ลากอนุภาคได้", px, py + 26, C.muted, 12, "center");
+  if (!P1.run && !P1.res) { g.font = "400 12px " + FONT; var lw1 = g.measureText("ลากอนุภาคได้").width; g.fillStyle = "rgba(10,15,25,.85)"; var lx1 = px - 18 - lw1 > 6 ? px - 18 - lw1 : px + 36; g.fillRect(lx1 - 4, py - 10, lw1 + 8, 20); txt(g, "ลากอนุภาคได้", lx1, py, C.muted, 12, "left"); }
   if (P1.res) txt(g, "ถึงแผ่นใน " + sciT(P1.res.t) + " s", px, py + (P1.y > 0 ? 26 : -26), C.text, 13, "center", true); }
 (function(){ var cv = $("c1");
   cv.addEventListener("pointerdown", function(e){ var V = cv._v, M = map1(V), p = ptr(cv, e); var px = M.ox + P1.x * M.s, py = M.yb - P1.y * M.s; if (Math.hypot(p.x - px, p.y - py) < 30){ P1.drag = true; P1.run = false; P1.res = null; P1.trail = []; cv.setPointerCapture(e.pointerId); } });
@@ -301,7 +322,7 @@ function draw2(){ var V = $("c2")._v; if (!V) return; var g = V.g; clear(V); var
   var wide = V.w > 640, pw = wide ? (V.w - 30) / 2 : V.w - 20, ph = wide ? V.h - 40 : (V.h - 50) / 2;
   var ax = 10, ay = 30, bx = wide ? 20 + pw : 10, by = wide ? 30 : 40 + ph;
   /* ซ้าย บอร์ด */
-  var sb = Math.min((pw - 30) / BW, (ph - 30) / BH), ox = ax + 20, oy = ay + 20;
+  var sb = Math.min((pw - 30) / BW, (ph - 30) / BH), ox = wide ? ax + 20 : (V.w - BW * sb) / 2, oy = ay + 20;
   g.fillStyle = "#121b2c"; g.fillRect(ox, oy, BW * sb, BH * sb); g.strokeStyle = C.line2; g.strokeRect(ox, oy, BW * sb, BH * sb);
   for (var k = 1; k < 8; k++) line(g, ox, oy + k * BH * sb / 8, ox + BW * sb, oy + k * BH * sb / 8, "rgba(159,180,208,.10)", 1);
   txt(g, "ขอบบน (สูง) · ลาดลง ↓", ox + BW * sb / 2, oy - 10, C.muted, 12, "center");
@@ -311,13 +332,13 @@ function draw2(){ var V = $("c2")._v; if (!V) return; var g = V.g; clear(V); var
   if (cur[1] <= oy + BH * sb) sphere(g, cur[0], cur[1], 8);
   txt(g, "ลูกแก้ว a = g sin θ", ox + 4, oy + BH * sb + 14, C.text, 13, "left", true);
   /* ขวา แผ่น */
-  var se = Math.min((pw - 40) / LP, (ph - 60) / DP), ex = bx + 20, top = by + 26, midY = top + DP * se / 2;
+  var se = Math.min((pw - 40) / LP, (ph - 60) / DP), ex = wide ? bx + 20 : (V.w - LP * se) / 2, top = by + 26, midY = top + DP * se / 2;
   plate(g, ex, top - 12, LP * se, 12, -1); plate(g, ex, top + DP * se, LP * se, 12, 1);
   fieldArrows(g, ex + 16, ex + LP * se - 6, top + 4, top + DP * se - 4, 1, 38);
   var Pe = function(q){ return [ex + q[0] * se, midY + q[1] * se]; };
   [P2.old && P2.old.B, p.B].forEach(function(arr, j){ if (!arr) return; var n = Math.floor(P2.t * 12 + 1e-9); for (var i = 0; i <= (j ? n : 12); i++){ if (arr[i][1] > DP / 2) break; var q = Pe(arr[i]); g.fillStyle = j ? C.cyan : "rgba(159,180,208,.5)"; g.beginPath(); g.arc(q[0], q[1], 3.5, 0, 7); g.fill(); } });
   var te = LP / VE[P2.sp] * tt, ye = 0.5 * a2e() * te * te; if (ye <= DP / 2) chg(g, ex + VE[P2.sp] * te * se, midY + ye * se, -1, 8);
-  txt(g, "อิเล็กตรอน a = eE/m (E ชี้ขึ้น แรงชี้ลง)", ex, top + DP * se + 26, C.text, 13, "left", true); }
+  if (wide) txt(g, "อิเล็กตรอน a = eE/m (E ชี้ขึ้น แรงชี้ลง)", ex, top + DP * se + 26, C.text, 13, "left", true); else txt(g, "อิเล็กตรอน a = eE/m (E ชี้ขึ้น แรงชี้ลง)", V.w / 2, top + DP * se + 26, C.text, 13, "center", true); }
 $("sp2").addEventListener("click", function(e){ var b = e.target.closest("button"); if (!b) return; segSel("sp2", b); P2.sp = +b.dataset.k; P2.t = 0; P2.run = false; upd2(); });
 $("sA2").addEventListener("input", function(){ P2.th = +this.value; P2.t = 0; upd2(); });
 $("sE2").addEventListener("input", function(){ P2.E = +this.value * 1e3; P2.t = 0; upd2(); });

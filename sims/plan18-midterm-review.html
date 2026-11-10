@@ -205,6 +205,27 @@ sub,sup{font-size:72%}
 .st .prob{border:1px solid var(--amber);background:rgba(255,176,32,.08);padding:10px 12px;margin-top:8px;font-size:16.5px}
 </style>
 <script>
+/* กันข้อความในภาพหลุดขอบ: ถ้าป้ายจะล้นขอบภาพ ให้เลื่อนกลับเข้ามาในกรอบ (ไม่ยุ่งกับข้อความที่หมุน) */
+(function(){
+  var P = CanvasRenderingContext2D.prototype, o = P.fillText;
+  if (P.__p4fit) return; P.__p4fit = true;
+  P.fillText = function(s, x, y, mw){
+    try {
+      var m = this.getTransform();
+      if (Math.abs(m.b) < 0.01 && Math.abs(m.c) < 0.01 && m.a > 0 && m.d > 0 && String(s).trim()) {
+        var c = this.canvas, pad = 3, t = this.measureText(s);
+        var L = (0 - m.e) / m.a + pad, R = (c.width - m.e) / m.a - pad, T = (0 - m.f) / m.d + pad, B = (c.height - m.f) / m.d - pad;
+        var wl = t.actualBoundingBoxLeft, wr = t.actualBoundingBoxRight, k = 1;
+        if (mw !== undefined && wl + wr > mw && wl + wr > 0) { k = mw / (wl + wr); wl *= k; wr *= k; }
+        if (wl + wr > R - L) { var a = this.textAlign; x = (a === "center") ? (L + R) / 2 : (a === "right" || a === "end") ? R : L; mw = R - L; }
+        else if (x - wl < L) x = L + wl; else if (x + wr > R) x = R - wr;
+        var up = t.actualBoundingBoxAscent, dn = t.actualBoundingBoxDescent;
+        if (up + dn < B - T) { if (y - up < T) y = T + up; else if (y + dn > B) y = B - dn; }
+      }
+    } catch (e) {}
+    return mw === undefined ? o.call(this, s, x, y) : o.call(this, s, x, y, mw);
+  };
+})();
 (function(){
 "use strict";
 var C = {bg:"#0a0f19", line:"#26324a", line2:"#34446a", text:"#e7ecf5", muted:"#8793aa", cyan:"#35d0ff", amber:"#ffb020", green:"#3ddc97", red:"#ff4d5e", steel:"#9fb4d0", metal:"#3a4a66"};
@@ -219,6 +240,7 @@ function setup(cv){
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px";
   var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return {g: g, w: w, h: h};
 }
+function spreadLbl(g, s1, x1, s2, x2, size){ g.font = "600 " + size + "px " + FONT; var need = (g.measureText(s1).width + g.measureText(s2).width) / 2 + 10, d = x2 - x1; if (Math.abs(d) >= need) return [x1, x2]; var m = (x1 + x2) / 2, k = d >= 0 ? 1 : -1, cw = g.canvas.clientWidth || 9999, half = need - 10 + 4; m = Math.max(half, Math.min(cw - half, m)); return [m - k * need / 2, m + k * need / 2]; } /* กันป้ายสองอันที่อยู่ใกล้กันทับกัน */
 function txt(g, s, x, y, col, size, align, bold){ g.fillStyle = col || C.text; g.font = (bold ? "600 " : "400 ") + (size || 14) + "px " + FONT; g.textAlign = align || "left"; g.textBaseline = "middle"; g.fillText(s, x, y); }
 function line(g, x1, y1, x2, y2, col, w, dash){ g.strokeStyle = col; g.lineWidth = w || 1; g.setLineDash(dash || []); g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); g.setLineDash([]); }
 function arrow(g, x1, y1, x2, y2, col, w){ var a = Math.atan2(y2 - y1, x2 - x1), L = Math.hypot(x2 - x1, y2 - y1); if (L < 3) return; line(g, x1, y1, x2, y2, col, w || 3);
@@ -299,8 +321,8 @@ function upd3(){ $("vq1").textContent = sg(P3.q1); $("vq2").textContent = sg(P3.
 function draw3(){ var V = $("c3")._v; if (!V) return; var g = V.g, M = map3(V); clear(V); var ya = M.ya;
   line(g, 10, ya, V.w - 10, ya, C.muted, 1.2); for (var t = -0.4; t <= 1.0001; t += 0.1){ var xx = M.X(t); line(g, xx, ya + 18, xx, ya + 24, C.muted, 1); if (Math.abs(Math.round(t * 10) % 2) === 0) txt(g, (Math.abs(t) < 1e-9 ? 0 : t).toFixed(1), xx, ya + 34, C.muted, 11, "center"); }
   txt(g, "x (m)", V.w - 12, ya - 12, C.muted, 11, "right"); // ไว้เหนือแกน ไม่ทับตัวเลข 1.0
-  chg(g, M.X(0), ya, P3.q1, 14); txt(g, "q₁ " + sg(P3.q1), M.X(0), ya - 28, C.text, 12, "center", true);
-  chg(g, M.X(P3.d), ya, P3.q2, 12); txt(g, "q₂ " + sg(P3.q2), M.X(P3.d), ya - 28, C.text, 12, "center", true);
+  var sp3 = spreadLbl(g, "q₁ " + sg(P3.q1), M.X(0), "q₂ " + sg(P3.q2), M.X(P3.d), 12); chg(g, M.X(0), ya, P3.q1, 14); txt(g, "q₁ " + sg(P3.q1), sp3[0], ya - 28, C.text, 12, "center", true);
+  chg(g, M.X(P3.d), ya, P3.q2, 12); txt(g, "q₂ " + sg(P3.q2), sp3[1], ya - 28, C.text, 12, "center", true);
   var F = fld(P3.x), px = M.X(P3.x);
   function L(e){ var a = Math.abs(e); return a < 1 ? 0 : Math.sign(e) * Math.min(120, 18 * Math.log10(a / 1e2 + 1) + 10); }
   arrow(g, px, ya - 50, px + L(F.e1), ya - 50, C.amber, 3); txt(g, "E₁", px + L(F.e1) + (F.e1 > 0 ? 8 : -8), ya - 50, C.amber, 12, F.e1 > 0 ? "left" : "right", true);

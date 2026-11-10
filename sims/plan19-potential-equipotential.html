@@ -226,6 +226,27 @@ sub,sup{font-size:72%}
 </div>
 
 <script>
+/* กันข้อความในภาพหลุดขอบ: ถ้าป้ายจะล้นขอบภาพ ให้เลื่อนกลับเข้ามาในกรอบ (ไม่ยุ่งกับข้อความที่หมุน) */
+(function(){
+  var P = CanvasRenderingContext2D.prototype, o = P.fillText;
+  if (P.__p4fit) return; P.__p4fit = true;
+  P.fillText = function(s, x, y, mw){
+    try {
+      var m = this.getTransform();
+      if (Math.abs(m.b) < 0.01 && Math.abs(m.c) < 0.01 && m.a > 0 && m.d > 0 && String(s).trim()) {
+        var c = this.canvas, pad = 3, t = this.measureText(s);
+        var L = (0 - m.e) / m.a + pad, R = (c.width - m.e) / m.a - pad, T = (0 - m.f) / m.d + pad, B = (c.height - m.f) / m.d - pad;
+        var wl = t.actualBoundingBoxLeft, wr = t.actualBoundingBoxRight, k = 1;
+        if (mw !== undefined && wl + wr > mw && wl + wr > 0) { k = mw / (wl + wr); wl *= k; wr *= k; }
+        if (wl + wr > R - L) { var a = this.textAlign; x = (a === "center") ? (L + R) / 2 : (a === "right" || a === "end") ? R : L; mw = R - L; }
+        else if (x - wl < L) x = L + wl; else if (x + wr > R) x = R - wr;
+        var up = t.actualBoundingBoxAscent, dn = t.actualBoundingBoxDescent;
+        if (up + dn < B - T) { if (y - up < T) y = T + up; else if (y + dn > B) y = B - dn; }
+      }
+    } catch (e) {}
+    return mw === undefined ? o.call(this, s, x, y) : o.call(this, s, x, y, mw);
+  };
+})();
 (function(){
 "use strict";
 var C = {bg:"#0a0f19", line:"#26324a", line2:"#34446a", text:"#e7ecf5", muted:"#8793aa", cyan:"#35d0ff", amber:"#ffb020", green:"#3ddc97", red:"#ff4d5e", steel:"#9fb4d0", metal:"#3a4a66"};
@@ -353,8 +374,8 @@ function flines1(V, M){ var key = JSON.stringify([P1.ch, P1.v, V.w, V.h]); if (k
       out.push(pts); } });
   P1.fk = key; P1.fc = {lines: out, sgn: sgn}; return P1.fc; }
 function draw1(){ var V = $("c1")._v; if (!V) return; var g = V.g, M = map1(V); clear(V);
-  var gs = P1.v.grid, i0 = Math.floor(M.x(0) / gs), i1 = Math.ceil(M.x(V.w) / gs), j0 = Math.floor(M.y(V.h) / gs), j1 = Math.ceil(M.y(0) / gs), every = Math.max(1, Math.ceil(42 / (gs * M.s)));
-  for (var i = i0; i <= i1; i++){ var X = M.X(i * gs); line(g, X, 0, X, V.h, i === 0 ? C.line2 : "rgba(38,50,74,.7)", i === 0 ? 1.5 : 1); if (i % every === 0) txt(g, fx(i * gs, 2), X, V.h - 10, C.muted, 11, "center"); }
+  var gs = P1.v.grid, i0 = Math.floor(M.x(0) / gs), i1 = Math.ceil(M.x(V.w) / gs), j0 = Math.floor(M.y(V.h) / gs), j1 = Math.ceil(M.y(0) / gs), every = Math.max(1, Math.ceil(48 / (gs * M.s)));
+  for (var i = i0; i <= i1; i++){ var X = M.X(i * gs); line(g, X, 0, X, V.h, i === 0 ? C.line2 : "rgba(38,50,74,.7)", i === 0 ? 1.5 : 1); if (i % every === 0 && X > 20 && X < V.w - 20) txt(g, fx(i * gs, 2), X, V.h - 10, C.muted, 11, "center"); }
   for (var j = j0; j <= j1; j++){ var Y = M.Y(j * gs); line(g, 0, Y, V.w, Y, j === 0 ? C.line2 : "rgba(38,50,74,.7)", j === 0 ? 1.5 : 1); }
   /* เส้นสมศักย์ */
   var CC = (P1.eq || P1.lock) ? cont1(V, M) : [], placed = [[30, 16], [80, 16]];
@@ -375,14 +396,14 @@ function draw1(){ var V = $("c1")._v; if (!V) return; var g = V.g, M = map1(V); 
     if (c.q === 0){ g.strokeStyle = C.muted; g.lineWidth = 1.6; g.beginPath(); g.arc(X, Y, 9, 0, 7); g.stroke(); } else chg(g, X, Y, c.q, r);
     if (i === P1.sel){ g.strokeStyle = "rgba(231,236,245,.6)"; g.lineWidth = 1; g.setLineDash([3, 3]); g.beginPath(); g.arc(X, Y, r + 6, 0, 7); g.stroke(); g.setLineDash([]); }
     tag(g, "q" + SUBN[i] + " " + sq(c.q) + " nC", X, Y - r - 14, c.q > 0 ? C.amber : c.q < 0 ? C.cyan : C.muted, 12, V.w); });
-  P1.mk.forEach(function(m){ var X = M.X(m[1]), Y = M.Y(m[2]), dx = m[1] <= P1.v.cx ? -18 : 18, dy = m[2] < P1.v.cy ? 16 : -16; if (m[0] === "P") dy = -18; txt(g, m[0], X + dx, Y + dy, C.text, 15, "center", true); });
+  P1.mk.forEach(function(m){ var X = M.X(m[1]), Y = M.Y(m[2]), dx = m[1] <= P1.v.cx ? -18 : 18, dy = m[2] < P1.v.cy ? 16 : -16; if (m[0] === "P") dy = -18; if (P1.ch.some(function(c){ return Math.abs(c.x - m[1]) < 1e-6 && Math.abs(c.y - m[2]) < 1e-6; })) { dy = 28; dx = 0; } txt(g, m[0], X + dx, Y + dy, C.text, 15, "center", true); });
   /* หัววัด */
   var R = probe1(), px = M.X(P1.pr.x), py = M.Y(P1.pr.y);
   if (P1.ea && R.em > 0){ var ux = R.E.x / R.em, uy = -R.E.y / R.em; line(g, px - uy * 52, py + ux * 52, px + uy * 52, py - ux * 52, "rgba(231,236,245,.85)", 1.6, [6, 4]);
     arrow(g, px + ux * 14, py + uy * 14, px + ux * 66, py + uy * 66, C.green, 3); txt(g, "E", px + ux * 80, py + uy * 80, C.green, 14, "center", true); }
   g.strokeStyle = C.amber; g.lineWidth = 3; g.beginPath(); g.arc(px, py, 13, 0, 7); g.stroke(); g.fillStyle = "rgba(255,176,32,.15)"; g.fill();
   line(g, px - 5, py, px + 5, py, C.amber, 2); line(g, px, py - 5, px, py + 5, C.amber, 2);
-  tag(g, "V = " + (P1.hide ? "?" : sf(R.v).replace(/<sup>(.*?)<\/sup>/, "^$1")) + " V", px, py + 30 > V.h - 30 ? py - 30 : py + 30, C.text, 13, V.w);
+  tag(g, "V = " + (P1.hide ? "?" : sf(R.v).replace(/<sup>(.*?)<\/sup>/g, function(m, a){ return a.replace(/[0-9+\-−]/g, function(c){ return {"0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹","-":"⁻","−":"⁻","+":"⁺"}[c]; }); })) + " V", px, py + 30 > V.h - 30 ? py - 30 : py + 30, C.text, 13, V.w);
   g.font = "600 12px " + FONT; var sl = "1 ช่อง = " + fx(gs, 2) + " m", sw = g.measureText(sl).width + 12; g.fillStyle = "rgba(10,15,25,.85)"; g.fillRect(6, 6, sw, 20); txt(g, sl, 12, 16, C.muted, 12, "left", true); }
 function changed1(){ P1.lv = autoLv(); if (P1.lock) P1.lockV = V1(P1.pr.x, P1.pr.y); ui1(); upd1(); }
 function proj1(x, y, Vt){ for (var k = 0; k < 12; k++){ var v = V1(x, y) - Vt, E = E1(x, y), g2 = E.x * E.x + E.y * E.y; if (!(g2 > 0)) return null;
@@ -448,7 +469,7 @@ function draw2(){ var V = $("c2")._v; if (!V) return; var g = V.g, G = geo2(V); 
   var px = G.xR - P2.x * G.pc, py = G.top + P2.yf * (G.bot - G.top);
   if (P2.tc !== "n" && P2.dv > 0){ var dir = P2.tc === "p" ? 1 : -1; arrow(g, px + dir * 14, py, px + dir * 58, py, C.green, 3); txt(g, "F", px + dir * 68, py - 12, C.green, 13, "center", true); g.fillStyle = C.bg; g.beginPath(); g.arc(px, py, 7, 0, 7); g.fill(); chg(g, px, py, dir, 7); }
   g.strokeStyle = C.amber; g.lineWidth = 3; g.beginPath(); g.arc(px, py, 12, 0, 7); g.stroke(); if (P2.tc === "n"){ line(g, px - 5, py, px + 5, py, C.amber, 2); line(g, px, py - 5, px, py + 5, C.amber, 2); }
-  tag(g, "V = " + sf(P2.dv * P2.x / P2.d).replace(/<sup>(.*?)<\/sup>/, "^$1") + " V", px, py - 26 < G.top ? py + 28 : py - 26, C.text, 13, V.w);
+  tag(g, "V = " + sf(P2.dv * P2.x / P2.d).replace(/<sup>(.*?)<\/sup>/g, function(m, a){ return a.replace(/[0-9+\-−]/g, function(c){ return {"0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹","-":"⁻","−":"⁻","+":"⁺"}[c]; }); }) + " V", px, py - 26 < G.top ? py + 28 : py - 26, C.text, 13, V.w);
   /* กราฟ V-x */
   var gt = G.gt, gb = G.gb, sy = (gb - gt) / 600, x5 = G.xR - 5 * G.pc;
   txt(g, V.w < 520 ? "กราฟ V กับ x · ความชัน = E" : "กราฟ V กับ x (x วัดจากแผ่นลบไปทางซ้าย) ความชัน = E", x5, gt - 22, C.muted, 12, "left");

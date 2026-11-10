@@ -210,6 +210,27 @@ sub,sup{font-size:72%}
 </div>
 
 <script>
+/* กันข้อความในภาพหลุดขอบ: ถ้าป้ายจะล้นขอบภาพ ให้เลื่อนกลับเข้ามาในกรอบ (ไม่ยุ่งกับข้อความที่หมุน) */
+(function(){
+  var P = CanvasRenderingContext2D.prototype, o = P.fillText;
+  if (P.__p4fit) return; P.__p4fit = true;
+  P.fillText = function(s, x, y, mw){
+    try {
+      var m = this.getTransform();
+      if (Math.abs(m.b) < 0.01 && Math.abs(m.c) < 0.01 && m.a > 0 && m.d > 0 && String(s).trim()) {
+        var c = this.canvas, pad = 3, t = this.measureText(s);
+        var L = (0 - m.e) / m.a + pad, R = (c.width - m.e) / m.a - pad, T = (0 - m.f) / m.d + pad, B = (c.height - m.f) / m.d - pad;
+        var wl = t.actualBoundingBoxLeft, wr = t.actualBoundingBoxRight, k = 1;
+        if (mw !== undefined && wl + wr > mw && wl + wr > 0) { k = mw / (wl + wr); wl *= k; wr *= k; }
+        if (wl + wr > R - L) { var a = this.textAlign; x = (a === "center") ? (L + R) / 2 : (a === "right" || a === "end") ? R : L; mw = R - L; }
+        else if (x - wl < L) x = L + wl; else if (x + wr > R) x = R - wr;
+        var up = t.actualBoundingBoxAscent, dn = t.actualBoundingBoxDescent;
+        if (up + dn < B - T) { if (y - up < T) y = T + up; else if (y + dn > B) y = B - dn; }
+      }
+    } catch (e) {}
+    return mw === undefined ? o.call(this, s, x, y) : o.call(this, s, x, y, mw);
+  };
+})();
 (function(){
 "use strict";
 var C = {bg:"#0a0f19", line:"#26324a", line2:"#34446a", text:"#e7ecf5", muted:"#8793aa", cyan:"#35d0ff", amber:"#ffb020", green:"#3ddc97", red:"#ff4d5e", steel:"#9fb4d0", panel:"#111827"};
@@ -218,7 +239,7 @@ var $ = function(id){ return document.getElementById(id); };
 var each = function(sel, f){ Array.prototype.forEach.call(document.querySelectorAll(sel), f); };
 function sci(x, d){ d = d || 2; if (!isFinite(x)) return "-"; if (x === 0) return "0"; var s = x < 0 ? "−" : ""; x = Math.abs(x); var e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e); if (+m.toFixed(d) >= 10) { m /= 10; e++; }
   if (e >= -2 && e <= 3) return s + (+x.toPrecision(d + 1)).toString(); return s + m.toFixed(d) + " × 10<sup>" + e + "</sup>"; }
-function sciT(x, d){ return sci(x, d).replace(/<sup>/g, "^").replace(/<\/sup>/g, ""); }
+function sciT(x, d){ return sci(x, d).replace(/<sup>(.*?)<\/sup>/g, function(m, a){ return a.replace(/[0-9+\-−]/g, function(c){ return {"0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹","-":"⁻","−":"⁻","+":"⁺"}[c]; }); }); }
 function setup(cv){ var dpr = window.devicePixelRatio || 1, w = cv.clientWidth, attr = +(cv.dataset.h || (cv.dataset.h = cv.getAttribute("height"))); var h = Math.round(Math.min(attr, Math.max(+(cv.dataset.min || 220), w * 0.9)));
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px"; var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return {g: g, w: w, h: h}; }
 function txt(g, s, x, y, col, size, align, bold){ g.fillStyle = col || C.text; g.font = (bold ? "600 " : "400 ") + (size || 14) + "px " + FONT; g.textAlign = align || "left"; g.textBaseline = "middle"; g.fillText(s, x, y); }

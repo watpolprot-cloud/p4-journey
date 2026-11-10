@@ -203,6 +203,27 @@ sub,sup{font-size:72%}
 </div>
 
 <script>
+/* กันข้อความในภาพหลุดขอบ: ถ้าป้ายจะล้นขอบภาพ ให้เลื่อนกลับเข้ามาในกรอบ (ไม่ยุ่งกับข้อความที่หมุน) */
+(function(){
+  var P = CanvasRenderingContext2D.prototype, o = P.fillText;
+  if (P.__p4fit) return; P.__p4fit = true;
+  P.fillText = function(s, x, y, mw){
+    try {
+      var m = this.getTransform();
+      if (Math.abs(m.b) < 0.01 && Math.abs(m.c) < 0.01 && m.a > 0 && m.d > 0 && String(s).trim()) {
+        var c = this.canvas, pad = 3, t = this.measureText(s);
+        var L = (0 - m.e) / m.a + pad, R = (c.width - m.e) / m.a - pad, T = (0 - m.f) / m.d + pad, B = (c.height - m.f) / m.d - pad;
+        var wl = t.actualBoundingBoxLeft, wr = t.actualBoundingBoxRight, k = 1;
+        if (mw !== undefined && wl + wr > mw && wl + wr > 0) { k = mw / (wl + wr); wl *= k; wr *= k; }
+        if (wl + wr > R - L) { var a = this.textAlign; x = (a === "center") ? (L + R) / 2 : (a === "right" || a === "end") ? R : L; mw = R - L; }
+        else if (x - wl < L) x = L + wl; else if (x + wr > R) x = R - wr;
+        var up = t.actualBoundingBoxAscent, dn = t.actualBoundingBoxDescent;
+        if (up + dn < B - T) { if (y - up < T) y = T + up; else if (y + dn > B) y = B - dn; }
+      }
+    } catch (e) {}
+    return mw === undefined ? o.call(this, s, x, y) : o.call(this, s, x, y, mw);
+  };
+})();
 (function(){
 "use strict";
 var C = {bg:"#0a0f19", line:"#26324a", line2:"#34446a", text:"#e7ecf5", muted:"#8793aa", cyan:"#35d0ff", amber:"#ffb020", green:"#3ddc97", red:"#ff4d5e", steel:"#9fb4d0", metal:"#3a4a66"};
@@ -383,7 +404,7 @@ function draw3(dt){
   var V = $("c3")._v; if (!V) return; var g = V.g, W = V.w, H = V.h; clear(V);
   var cx = W * 0.52, cy = H * 0.42, R = Math.min(W * 0.2, 90);
   // stand
-  g.fillStyle = "#2a3446"; g.fillRect(cx - 7, cy + R, 14, H * 0.82 - cy - R); g.fillRect(cx - 44, H * 0.82, 88, 10); txt(g, "ฐานฉนวน", cx + 14, H * 0.74, C.muted, 11.5);
+  g.fillStyle = "#2a3446"; g.fillRect(cx - 7, cy + R, 14, H * 0.82 - cy - R); g.fillRect(cx - 44, H * 0.82, 88, 10); txt(g, "ฐานฉนวน", cx - 14, H * 0.74, C.muted, 11.5, "right");
   sphere(g, cx, cy, R);
   var s = P3.s, near = -s * (P3.near ? 4 : 0), far = s * (P3.near ? 4 : 0) + P3.Q, i, a;
   if (P3.near) {

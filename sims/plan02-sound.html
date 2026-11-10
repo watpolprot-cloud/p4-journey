@@ -155,6 +155,27 @@ ol.qs{margin:0;padding-left:20px} ol.qs li{margin-bottom:6px}
 </div>
 
 <script>
+/* กันข้อความในภาพหลุดขอบ: ถ้าป้ายจะล้นขอบภาพ ให้เลื่อนกลับเข้ามาในกรอบ (ไม่ยุ่งกับข้อความที่หมุน) */
+(function(){
+  var P = CanvasRenderingContext2D.prototype, o = P.fillText;
+  if (P.__p4fit) return; P.__p4fit = true;
+  P.fillText = function(s, x, y, mw){
+    try {
+      var m = this.getTransform();
+      if (Math.abs(m.b) < 0.01 && Math.abs(m.c) < 0.01 && m.a > 0 && m.d > 0 && String(s).trim()) {
+        var c = this.canvas, pad = 3, t = this.measureText(s);
+        var L = (0 - m.e) / m.a + pad, R = (c.width - m.e) / m.a - pad, T = (0 - m.f) / m.d + pad, B = (c.height - m.f) / m.d - pad;
+        var wl = t.actualBoundingBoxLeft, wr = t.actualBoundingBoxRight, k = 1;
+        if (mw !== undefined && wl + wr > mw && wl + wr > 0) { k = mw / (wl + wr); wl *= k; wr *= k; }
+        if (wl + wr > R - L) { var a = this.textAlign; x = (a === "center") ? (L + R) / 2 : (a === "right" || a === "end") ? R : L; mw = R - L; }
+        else if (x - wl < L) x = L + wl; else if (x + wr > R) x = R - wr;
+        var up = t.actualBoundingBoxAscent, dn = t.actualBoundingBoxDescent;
+        if (up + dn < B - T) { if (y - up < T) y = T + up; else if (y + dn > B) y = B - dn; }
+      }
+    } catch (e) {}
+    return mw === undefined ? o.call(this, s, x, y) : o.call(this, s, x, y, mw);
+  };
+})();
 (function(){
 "use strict";
 var C = {bg:"#0a0f19", line:"#26324a", text:"#e7ecf5", muted:"#8793aa", cyan:"#35d0ff", amber:"#ffb020", green:"#3ddc97", red:"#ff4d5e", steel:"#9fb4d0"};
@@ -401,7 +422,7 @@ function draw3(dt){
   for (var n = -2; n < 40; n++) { var xc = x0 + (S3.phase + 2 * Math.PI * n) / k; if (xc >= x0 && xc <= x1) comp.push(xc); }
   g.font = "600 13px " + FONT; g.textAlign = "center";
   comp.forEach(function(xc){ g.fillStyle = "rgba(53,208,255,.12)"; g.fillRect(xc - Math.min(14, lp * 0.12), top - 12, Math.min(28, lp * 0.24), rows * rh + 4);
-    txt(g, "อัด", xc, top - 22, C.cyan, 12, "center", true); });
+    if (xc > 96) txt(g, "อัด", xc, top - 22, C.cyan, 12, "center", true); });
   for (var m = -2; m < 40; m++) { var xr = x0 + (S3.phase + Math.PI + 2 * Math.PI * m) / k; if (xr >= x0 && xr <= x1) txt(g, "ขยาย", xr, yb + 8, C.muted, 12, "center"); }
   if (comp.length >= 2) {
     var a = comp[0], b = comp[1], yl = yb + 34;
@@ -469,7 +490,8 @@ function draw4(){
   [10, 100, 1000, 10000].forEach(function(f){ var xx = X(f); g.strokeStyle = C.line; g.beginPath(); g.moveTo(xx, y + hgt); g.lineTo(xx, y + hgt + 8); g.stroke(); txt(g, nice(f), xx, y + hgt + 20, C.muted, 11, "center"); });
   var ex = [[12, "ช้างสื่อสารระยะไกล"], [100, "เสียงพูดผู้ชาย"], [440, "โน้ตลา (A4)"], [4000, "เสียงนกหวีด"], [40000, "ค้างคาว / เครื่องไล่สัตว์"]];
   var lv = nar ? 3 : 2, step = nar ? 18 : 22;
-  ex.forEach(function(e, i){ var xx = X(e[0]), k = i % lv; g.strokeStyle = "rgba(231,236,245,.25)"; g.beginPath(); g.moveTo(xx, y - 4); g.lineTo(xx, y - 22 - k * step); g.stroke();
+  ex.forEach(function(e, i){ var xx = X(e[0]), k = i % lv; g.strokeStyle = "rgba(231,236,245,.25)"; g.beginPath(); g.moveTo(xx, y - 4); g.lineTo(xx, y - 22 - k * step); g.stroke(); });
+  ex.forEach(function(e, i){ var xx = X(e[0]), k = i % lv, al = i === ex.length - 1 ? "right" : (i === 0 ? "left" : "center"); g.font = "400 " + (nar ? 11 : 12) + "px " + FONT; var tw = g.measureText(e[1]).width, bx = al === "right" ? xx - tw : (al === "left" ? xx : xx - tw / 2); g.fillStyle = C.bg; g.fillRect(bx - 3, y - 30 - k * step - 8, tw + 6, 16); /* พื้นหลังป้าย กันเส้นชี้ของป้ายอื่นพาดทับตัวหนังสือ */
     txt(g, e[1], xx, y - 30 - k * step, C.muted, nar ? 11 : 12, i === ex.length - 1 ? "right" : (i === 0 ? "left" : "center")); });
   var f = f4(), xf = X(f);
   g.fillStyle = C.text; g.beginPath(); g.moveTo(xf, y + hgt + 30); g.lineTo(xf - 7, y + hgt + 44); g.lineTo(xf + 7, y + hgt + 44); g.closePath(); g.fill();

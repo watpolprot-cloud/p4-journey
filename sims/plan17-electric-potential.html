@@ -207,6 +207,27 @@ sub,sup{font-size:72%}
 </div>
 
 <script>
+/* กันข้อความในภาพหลุดขอบ: ถ้าป้ายจะล้นขอบภาพ ให้เลื่อนกลับเข้ามาในกรอบ (ไม่ยุ่งกับข้อความที่หมุน) */
+(function(){
+  var P = CanvasRenderingContext2D.prototype, o = P.fillText;
+  if (P.__p4fit) return; P.__p4fit = true;
+  P.fillText = function(s, x, y, mw){
+    try {
+      var m = this.getTransform();
+      if (Math.abs(m.b) < 0.01 && Math.abs(m.c) < 0.01 && m.a > 0 && m.d > 0 && String(s).trim()) {
+        var c = this.canvas, pad = 3, t = this.measureText(s);
+        var L = (0 - m.e) / m.a + pad, R = (c.width - m.e) / m.a - pad, T = (0 - m.f) / m.d + pad, B = (c.height - m.f) / m.d - pad;
+        var wl = t.actualBoundingBoxLeft, wr = t.actualBoundingBoxRight, k = 1;
+        if (mw !== undefined && wl + wr > mw && wl + wr > 0) { k = mw / (wl + wr); wl *= k; wr *= k; }
+        if (wl + wr > R - L) { var a = this.textAlign; x = (a === "center") ? (L + R) / 2 : (a === "right" || a === "end") ? R : L; mw = R - L; }
+        else if (x - wl < L) x = L + wl; else if (x + wr > R) x = R - wr;
+        var up = t.actualBoundingBoxAscent, dn = t.actualBoundingBoxDescent;
+        if (up + dn < B - T) { if (y - up < T) y = T + up; else if (y + dn > B) y = B - dn; }
+      }
+    } catch (e) {}
+    return mw === undefined ? o.call(this, s, x, y) : o.call(this, s, x, y, mw);
+  };
+})();
 (function(){
 "use strict";
 var C = {bg:"#0a0f19", line:"#26324a", line2:"#34446a", text:"#e7ecf5", muted:"#8793aa", cyan:"#35d0ff", amber:"#ffb020", green:"#3ddc97", red:"#ff4d5e", steel:"#9fb4d0", metal:"#3a4a66"};
@@ -221,6 +242,7 @@ function setup(cv){
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + "px";
   var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return {g: g, w: w, h: h};
 }
+function spreadLbl(g, s1, x1, s2, x2, size){ g.font = "600 " + size + "px " + FONT; var need = (g.measureText(s1).width + g.measureText(s2).width) / 2 + 10, d = x2 - x1; if (Math.abs(d) >= need) return [x1, x2]; var m = (x1 + x2) / 2, k = d >= 0 ? 1 : -1, cw = g.canvas.clientWidth || 9999, half = need - 10 + 4; m = Math.max(half, Math.min(cw - half, m)); return [m - k * need / 2, m + k * need / 2]; } /* กันป้ายสองอันที่อยู่ใกล้กันทับกัน */
 function txt(g, s, x, y, col, size, align, bold){ g.fillStyle = col || C.text; g.font = (bold ? "600 " : "400 ") + (size || 14) + "px " + FONT; g.textAlign = align || "left"; g.textBaseline = "middle"; g.fillText(s, x, y); }
 function line(g, x1, y1, x2, y2, col, w, dash){ g.strokeStyle = col; g.lineWidth = w || 1; g.setLineDash(dash || []); g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); g.setLineDash([]); }
 function arrow(g, x1, y1, x2, y2, col, w){ var a = Math.atan2(y2 - y1, x2 - x1), L = Math.hypot(x2 - x1, y2 - y1); if (L < 3) return; line(g, x1, y1, x2, y2, col, w || 3);
@@ -274,8 +296,8 @@ function draw1(){ var V = $("c1")._v; if (!V) return; step1(); var g = V.g, M = 
   for (var r = 0.1; r <= RMAX + 1e-9; r += 0.1){ var xx = M.x0 + r * M.sx; line(g, xx, y + 22, xx, y + 30, C.muted, 1); txt(g, r.toFixed(1), xx, y + 40, C.muted, 11, "center"); }
   txt(g, "r (m)", V.w - 26, y + 40, C.muted, 11, "right");
   rodShape(g, xq1 - 5, y + 14, 10, 30, "#5a6c8c", "#1e2a40");
-  chg(g, xq1, y, P1.q1, 16); txt(g, "q₁ " + sg(P1.q1) + " μC", xq1, y - 32, C.text, 13, "center", true);
-  chg(g, xq2, y, P1.q2, 13); txt(g, "q₂ " + sg(P1.q2) + " μC", xq2, y - 30, C.text, 13, "center", true);
+  var sp1 = spreadLbl(g, "q₁ " + sg(P1.q1) + " μC", xq1, "q₂ " + sg(P1.q2) + " μC", xq2, 13); chg(g, xq1, y, P1.q1, 16); txt(g, "q₁ " + sg(P1.q1) + " μC", sp1[0], y - 32, C.text, 13, "center", true);
+  chg(g, xq2, y, P1.q2, 13); txt(g, "q₂ " + sg(P1.q2) + " μC", sp1[1], y - 30, C.text, 13, "center", true);
   if (P1.q1 * P1.q2 !== 0){ var like = P1.q1 * P1.q2 > 0, L = 40; arrow(g, xq2 + (like ? 16 : -16), y, xq2 + (like ? 16 + L : -16 - L), y, C.amber, 3); txt(g, like ? "ผลัก" : "ดูด", xq2 + (like ? 36 : -36), y + 18, C.amber, 12, "center", true); }
   /* กราฟ U-r */
   var Umax = Math.abs(K * 25e-12 / RMIN) * 0.25, Uref = Math.max(Math.abs(U1(RMIN)), 1e-9);
@@ -286,8 +308,8 @@ function draw1(){ var V = $("c1")._v; if (!V) return; step1(); var g = V.g, M = 
   for (var i = 0; i <= 200; i++){ var rr = RMIN + (RMAX - RMIN) * i / 200, uu = U1(rr), X = M.x0 + rr * M.sx, Y = y0 - uu * sy; if (i === 0) g.moveTo(X, Y); else g.lineTo(X, Y); } g.stroke();
   var Xc = M.x0 + P1.r * M.sx, Yc = y0 - U1(P1.r) * sy; line(g, Xc, y + 30, Xc, Yc, "rgba(255,176,32,.35)", 1, [3, 4]);
   g.fillStyle = C.text; g.beginPath(); g.arc(Xc, Yc, 6, 0, 7); g.fill();
-  txt(g, "U = " + nf(U1(P1.r)).replace(/<[^>]+>/g, function(t){ return t === "<sup>" ? "^" : ""; }) + " J", Xc + 10, Yc - 14, C.text, 13, "left", true);
-  txt(g, "กราฟ U กับ r (สเกลปรับตามคู่ประจุ)", V.w - 30, gt + 6, C.muted, 12, "right"); }
+  txt(g, "U = " + nf(U1(P1.r)).replace(/<sup>(.*?)<\/sup>/g, function(m, a){ return a.replace(/[0-9+\-−]/g, function(c){ return {"0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹","-":"⁻","−":"⁻","+":"⁺"}[c]; }); }).replace(/<[^>]+>/g, "") + " J", Xc + 10, Yc - 14, C.text, 13, "left", true);
+  txt(g, "กราฟ U กับ r (สเกลปรับตามคู่ประจุ)", V.w - 30, U1(P1.r) > 0 ? gb - 8 : gt + 6, C.muted, 12, "right"); }
 function set1(q1, q2, r, m){ P1.q1 = q1; P1.q2 = q2; P1.r = P1.r0 = r; P1.m = m || P1.m; P1.v = 0; P1.run = false; P1.ended = "";
   $("sq1").value = q1; $("sq2").value = q2; $("sr1").value = r; $("sm1").value = P1.m; upd1(); }
 $("pre1").addEventListener("click", function(e){ var b = e.target.closest("button"); if (!b) return; segSel("pre1", b);
@@ -368,10 +390,10 @@ function draw3(){ var V = $("c3")._v; if (!V) return; var g = V.g; clear(V); var
   if (P3.mode === "a"){ var R = calcA(), P = PART[P3.k], c = getA(), xA = 80, xB = V.w - 80, yc = barTop / 2 + 10;
     line(g, xA, 40, xA, barTop - 20, C.steel, 4); line(g, xB, 40, xB, barTop - 20, C.steel, 4);
     txt(g, "A  " + c.VA + " V", xA, 26, C.text, 14, "center", true); txt(g, "B  " + c.VB + " V", xB, 26, C.text, 14, "center", true);
-    var hi = c.VA > c.VB ? xA : xB, lo = hi === xA ? xB : xA; if (c.VA !== c.VB){ arrow(g, (hi * 2 + lo) / 3, barTop - 40, (hi + lo * 2) / 3, barTop - 40, "rgba(159,180,208,.6)", 2); txt(g, "E ชี้จากศักย์สูงไปศักย์ต่ำ", (hi + lo) / 2, barTop - 58, C.muted, 12, "center"); }
+    var hi = c.VA > c.VB ? xA : xB, lo = hi === xA ? xB : xA; if (c.VA !== c.VB){ arrow(g, (hi * 2 + lo) / 3, barTop - 40, (hi + lo * 2) / 3, barTop - 40, "rgba(159,180,208,.6)", 2); txt(g, "E ชี้จากศักย์สูงไปศักย์ต่ำ", (hi + lo) / 2, barTop - 24, C.muted, 12, "center"); }
     if (P3.run && R.moves){ P3.u = Math.min(1, P3.u + 0.012); if (P3.u >= 1) P3.run = false; }
     var s = R.moves ? P3.u * P3.u : 0, x0 = P3.st === "A" ? xA + 18 : xB - 18, x1 = P3.st === "A" ? xB - 18 : xA + 18, xx = x0 + (x1 - x0) * s;
-    chg(g, xx, yc, P.q, 11); txt(g, P.n, xx, yc - 24, C.text, 13, "center", true);
+    chg(g, xx, yc, P.q, 11); if (xx < V.w / 2) txt(g, P.n, xx - 9, yc - 24, C.text, 13, "left", true); else txt(g, P.n, xx + 9, yc - 24, C.text, 13, "right", true);
     if (R.moves && s > 0.02) arrow(g, xx, yc + 22, xx + Math.sign(x1 - x0) * 40, yc + 22, C.amber, 3);
     /* แท่งพลังงาน */
     var Ekf = R.moves ? R.dEk : 0, Ek = Ekf * s, dU = -Ek, bw = 70, bx1 = V.w / 2 - 110, bx2 = V.w / 2 + 40, base = V.h - 22, H = 70;

@@ -194,6 +194,27 @@ sub,sup{font-size:72%}
 </div>
 
 <script>
+/* กันข้อความในภาพหลุดขอบ: ถ้าป้ายจะล้นขอบภาพ ให้เลื่อนกลับเข้ามาในกรอบ (ไม่ยุ่งกับข้อความที่หมุน) */
+(function(){
+  var P = CanvasRenderingContext2D.prototype, o = P.fillText;
+  if (P.__p4fit) return; P.__p4fit = true;
+  P.fillText = function(s, x, y, mw){
+    try {
+      var m = this.getTransform();
+      if (Math.abs(m.b) < 0.01 && Math.abs(m.c) < 0.01 && m.a > 0 && m.d > 0 && String(s).trim()) {
+        var c = this.canvas, pad = 3, t = this.measureText(s);
+        var L = (0 - m.e) / m.a + pad, R = (c.width - m.e) / m.a - pad, T = (0 - m.f) / m.d + pad, B = (c.height - m.f) / m.d - pad;
+        var wl = t.actualBoundingBoxLeft, wr = t.actualBoundingBoxRight, k = 1;
+        if (mw !== undefined && wl + wr > mw && wl + wr > 0) { k = mw / (wl + wr); wl *= k; wr *= k; }
+        if (wl + wr > R - L) { var a = this.textAlign; x = (a === "center") ? (L + R) / 2 : (a === "right" || a === "end") ? R : L; mw = R - L; }
+        else if (x - wl < L) x = L + wl; else if (x + wr > R) x = R - wr;
+        var up = t.actualBoundingBoxAscent, dn = t.actualBoundingBoxDescent;
+        if (up + dn < B - T) { if (y - up < T) y = T + up; else if (y + dn > B) y = B - dn; }
+      }
+    } catch (e) {}
+    return mw === undefined ? o.call(this, s, x, y) : o.call(this, s, x, y, mw);
+  };
+})();
 (function(){
 "use strict";
 var C = {bg:"#0a0f19", line:"#26324a", line2:"#34446a", text:"#e7ecf5", muted:"#8793aa", cyan:"#35d0ff", amber:"#ffb020", green:"#3ddc97", red:"#ff4d5e", steel:"#9fb4d0", metal:"#3a4a66"};
@@ -268,7 +289,7 @@ function draw1(){
   var sc = Math.min(170, (W - 80) * 0.3) / mx, cols = [C.cyan, C.steel, C.green];
   // ป้ายชื่อประจุที่อยู่ชิดกันเกินไป ให้สลับขึ้นแถวบน ไม่ให้ตัวหนังสือทับกัน
   var LV = [0, 0, 0], ord = [0, 1, 2].sort(function(p, q){ return P1.x[p] - P1.x[q]; });
-  for (var o = 1; o < 3; o++) if (X(P1.x[ord[o]]) - X(P1.x[ord[o - 1]]) < 74 && LV[ord[o - 1]] === 0) LV[ord[o]] = 1;
+  for (var o = 1; o < 3; o++) if (X(P1.x[ord[o]]) - X(P1.x[ord[o - 1]]) < 74 && LV[ord[o - 1]] === 0) LV[ord[o]] = 1; if (LV[ord[1]] === 1 && X(P1.x[ord[2]]) - X(P1.x[ord[0]]) < 74) LV[ord[2]] = 2;
   for (i = 0; i < 3; i++){ var rr = 10 + Math.sqrt(Math.abs(P1.q[i])) * 4; if (P1.q[i]) chg(g, X(P1.x[i]), y, P1.q[i], rr); else { g.strokeStyle = C.muted; g.beginPath(); g.arc(X(P1.x[i]), y, 10, 0, 7); g.stroke(); }
     txt(g, NM[i] + " " + sgn(P1.q[i]) + " μC", X(P1.x[i]), y - rr - 14 - LV[i] * 18, i === t ? C.amber : C.text, W < 520 ? 12 : 13, "center", true); }
   if (R.bad) return;
@@ -306,9 +327,9 @@ function draw2(){
   var ox = W * 0.5, oy = H * 0.62, s = Math.min(W * 0.42, H * 0.5) / 0.5;
   arrow(g, 14, oy, W - 10, oy, C.steel, 1.5); arrow(g, ox, H - 10, ox, 10, C.steel, 1.5); txt(g, "x", W - 12, oy + 16, C.muted, 12, "right"); txt(g, "y", ox + 10, 16, C.muted, 12);
   var q0 = g2("s20"), q1 = g2("s21"), q2 = g2("s22"), x = g2("s2x"), yv = g2("s2y"), R = calc2();
-  function Q(px, py, v, lab){ var rr = 9 + Math.sqrt(Math.abs(v)) * 3.5; if (v) chg(g, px, py, v, rr); else { g.strokeStyle = C.muted; g.beginPath(); g.arc(px, py, 9, 0, 7); g.stroke(); } if (px > W * 0.68) txt(g, lab, px, py - rr - 12, C.text, 12.5, "center", true); else txt(g, lab, px + rr + 6, py - rr, C.text, 12.5, "left", true); }
-  Q(ox + x * s, oy, q1, "q₁ " + sgn(q1) + " μC"); Q(ox, oy - yv * s, q2, "q₂ " + sgn(q2) + " μC"); Q(ox, oy, q0, "");
-  txt(g, "q₀ " + sgn(q0) + " μC", ox + 14, oy + 22, C.amber, 12.5, "left", true);
+  function Q(px, py, v, lab, below){ var rr = 9 + Math.sqrt(Math.abs(v)) * 3.5; if (v) chg(g, px, py, v, rr); else { g.strokeStyle = C.muted; g.beginPath(); g.arc(px, py, 9, 0, 7); g.stroke(); } if (below) txt(g, lab, px, py + rr + 14, C.text, 12.5, "center", true); else if (px > W * 0.68) txt(g, lab, px, py - rr - 12, C.text, 12.5, "center", true); else txt(g, lab, px + rr + 6, py - rr, C.text, 12.5, "left", true); }
+  Q(ox + x * s, oy, q1, "q₁ " + sgn(q1) + " μC", true); Q(ox, oy - yv * s, q2, "q₂ " + sgn(q2) + " μC"); Q(ox, oy, q0, "");
+  txt(g, "q₀ " + sgn(q0) + " μC", ox - 14, oy + 22, C.amber, 12.5, "right", true);
   var mx = Math.max(Math.abs(R.fx), Math.abs(R.fy), 1e-12), fs = Math.min(W, H) * 0.32 / mx;
   var ex = ox + R.fx * fs, ey = oy - R.fy * fs;
   if (R.fx) arrow(g, ox, oy, ex, oy, C.cyan, 3.5);
@@ -351,7 +372,7 @@ function draw3(){
   chg(g, X(0), y, a || 1, 10 + Math.sqrt(Math.abs(a)) * 4); txt(g, "A " + sgn(a), X(0), y - 34, C.text, 12.5, "center", true);
   chg(g, X(d), y, b || 1, 10 + Math.sqrt(Math.abs(b)) * 4); txt(g, "B " + sgn(b), X(d), y - 34, C.text, 12.5, "center", true);
   var F = net3(xt), z = zeros3();
-  g.fillStyle = "#e7ecf5"; g.beginPath(); g.arc(X(xt), y, 7, 0, 7); g.fill(); txt(g, "+1.0 μC", X(xt), y + 22, C.muted, 11.5, "center");
+  g.fillStyle = "#e7ecf5"; g.beginPath(); g.arc(X(xt), y, 7, 0, 7); g.fill(); txt(g, "+1.0 μC", X(xt), y + 32, C.muted, 11.5, "center");
   if (Math.abs(F) > 1e-9){ var L = Math.max(14, Math.min(90, 20 + 14 * Math.log10(Math.abs(F) / 1e-3))); arrow(g, X(xt), y - 16, X(xt) + Math.sign(F) * L, y - 16, C.amber, 3); }
   // กราฟ
   var gy = H * 0.72, gh = H * 0.22;

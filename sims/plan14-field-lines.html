@@ -184,6 +184,27 @@ sub,sup{font-size:72%}
 </div>
 
 <script>
+/* กันข้อความในภาพหลุดขอบ: ถ้าป้ายจะล้นขอบภาพ ให้เลื่อนกลับเข้ามาในกรอบ (ไม่ยุ่งกับข้อความที่หมุน) */
+(function(){
+  var P = CanvasRenderingContext2D.prototype, o = P.fillText;
+  if (P.__p4fit) return; P.__p4fit = true;
+  P.fillText = function(s, x, y, mw){
+    try {
+      var m = this.getTransform();
+      if (Math.abs(m.b) < 0.01 && Math.abs(m.c) < 0.01 && m.a > 0 && m.d > 0 && String(s).trim()) {
+        var c = this.canvas, pad = 3, t = this.measureText(s);
+        var L = (0 - m.e) / m.a + pad, R = (c.width - m.e) / m.a - pad, T = (0 - m.f) / m.d + pad, B = (c.height - m.f) / m.d - pad;
+        var wl = t.actualBoundingBoxLeft, wr = t.actualBoundingBoxRight, k = 1;
+        if (mw !== undefined && wl + wr > mw && wl + wr > 0) { k = mw / (wl + wr); wl *= k; wr *= k; }
+        if (wl + wr > R - L) { var a = this.textAlign; x = (a === "center") ? (L + R) / 2 : (a === "right" || a === "end") ? R : L; mw = R - L; }
+        else if (x - wl < L) x = L + wl; else if (x + wr > R) x = R - wr;
+        var up = t.actualBoundingBoxAscent, dn = t.actualBoundingBoxDescent;
+        if (up + dn < B - T) { if (y - up < T) y = T + up; else if (y + dn > B) y = B - dn; }
+      }
+    } catch (e) {}
+    return mw === undefined ? o.call(this, s, x, y) : o.call(this, s, x, y, mw);
+  };
+})();
 (function(){
 "use strict";
 var C = {bg:"#0a0f19", line:"#26324a", line2:"#34446a", text:"#e7ecf5", muted:"#8793aa", cyan:"#35d0ff", amber:"#ffb020", green:"#3ddc97", red:"#ff4d5e", steel:"#9fb4d0", metal:"#3a4a66"};
@@ -371,9 +392,9 @@ function draw3(){
   var F = field3(), ex = F[0].ex + F[1].ex, ey = F[0].ey + F[1].ey, E = Math.hypot(ex, ey), mx = Math.max(F[0].E, F[1].E, E) || 1, sc = Math.min(W, H) * 0.3 / mx;
   var Px = X(P3.px), Py = Y(P3.py);
   for (var i = 0; i < 2; i++){ line(g, X(P3.x[i]), Y(P3.y[i]), Px, Py, C.line2, 1, [4, 4]); if (P3.q[i]){ sphere(g, X(P3.x[i]), Y(P3.y[i]), 13); chg(g, X(P3.x[i]), Y(P3.y[i]), P3.q[i], 8); }
-    txt(g, "q" + (i ? "₂" : "₁") + " = " + sgn(P3.q[i], 0) + " μC", X(P3.x[i]), Y(P3.y[i]) + 26, C.text, 12, "center", true); }
+    txt(g, "q" + (i ? "₂" : "₁") + " = " + sgn(P3.q[i], 0) + " μC", X(P3.x[i]), Y(P3.y[i]) + ((i === 1 && Math.abs(X(P3.x[0]) - X(P3.x[1])) < 96 && Math.abs(Y(P3.y[0]) - Y(P3.y[1])) < 20) ? -26 : 26), C.text, 12, "center", true); }
   arrow(g, Px, Py, Px + F[0].ex * sc, Py - F[0].ey * sc, C.amber, 3); txt(g, "E₁", Px + F[0].ex * sc + 8, Py - F[0].ey * sc - 8, C.amber, 13, "left", true);
-  arrow(g, Px, Py, Px + F[1].ex * sc, Py - F[1].ey * sc, C.amber, 3); txt(g, "E₂", Px + F[1].ex * sc + 8, Py - F[1].ey * sc - 8, C.amber, 13, "left", true);
+  arrow(g, Px, Py, Px + F[1].ex * sc, Py - F[1].ey * sc, C.amber, 3); txt(g, "E₂", Px + F[1].ex * sc + 8, Py - F[1].ey * sc - 8 + (Math.hypot((F[1].ex - F[0].ex) * sc, (F[1].ey - F[0].ey) * sc) < 22 ? 18 : 0), C.amber, 13, "left", true);
   if (!P3.hide && E){ line(g, Px + ex * sc, Py, Px + ex * sc, Py - ey * sc, C.muted, 1, [4, 4]); line(g, Px, Py - ey * sc, Px + ex * sc, Py - ey * sc, C.muted, 1, [4, 4]);
     arrow(g, Px, Py, Px + ex * sc, Py - ey * sc, C.cyan, 4); txt(g, "E", Px + ex * sc + 10, Py - ey * sc + 12, C.cyan, 15, "left", true); }
   g.fillStyle = C.text; g.beginPath(); g.arc(Px, Py, 5, 0, 7); g.fill(); txt(g, "P", Px - 10, Py + 14, C.text, 14, "right", true);
