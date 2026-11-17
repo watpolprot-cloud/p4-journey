@@ -238,6 +238,82 @@ a{color:var(--cyan)}
 .player-team img{width:40px;height:40px;object-fit:cover}
 .player-team b{font-family:"Chakra Petch";letter-spacing:1.5px;color:var(--tc)}
 .foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:30px;font-family:"Chakra Petch";letter-spacing:1px}
+
+/* SQUAD CHECK · สถานะส่งใบงานรายเลขที่ (อ่านจาก data/squad.js) */
+.sq-cta{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;border:1px solid var(--line);border-left:3px solid var(--green);background:var(--bg2);padding:8px 12px;margin:-4px 0 14px}
+.sq-cta .lead{flex:1 1 260px;font-size:14px;line-height:1.4}
+.sq-cta .lead b{font-family:"Chakra Petch";letter-spacing:2px;color:var(--green);font-size:12.5px;margin-right:8px;white-space:nowrap}
+.sq-go{display:flex;gap:8px;flex-wrap:wrap}
+.sqb{font-family:"Chakra Petch";font-weight:600;font-size:14px;letter-spacing:.5px;border:1px solid var(--tc);color:var(--tc);background:var(--tcs);padding:6px 14px;cursor:pointer;line-height:1.2;text-align:center;
+  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);transition:filter .15s}
+.sqb:hover{filter:brightness(1.3)}
+.sqb small{display:block;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:1px}
+.tp-card .sqb{margin-top:16px;width:100%;font-size:15px;padding:9px 14px}
+.tp-card .sqb small{font-size:12.5px;color:var(--text);opacity:.8;margin-top:2px}
+.sq-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.sq-head .kicker{color:var(--tc)}
+.sq-head h1{font-size:24px;line-height:1.25}
+.sq-head h1 span{color:var(--tc);letter-spacing:1.5px}
+.sq-rooms{display:flex;gap:8px;flex-wrap:wrap}
+.sq-rooms .sqb{opacity:.55}
+.sq-rooms .sqb[aria-pressed="true"]{opacity:1;box-shadow:inset 0 -2px 0 var(--tc)}
+.sq-card{border-top:2px solid var(--tc)}
+.sq-card:before{background:var(--tc)}
+.sq-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.sq-stat{border:1px solid var(--line);background:var(--bg2);padding:8px 10px}
+.sq-stat b{display:block;font-family:"Chakra Petch";font-weight:700;font-size:26px;line-height:1.1;color:var(--tc);font-variant-numeric:tabular-nums}
+.sq-stat b small{font-size:14px;color:var(--muted);margin-left:2px}
+.sq-stat>span{font-size:12.5px;color:var(--muted);line-height:1.3;display:block}
+.sq-tasks{display:grid;gap:8px;margin-bottom:12px}
+@media(min-width:880px){.sq-tasks{grid-template-columns:1fr 1fr}}
+.sq-task{border:1px solid var(--line);background:var(--bg2);padding:8px 10px;min-width:0}
+.sq-task .tt{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.sq-task .tt b{font-family:"Chakra Petch";font-weight:600;font-size:14px;white-space:nowrap}
+.sq-task .tt .num{font-weight:700;color:var(--tc);white-space:nowrap}
+.sq-task .tn{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sq-task .bar{height:5px;background:#1b2436;margin-top:5px}
+.sq-task .bar i{display:block;height:100%;background:var(--green);transition:width 1s ease}
+.sq-tools{display:flex;justify-content:space-between;gap:8px 14px;flex-wrap:wrap;align-items:center;margin:4px 0 8px}
+.seg{display:flex;flex-wrap:wrap;border:1px solid var(--line2)}
+.seg button{font-family:"Chakra Petch";font-weight:600;font-size:13px;border:0;background:none;color:var(--muted);padding:6px 12px;cursor:pointer;line-height:1.2}
+.seg button+button{border-left:1px solid var(--line2)}
+.seg button[aria-pressed="true"]{background:var(--tcs);color:var(--text);box-shadow:inset 0 -2px 0 var(--tc)}
+.sq-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line)}
+.sq{border-collapse:separate;border-spacing:0;width:100%;font-size:13px}
+.sq th,.sq td{text-align:center;border-bottom:1px solid var(--line);padding:4px 3px}
+.sq thead th,.sq tr.rh th{font-family:"Chakra Petch";font-weight:600;font-size:11px;letter-spacing:.5px;color:var(--muted);background:var(--panel);line-height:1.15;padding:6px 3px}
+.sq thead th b,.sq tr.rh th b{display:block;font-size:16px;color:var(--text);letter-spacing:0}
+.sq tr.rh th{padding:3px;background:#0e1522}
+.sq tr.rh th b{font-size:13px;color:#b8c3d8}
+.sq .no{position:sticky;left:0;z-index:1;background:var(--panel);font-family:"Chakra Petch";font-weight:700;font-size:16px;width:58px;min-width:58px;border-right:1px solid var(--line2);font-variant-numeric:tabular-nums}
+.sq td.no small{display:block;font-size:10px;letter-spacing:1px;color:var(--tc);line-height:1}
+.sq td.c{min-width:46px}
+.nw{white-space:nowrap}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+body[data-view="squad"] #squadCta{display:none!important}
+.sq td.c span{display:block;max-width:96px;margin:0 auto;font-family:"IBM Plex Sans Thai";font-size:12px;font-weight:600;line-height:1.2;padding:4px 1px;border:1px solid;white-space:nowrap}
+.sq td.o span{background:rgba(61,220,151,.16);border-color:rgba(61,220,151,.7);color:var(--green)}
+.sq td.i span{border-color:var(--amber);color:var(--amber);background:repeating-linear-gradient(135deg,rgba(255,176,32,.18) 0 4px,transparent 4px 8px)}
+.sq td.m span{border-color:rgba(255,77,94,.55);color:#ff7f8b;border-style:dashed}
+.sq .tot{width:62px;min-width:56px;font-family:"Chakra Petch";font-weight:700;font-size:14px;border-left:1px solid var(--line2);white-space:nowrap}
+.sq td.tot.ok{color:var(--green)}.sq td.tot.bad{color:var(--red)}
+.sq tbody tr:hover td{background-color:rgba(255,255,255,.03)}
+.sq tr.me td{background:var(--tcs)}
+.sq tr.me td.no{background:linear-gradient(var(--tcs),var(--tcs)),var(--panel);color:var(--tc);box-shadow:inset 3px 0 0 var(--tc)}
+.sq-empty{border:1px dashed var(--line2);padding:16px;text-align:center;color:var(--muted)}
+.sq-legend{display:flex;gap:6px 14px;flex-wrap:wrap;margin:10px 0 6px;font-size:13px;color:var(--muted)}
+.lg{display:inline-flex;align-items:center;gap:6px}
+.lg i{font-style:normal;font-family:"IBM Plex Sans Thai";font-size:12px;font-weight:600;border:1px solid;padding:0 7px}
+.lg .o{background:rgba(61,220,151,.16);border-color:rgba(61,220,151,.7);color:var(--green)}
+.lg .i{border-color:var(--amber);color:var(--amber);background:repeating-linear-gradient(135deg,rgba(255,176,32,.18) 0 4px,transparent 4px 8px)}
+.lg .m{border-color:rgba(255,77,94,.55);color:#ff7f8b;border-style:dashed}
+.sq-scroll{font-size:12px;color:var(--muted);margin-top:6px}
+@media(max-width:620px){
+  .sq-stats{gap:6px}.sq-stat{padding:6px 8px}.sq-stat b{font-size:22px}.sq-stat>span{font-size:11.5px}
+  .sq-card{padding:14px 10px}
+  .sq .no{width:46px;min-width:46px;font-size:15px}.sq td.c{min-width:44px}.sq .tot{width:50px;min-width:48px;font-size:13px}
+  .sq-head h1{font-size:21px}
+}
 </style>
 </head>
 <body>
@@ -255,6 +331,8 @@ a{color:var(--cyan)}
 
   <!-- แถบพลังทีม (อ่านจาก data/teams.js) กดแล้วไปหน้าสนามทีม -->
   <div class="strip" id="teamStrip" hidden></div>
+  <!-- SQUAD CHECK: ปุ่มเข้าดูสถานะส่งใบงานรายเลขที่ของแต่ละห้อง (อ่านจาก data/squad.js) -->
+  <div class="sq-cta" id="squadCta" hidden></div>
 
   <nav class="tabs" role="tablist">
     <button class="tab" role="tab" id="tabLesson" aria-selected="true" aria-controls="viewLesson">คาบนี้เรียนอะไร</button>
@@ -319,6 +397,36 @@ a{color:var(--cyan)}
           <li>คะแนนของตัวเองดูได้ในแท็บ "ข้อมูลของฉัน" ด้วยรหัสของเราเท่านั้น</li>
           <li>ช่วยเพื่อนในทีมให้ส่งงานและเข้าใจเนื้อหา คือวิธีเติมเกจที่เร็วที่สุด</li>
           <li>ครูอัปเดตเกจหลังตรวจงานหรือประกาศผลสอบแต่ละครั้ง</li>
+          <li><b>SQUAD CHECK</b> แสดงแค่ว่าเลขที่ไหนส่งใบงานไหนแล้ว ไม่มีชื่อ ไม่มีคะแนน ไม่มี Quick Check ใช้ช่วยกัน<span class="nw">เตือนเพื่อน</span><span class="nw">ให้ส่งงานครบ</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ส่วนที่ 1.6: SQUAD CHECK สถานะส่งใบงานรายเลขที่ (data/squad.js) ================= -->
+  <section id="viewSquad" role="tabpanel" aria-labelledby="tabArena" hidden>
+    <div class="sq-head">
+      <div><div class="kicker" id="sqKicker">SQUAD CHECK</div><h1 id="sqTitle"></h1></div>
+      <div class="sq-rooms" id="sqRooms" role="group" aria-label="เลือกห้อง"></div>
+    </div>
+    <div id="sqBody"></div>
+    <div class="grid g2" style="margin-top:22px">
+      <div class="card">
+        <div class="sec-title"><div class="sec-num">SQ</div><h2>อ่านตารางนี้อย่างไร</h2></div>
+        <ul class="list">
+          <li>แต่ละแถวคือ 1 เลขที่ของห้อง แต่ละช่องคือใบงาน 1 ชิ้น ไม่มีชื่อและไม่มีคะแนน</li>
+          <li>แสดงเฉพาะใบงานที่ครูตรวจของห้องนั้นแล้ว ไม่แสดง Quick Check และใบงานเสริม</li>
+          <li><b>ค้างรวม</b> คือจำนวนใบงานที่ยังไม่ส่งหรือยังไม่ครบ <span class="nw">นับทุกช่วง Quiz</span></li>
+          <li>ส่งแล้วแต่ยังขึ้นว่าค้าง แปลว่าใบงานนั้นยังรอตรวจ จะขึ้นในการอัปเดตครั้งถัดไป ถ้านานเกินไป<span class="nw">ให้แจ้งครูต้น</span></li>
+        </ul>
+      </div>
+      <div class="card amber">
+        <div class="sec-title"><div class="sec-num">!!</div><h2>ค้างอยู่ทำอย่างไร</h2></div>
+        <ul class="list">
+          <li>ใบงานที่ยังไม่ส่ง ส่งย้อนหลังได้ถึงวันก่อนตัดสินผล <span class="nw">ถูกผิดไม่เป็นไร</span> <span class="nw">ขอให้ทำครบทุกข้อ</span></li>
+          <li>ขึ้นว่า "ไม่ครบ" คือส่งแล้วแต่ยังทำไม่ครบ ให้ทำส่วนที่ขาดแล้วส่งใหม่</li>
+          <li>ใบงานแต่ละช่วงเป็นคะแนนงาน 5 คะแนนของ Quiz ช่วงนั้น ส่งครบได้เต็ม</li>
+          <li>เห็นเพื่อนค้าง ช่วยกันเตือน ทีมไหนส่งครบมาก เกจ CORE CHARGE ก็ขึ้นเร็ว</li>
         </ul>
       </div>
     </div>
@@ -430,6 +538,7 @@ a{color:var(--cyan)}
 
 <script src="data/lesson.js"></script>
 <script src="data/teams.js"></script>
+<script src="data/squad.js"></script>
 <script src="data/vault.js"></script>
 <script>
 "use strict";
@@ -438,11 +547,13 @@ const esc=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const safeUrl=u=>/^(https?:\/\/|[\w.\-\/]+\.(html?|pdf)(#.*)?$)/i.test(u||"")?u:"";
 
 /* ===== tabs ===== */
-const VIEWS={lesson:["viewLesson","tabLesson","#"],arena:["viewArena","tabArena","#arena"],me:["viewMe","tabMe","#me"]};
-function showView(which){
+const VIEWS={lesson:["viewLesson","tabLesson","#"],arena:["viewArena","tabArena","#arena"],squad:["viewSquad","tabArena","#arena"],me:["viewMe","tabMe","#me"]};
+function showView(which,hash){
   if(!VIEWS[which])which="lesson";
-  for(const k in VIEWS){const on=k===which;$(VIEWS[k][0]).hidden=!on;$(VIEWS[k][1]).setAttribute("aria-selected",on)}
-  try{history.replaceState(null,"",VIEWS[which][2])}catch(e){}
+  for(const k in VIEWS)$(VIEWS[k][0]).hidden=k!==which;
+  document.body.dataset.view=which;
+  ["tabLesson","tabArena","tabMe"].forEach(id=>$(id).setAttribute("aria-selected",id===VIEWS[which][1]));
+  try{history.replaceState(null,"",hash||VIEWS[which][2])}catch(e){}
 }
 $("tabLesson").onclick=()=>showView("lesson");
 $("tabArena").onclick=()=>showView("arena");
@@ -463,6 +574,84 @@ const TEAMS=(()=>{
 const teamOfRoom=room=>TEAMS.list.find(t=>t.room===room);
 let myRoom="";try{myRoom=localStorage.getItem("p4_room")||""}catch(e){}
 const fmtPct=v=>(Math.round(v*10)/10).toLocaleString("th-TH",{maximumFractionDigits:1});
+
+/* ===== SQUAD CHECK · สถานะส่งใบงานรายเลขที่ (อ่านจาก data/squad.js สร้างโดย build_squad.py) =====
+   มีแค่ห้อง เลขที่ และสถานะ o ส่งแล้ว / i ส่งแล้วแต่ไม่ครบ / m ยังไม่ส่ง · ไม่มีชื่อ คะแนน หรือ Quick Check */
+const SQUAD=(()=>{const S=window.P4_SQUAD||{};return {updated:S.updated||"",rooms:(S.rooms||[]).filter(r=>r&&TEAM_ART[r.key]&&Array.isArray(r.rows)&&Array.isArray(r.tasks))}})();
+const slugOf=room=>String(room||"").replace(/\D/g,"");
+const squadOf=slug=>SQUAD.rooms.find(r=>slugOf(r.room)===String(slug));
+const QPERIODS=[[1,1,8],[2,9,12],[3,13,16],[4,17,24],[5,25,30],[6,31,36]];   // ใบงานของแต่ละช่วง Quiz (ไฟล์ 01)
+const periodOf=n=>(QPERIODS.find(p=>n>=p[1]&&n<=p[2])||[0])[0];
+const SQ_LABEL={o:"ส่ง",i:"ไม่ครบ",m:"ค้าง"},SQ_FULL={o:"ส่งแล้ว",i:"ส่งแล้วแต่ยังไม่ครบ",m:"ยังไม่ส่ง"};
+const sqSt=(row,i)=>{const c=String(row.s||"")[i];return c==="o"||c==="i"?c:"m"};
+let myMe=null;try{myMe=JSON.parse(localStorage.getItem("p4_me")||"null")}catch(e){}
+const sqState={slug:"",period:0,filter:"all"};
+function renderSquadCta(){
+  if(!SQUAD.rooms.length){$("squadCta").hidden=true;return}
+  $("squadCta").innerHTML=`<div class="lead"><b>SQUAD CHECK</b><span class="nw">ใครส่งใบงานอะไรแล้ว</span> <span class="nw">เช็กรายเลขที่ของห้อง</span> <span class="nw">แล้วช่วยกันเตือนเพื่อน</span></div>
+    <div class="sq-go">${SQUAD.rooms.map(r=>`<button type="button" class="sqb team-${r.key}" data-squad="${slugOf(r.room)}">${esc(r.room)}<small>${esc(r.name)}</small></button>`).join("")}</div>`;
+  $("squadCta").hidden=false;
+}
+function renderSquad(){
+  const r=squadOf(sqState.slug);if(!r)return;
+  $("viewSquad").className="team-"+r.key;
+  $("sqKicker").textContent=`SQUAD CHECK · ${r.room} · ${r.members} PLAYERS`;
+  $("sqTitle").innerHTML=`<span>${esc(r.name)}</span> <span class="nw">ใครส่งใบงานอะไรแล้ว</span>`;
+  $("sqRooms").innerHTML=SQUAD.rooms.map(x=>`<button type="button" class="sqb team-${x.key}" data-squad="${slugOf(x.room)}" aria-pressed="${x===r}">${esc(x.room)}<small>${esc(x.name)}</small></button>`).join("");
+  const T=r.tasks.map((t,i)=>({...t,n:+t.n,i})),R=r.rows,n=R.length;
+  const upd=`<div class="muted" style="margin-top:10px">อัปเดตล่าสุด ${esc(SQUAD.updated||"-")} · นับจากใบงานที่ครูสแกนและตรวจแล้ว</div>`;
+  if(!T.length||!n){$("sqBody").innerHTML=`<div class="card sq-card"><div class="sq-empty">ยังไม่มีใบงานที่ครูตรวจของ ${esc(r.room)} · สถานะจะขึ้นหลังครูตรวจใบงานชุดแรกของห้องนี้</div>${upd}</div>`;return}
+  const owe=row=>T.filter(t=>sqSt(row,t.i)!=="o").length;
+  const done=R.filter(row=>!owe(row)).length,sent=R.reduce((a,row)=>a+T.filter(t=>sqSt(row,t.i)==="o").length,0);
+  const periods=[...new Set(T.map(t=>periodOf(t.n)))].sort((a,b)=>a-b);
+  if(!periods.includes(sqState.period))sqState.period=periods[periods.length-1];
+  const cols=T.filter(t=>periodOf(t.n)===sqState.period),P=QPERIODS.find(p=>p[0]===sqState.period);
+  const me=myMe&&myMe.room===r.room?+myMe.no:null;
+  const cnt=(i,c)=>R.filter(row=>sqSt(row,i)===c).length;
+  const strip=s=>String(s||"").replace(/^ใบงานที่\s*\d+\s*/,"");
+  const tasks=cols.map(t=>{const o=cnt(t.i,"o"),inc=cnt(t.i,"i");
+    return `<div class="sq-task"><div class="tt"><b>ใบงานที่ ${t.n}</b><span class="num">ส่งแล้ว ${o}/${n} คน</span></div>
+      <div class="tn" title="${esc(t.t)}">${esc(strip(t.t))}</div><div class="bar"><i style="width:${Math.round(o/n*1000)/10}%"></i></div>
+      ${inc?`<div class="muted">ส่งแล้วแต่ยังไม่ครบ ${inc} คน</div>`:""}</div>`}).join("");
+  const seg=(key,opts)=>`<div class="seg" role="group">${opts.map(([v,lb])=>`<button type="button" data-${key}="${v}" aria-pressed="${String(sqState[key])===String(v)}">${lb}</button>`).join("")}</div>`;
+  const tools=`<div class="sq-tools">${periods.length>1?seg("period",periods.map(k=>{const q=QPERIODS[k-1];return [k,`Quiz ${k} · ใบงาน ${q[1]}–${q[2]}`]})):`<span class="tag">ช่วง Quiz ${P[0]} · ใบงานที่ ${P[1]}–${P[2]}</span>`}
+    ${seg("filter",[["all","ทุกคน"],["owe","เฉพาะคนที่ยังค้าง"]])}</div>`;
+  const hrow=cls=>`<tr${cls?` class="${cls}" aria-hidden="true"`:""}><th class="no" scope="col">เลขที่</th>${cols.map(t=>`<th scope="col" title="${esc(t.t)}">ใบงาน<b>${t.n}</b></th>`).join("")}<th class="tot" scope="col">ค้าง<br>รวม</th></tr>`;
+  const rows=R.filter(row=>sqState.filter==="all"||owe(row)>0);
+  const body=rows.map((row,k)=>{const ow=owe(row),mine=me!=null&&+row.no===me;
+    return (sqState.filter==="all"&&k>0&&k%10===0?hrow("rh"):"")+`<tr${mine?' class="me"':""}><td class="no">${esc(row.no)}${mine?"<small>ฉัน</small>":""}</td>${cols.map(t=>{const c=sqSt(row,t.i);
+      return `<td class="c ${c}" title="เลขที่ ${esc(row.no)} · ใบงานที่ ${t.n}: ${SQ_FULL[c]}"><span>${SQ_LABEL[c]}</span></td>`}).join("")}<td class="tot ${ow?"bad":"ok"}" title="ค้างรวมทุกช่วง ${ow} ชิ้น">${ow||"ครบ"}</td></tr>`}).join("");
+  $("sqBody").innerHTML=`<div class="card sq-card">
+    <div class="sq-stats">
+      <div class="sq-stat"><b>${T.length}<small>ชิ้น</small></b><span>ใบงานที่ครู<span class="nw">ตรวจแล้ว</span></span></div>
+      <div class="sq-stat"><b>${done}<small>/${n}</small></b><span>คนที่<span class="nw">ส่งครบ</span><span class="nw">ทุกชิ้น</span></span></div>
+      <div class="sq-stat"><b>${n-done}<small>คน</small></b><span><span class="nw">ยังค้าง</span><span class="nw">อย่างน้อย</span> <span class="nw">1 ชิ้น</span></span></div>
+    </div>
+    <div class="sq-tasks">${tasks}</div>
+    ${tools}
+    ${rows.length?`<div class="sq-wrap" id="sqWrap"><table class="sq"><caption class="sr">${esc(r.room)} ${esc(r.name)} · สถานะส่งใบงานรายเลขที่ · ช่วง Quiz ${P[0]}</caption><thead>${hrow("")}</thead><tbody>${body}</tbody></table></div>
+    <div class="sq-scroll" id="sqHint" hidden>เลื่อนตารางไปทางขวาเพื่อดูใบงานที่เหลือ</div>`
+    :`<div class="sq-empty">ทุกคนใน ${esc(r.room)} ส่งใบงานที่ตรวจแล้วครบทุกชิ้น</div>`}
+    <div class="sq-legend"><span class="lg"><i class="o">ส่ง</i>ส่งแล้ว</span><span class="lg"><i class="i">ไม่ครบ</i>ส่งแล้วแต่ยังทำไม่ครบ</span><span class="lg"><i class="m">ค้าง</i>ยังไม่ส่ง</span></div>
+    ${me!=null?`<div class="muted">แถวที่ไฮไลต์คือเลขที่ของคุณ (จำจากการเข้าสู่ระบบในเครื่องนี้)</div>`:""}
+    ${upd}</div>`;
+  requestAnimationFrame(sqHint);
+}
+function sqHint(){const w=$("sqWrap"),h=$("sqHint");if(w&&h)h.hidden=w.scrollWidth<=w.clientWidth+2}
+function openSquad(slug,scroll){
+  const r=squadOf(slug)||SQUAD.rooms[0];if(!r){showView("arena");return}
+  slug=slugOf(r.room);
+  if(sqState.slug!==slug){sqState.slug=slug;sqState.period=0;sqState.filter="all"}
+  renderSquad();showView("squad","#squad-"+slug);requestAnimationFrame(sqHint);
+  if(scroll){const nav=document.querySelector("nav.tabs");if(nav&&nav.getBoundingClientRect().top<0)nav.scrollIntoView({behavior:"smooth",block:"start"})}
+}
+$("squadCta").addEventListener("click",e=>{const b=e.target.closest("[data-squad]");if(b)openSquad(b.dataset.squad,true)});
+$("sqRooms").addEventListener("click",e=>{const b=e.target.closest("[data-squad]");if(b)openSquad(b.dataset.squad)});
+$("sqBody").addEventListener("click",e=>{const b=e.target.closest("[data-period],[data-filter]");if(!b)return;
+  if(b.dataset.period)sqState.period=+b.dataset.period;if(b.dataset.filter)sqState.filter=b.dataset.filter;renderSquad()});
+window.addEventListener("resize",sqHint);
+window.addEventListener("hashchange",()=>{const m=location.hash.match(/^#squad-(\d+)$/);if(m)openSquad(m[1],true)});
+
 function renderTeams(){
   const L=TEAMS.list;if(L.length<2){$("tabArena").hidden=true;return}
   const started=!!TEAMS.T.started;
@@ -491,13 +680,16 @@ function renderTeams(){
           <div class="part"><div class="lb"><span>ส่งงาน (${Math.round(TEAMS.ww*100)}%)</span><b>${started?fmtPct(t.work)+"%":"--"}</b></div><div class="bar"><i data-w="${started?t.work:0}"></i></div></div>
           <div class="part"><div class="lb"><span>คะแนนสอบ (${Math.round(TEAMS.sw*100)}%)</span><b>${started?fmtPct(t.score)+"%":"--"}</b></div><div class="bar"><i data-w="${started?t.score:0}"></i></div></div>
         </div>
-      </div></article>`).join("");
+      </div>${squadOf(slugOf(t.room))?`<button type="button" class="sqb" data-squad="${slugOf(t.room)}">SQUAD CHECK · ${esc(t.room)}<small><span class="nw">ดูการส่งใบงาน</span><span class="nw">รายเลขที่</span> <span class="nw">ใครส่งอะไรแล้ว</span></small></button>`:""}</article>`).join("");
+  $("arena").onclick=e=>{const b=e.target.closest("[data-squad]");if(b)openSquad(b.dataset.squad,true)};
   $("arenaWait").innerHTML=started?"":'<span class="wait-tag">รอข้อมูลชุดแรก · ทุกทีมเริ่มที่ 0%</span>';
   $("ccFormula").innerHTML=`CORE CHARGE = <b>ส่งงาน</b> × ${Math.round(TEAMS.ww*100)}% + <b>คะแนนสอบ</b> × ${Math.round(TEAMS.sw*100)}%`;
   $("ccBasis").textContent=TEAMS.T.basis||"-";$("ccUpd").textContent=TEAMS.T.updated||"-";
   setTimeout(()=>{document.querySelectorAll("#arena .arc").forEach(a=>a.style.strokeDashoffset=a.dataset.off);document.querySelectorAll("#arena .bar i").forEach(b=>b.style.width=b.dataset.w+"%")},150);
 }
 renderTeams();
+renderSquadCta();
+{const m=location.hash.match(/^#squad-(\d+)$/);if(m)openSquad(m[1])}
 
 /* ===== ส่วนที่ 1: คาบนี้เรียนอะไร (อ่านจาก data/lesson.js) ===== */
 (function renderLesson(){
@@ -657,6 +849,8 @@ function renderProfile(D){
   $("pTeam").hidden=!tm;
   $("pTeam").innerHTML=tm?`<img src="${TEAM_ART[tm.key].emblem}" alt=""><div><b>${esc(tm.name)}</b><div class="muted">PLAYER ${esc(D.room)} · CORE CHARGE ของทีม ${D.demo&&D.demoCharge!=null?fmtPct(D.demoCharge)+"% (ค่าสมมติ)":TEAMS.T.started?fmtPct(tm.charge)+"%":"รอข้อมูลชุดแรก"}</div></div>`:"";
   if(tm&&myRoom!==D.room){myRoom=D.room;try{localStorage.setItem("p4_room",D.room)}catch(e){}renderTeams()}
+  // SQUAD CHECK: จำห้องและเลขที่ของตัวเองไว้ในเครื่องนี้ เพื่อไฮไลต์แถวของตัวเอง (บัญชีตัวอย่างไม่จำ)
+  if(!D.demo&&D.room&&D.no!=null&&!(myMe&&myMe.room===D.room&&+myMe.no===+D.no)){myMe={room:D.room,no:+D.no};try{localStorage.setItem("p4_me",JSON.stringify(myMe))}catch(e){}if(sqState.slug)renderSquad()}
 
   // rank & xp
   const xp=+D.xp||0;let cur=0;RANKS.forEach((r,i)=>{if(xp>=r.min)cur=i});
