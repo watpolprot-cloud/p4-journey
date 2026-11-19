@@ -36,7 +36,7 @@ window.P4_SQUAD = {
       {"no": 23, "s": "mmo"},
       {"no": 24, "s": "mmm"},
       {"no": 25, "s": "mmm"},
-      {"no": 26, "s": "oio"},
+      {"no": 26, "s": "ooo"},
       {"no": 27, "s": "mmo"},
       {"no": 28, "s": "mmo"}
      ]},

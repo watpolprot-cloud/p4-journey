@@ -15,7 +15,7 @@ window.P4_TEAMS = {
       "room": "ม.5/2",
       "name": "TEAM COULOMB",
       "members": 28,
-      "work": 10.7,
+      "work": 11.3,
       "score": 0
     },
     {
